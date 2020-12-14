@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meadowsage.guildgame.mapper.WorldMapper">
+    <insert id="save" useGeneratedKeys="true" keyProperty="world.id">
+        INSERT INTO world (save_data_id, game_date)
+        VALUES (#{saveDataId},
+                #{world.gameDate})
+    </insert>
+    <select id="select" resultType="com.meadowsage.guildgame.model.World">
+        SELECT w.*
+        FROM world w
+        WHERE w.save_data_id = #{saveDataId}
+    </select>
+    <update id="update">
+        UPDATE world w
+        SET game_date = #{gameDate}
+        WHERE w.id = #{id}
+    </update>
+</mapper>

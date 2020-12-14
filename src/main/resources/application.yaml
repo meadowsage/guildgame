@@ -1,1 +1,17 @@
-spring.datasource.url=spring.datasource.url=${JDBC_DATABASE_URL}
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${JDBC_DATABASE_URL}
+  flyway:
+    clean-on-validation-error: true
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+logging:
+  level:
+    com:
+      spring:
+        ibatis:
+          UserMapper: DEBUG
+
+API_KEY: dummy

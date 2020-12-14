@@ -1,8 +1,17 @@
 package com.meadowsage.guildgame.model;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Quest {
-    QuestType type;
-    int difficulty;
+    @Getter
+    private long id;
+    @Getter
+    private QuestType type;
+    @Getter
+    private int difficulty;
 
     public static Quest generateRandom() {
         Quest quest = new Quest();

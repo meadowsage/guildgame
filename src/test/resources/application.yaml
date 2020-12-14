@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://ec2-107-20-15-85.compute-1.amazonaws.com:5432/d90q7dkhqusnac?password=1f2c71c1e2a69f90d151fc6bc8d7e2b409c68948b06afbec77d5ea25952c11a9&sslmode=require&user=msigfumngzayhg
+
+API_KEY: dummy

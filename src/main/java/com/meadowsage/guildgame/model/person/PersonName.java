@@ -1,13 +1,20 @@
 package com.meadowsage.guildgame.model.person;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PersonName {
+    @Getter
     private String firstName;
+    @Getter
     private String familyName;
 
     public static PersonName generateRandom() {
@@ -70,25 +77,21 @@ public class PersonName {
             {"re", "レ"},
             {"ro", "ロ"},
             {"wa", "ワ"},
-            {"o", "ヲ"},
-            {"wo", "ヲ"},
-            {"n", "ン"},
+//            {"wo", "ヲ"},
+//            {"n", "ン"},
             {"ga", "ガ"},
             {"gi", "ギ"},
             {"gu", "グ"},
             {"ge", "ゲ"},
             {"go", "ゴ"},
             {"za", "ザ"},
-            {"ji", "ジ"},
             {"zi", "ジ"},
             {"zu", "ズ"},
             {"ze", "ゼ"},
             {"zo", "ゾ"},
             {"da", "ダ"},
-            {"ji", "ヂ"},
-            {"di", "ヂ"},
-            {"zu", "ヅ"},
-            {"du", "ヅ"},
+//            {"di", "ヂ"},
+//            {"du", "ヅ"},
             {"de", "デ"},
             {"do", "ド"},
             {"ba", "バ"},
@@ -172,7 +175,6 @@ public class PersonName {
             {"r", "ル"},
             {"w", "ウ"}}
     ).collect(Collectors.toMap(data -> data[0], data -> data[1]));
-    ;
 
     private static final List<String> ENGLISH_PREFIX = Arrays.asList(
             "アー-",

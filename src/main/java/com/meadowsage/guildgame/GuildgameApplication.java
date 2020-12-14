@@ -28,7 +28,8 @@ public class GuildgameApplication {
                         .allowedOrigins(
                                 "http://localhost:3000",
                                 "https://my-rapid-demo-front.herokuapp.com"
-                        );
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
             }
 
             @Override

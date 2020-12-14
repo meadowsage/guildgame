@@ -1,9 +1,12 @@
 package com.meadowsage.guildgame.model.person;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Random;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Attributes {
     @Getter
     private int battle;
@@ -23,11 +26,9 @@ public class Attributes {
 
     /**
      * ランダム値生成
-     * 40を中心に正規分布
      */
     private static int generateRandom(Random random) {
-        int value = (int) (random.nextGaussian() * 10) + 50;
-//        int value = (int) (random.nextGaussian() * 9) + 40;
+        int value = (int) (random.nextGaussian() * 16) + 45;
         return value > 0 ? value : 1;
     }
 }
