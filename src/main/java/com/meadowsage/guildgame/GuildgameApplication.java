@@ -27,7 +27,7 @@ public class GuildgameApplication {
                 registry.addMapping("/api/**")
                         .allowedOrigins(
                                 "http://localhost:3000",
-                                "https://my-rapid-demo-front.herokuapp.com"
+                                "https://guild-game-front.herokuapp.com"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
             }
