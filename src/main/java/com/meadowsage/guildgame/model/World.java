@@ -1,15 +1,16 @@
 package com.meadowsage.guildgame.model;
 
 import com.meadowsage.guildgame.model.person.Person;
+import com.meadowsage.guildgame.model.quest.Quest;
+import com.meadowsage.guildgame.model.quest.QuestProcess;
+import com.meadowsage.guildgame.model.system.Dice;
+import com.meadowsage.guildgame.model.system.GameLogger;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class World {
@@ -33,27 +34,48 @@ public class World {
         this.quests.addAll(quests);
     }
 
-    public void toNextDay() {
-        night();
-        morning();
+    public void daytime(GameLogger logger) {
+        // TODO クエストの実行
+        // クエスト＆受注者から、クエストプロセスを生成
+        // クエストプロセスを順次実行
+        quests.stream().filter(Quest::isReserved).forEach(quest -> {
+            getPerson(quest.getReservedBy()).ifPresent(person -> {
+                new QuestProcess(quest, person).run(new Dice(), logger);
+            });
+        });
     }
 
-    private void night() {
-        // クエストの成否判定
-        this.quests.forEach(quest -> System.out.println(quest.getType()));
+    public void night() {
+        // TODO 冒険者の成長
+        // 経験点に応じて能力値をアップ
+        // 名声に応じてランクをアップ
+        // 生活費を差し引く
 
-        // 冒険者更新
-        this.persons.forEach(person -> System.out.println(person.getName().getFirstName()));
+        // TODO ギルドの更新
+        // 維持費を差し引く
+        guild.accountingProcess();
 
-        // ギルド更新
-        this.guild.accountingProcess();
+        // 新しい冒険者の作成
+        addPersons(Person.generateRandom(1));
+        // 新しいクエストの作成
+        addQuests(Quest.generate(1, guild.getReputation()));
 
         // 日付進める
-        this.gameDate++;
+        gameDate++;
     }
 
-    private void morning() {
-        // 冒険者がクエストを受注
+    public void morning() {
+        // 受注を一度キャンセル
+        quests.forEach(Quest::cancel);
+
+        // 冒険者がクエストを受注する
+        // TODO 幸運順
+        for (Person person : persons) {
+            // TODO 冒険者の名声や好みで重みづけを行い、一番高いものを選択
+            quests.stream().filter(quest -> !quest.isReserved())
+                    .findFirst()
+                    .ifPresent(quest -> quest.reserve(person));
+        }
     }
 
     public static World create() {
@@ -61,8 +83,12 @@ public class World {
         world.id = -1;
         world.gameDate = 1;
         world.guild = Guild.create();
-        world.persons = IntStream.range(1, 11).mapToObj(value -> Person.generateRandom()).collect(Collectors.toList());
-        world.quests = IntStream.range(1, 6).mapToObj(value -> Quest.generateRandom()).collect(Collectors.toList());
+        world.persons = Person.generateRandom(3);
+        world.quests = Quest.generate(3, world.getGuild().getReputation());
         return world;
+    }
+
+    public Optional<Person> getPerson(long personId) {
+        return persons.stream().filter(person -> person.getId() == personId).findAny();
     }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meadowsage.guildgame.mapper.QuestOrderMapper">
+    <insert id="insert">
+        INSERT INTO quest_order (person_id, quest_id)
+        VALUES (#{person.id}, #{quest.id})
+    </insert>
+
+    <delete id="delete">
+        DELETE
+        FROM quest_order qo
+            USING world w
+        WHERE w.id = #{worldId};
+    </delete>
+</mapper>

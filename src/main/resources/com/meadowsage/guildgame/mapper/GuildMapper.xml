@@ -2,20 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.meadowsage.guildgame.mapper.GuildMapper">
+    <resultMap id="guildMap" type="com.meadowsage.guildgame.model.Guild" autoMapping="true">
+        <association property="money" columnPrefix="m_" autoMapping="true"/>
+    </resultMap>
+
     <insert id="save">
         INSERT INTO guild (world_id, money, reputation)
         VALUES (#{worldId},
-                #{guild.money},
+                #{guild.money.value},
                 #{guild.reputation})
     </insert>
-    <select id="select" resultType="com.meadowsage.guildgame.model.Guild">
-        SELECT *
+
+    <select id="select" resultMap="guildMap">
+        SELECT *,
+               money as m_value
         FROM guild
         WHERE world_id = #{worldId}
     </select>
+
     <update id="update">
         UPDATE guild
-        SET money      = #{guild.money},
+        SET money      = #{guild.money.value},
             reputation = #{guild.reputation}
         WHERE world_id = #{worldId}
     </update>

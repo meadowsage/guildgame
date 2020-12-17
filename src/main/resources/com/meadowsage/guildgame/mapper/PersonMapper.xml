@@ -6,9 +6,10 @@
                autoMapping="true">
         <association property="name" columnPrefix="n_" autoMapping="true"/>
         <association property="attributes" columnPrefix="a_" autoMapping="true"/>
+        <association property="money" columnPrefix="m_" autoMapping="true"/>
     </resultMap>
 
-    <insert id="save" useGeneratedKeys="true" keyProperty="person.id">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="person.id">
         INSERT INTO person (world_id,
                             first_name,
                             family_name,
@@ -20,18 +21,25 @@
         VALUES (#{worldId},
                 #{person.name.firstName},
                 #{person.name.familyName},
-                #{person.money},
+                #{person.money.value},
                 #{person.reputation},
                 #{person.attributes.battle},
                 #{person.attributes.knowledge},
                 #{person.attributes.support})
     </insert>
 
+    <update id="update">
+        UPDATE person p
+        SET money = #{money.value},
+            reputation = #{reputation}
+        WHERE p.id = #{id}
+    </update>
+
     <select id="select" resultMap="personMap">
         SELECT id,
                first_name as n_first_name,
                family_name as n_family_name,
-               money,
+               money as m_value,
                reputation,
                battle as a_battle,
                knowledge as a_knowledge,

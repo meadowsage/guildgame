@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.meadowsage.guildgame.mapper.QuestMapper">
-    <insert id="save" useGeneratedKeys="true" keyProperty="quest.id">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="quest.id">
         INSERT INTO quest (world_id,
                            type,
                            difficulty)
@@ -11,9 +11,18 @@
                 #{quest.difficulty})
     </insert>
 
-    <select id="select" resultType="com.meadowsage.guildgame.model.Quest">
-        SELECT *
-        FROM quest
-        WHERE world_id = #{worldId}
+    <update id="update">
+        UPDATE quest q
+        SET is_completed = #{isCompleted}
+        WHERE q.id = #{id}
+    </update>
+
+    <select id="select" resultType="com.meadowsage.guildgame.model.quest.Quest">
+        SELECT q.*,
+               qo.person_id as reserved_by
+        FROM quest q
+                 LEFT JOIN quest_order qo ON q.id = qo.quest_id
+        WHERE q.world_id = #{worldId}
+          AND q.is_completed = false
     </select>
 </mapper>

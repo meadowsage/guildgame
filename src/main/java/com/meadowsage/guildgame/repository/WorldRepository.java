@@ -1,10 +1,9 @@
 package com.meadowsage.guildgame.repository;
 
-import com.meadowsage.guildgame.mapper.GuildMapper;
-import com.meadowsage.guildgame.mapper.PersonMapper;
-import com.meadowsage.guildgame.mapper.QuestMapper;
-import com.meadowsage.guildgame.mapper.WorldMapper;
+import com.meadowsage.guildgame.mapper.*;
+import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.person.Person;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +15,7 @@ public class WorldRepository {
     private final GuildMapper guildMapper;
     private final PersonMapper personMapper;
     private final QuestMapper questMapper;
+    private final QuestOrderMapper questOrderMapper;
 
     public World get(String saveDataId) {
         World world = worldMapper.select(saveDataId);
@@ -28,12 +28,28 @@ public class WorldRepository {
     public void create(World world, String saveDataId) {
         worldMapper.save(world, saveDataId);
         guildMapper.save(world.getGuild(), world.getId());
-        world.getPersons().forEach(person -> personMapper.save(person, world.getId()));
-        world.getQuests().forEach(quest -> questMapper.save(quest, world.getId()));
+        world.getPersons().forEach(person -> personMapper.insert(person, world.getId()));
+        world.getQuests().forEach(quest -> questMapper.insert(quest, world.getId()));
     }
 
-    public void update(World world) {
+    public void save(World world) {
         worldMapper.update(world);
         guildMapper.update(world.getGuild(), world.getId());
+
+        // リソース更新
+        world.getPersons().stream().filter(person -> !person.isNotSaved()).forEach(personMapper::update);
+        world.getQuests().stream().filter(quest -> !quest.isNotSaved()).forEach(questMapper::update);
+
+        // クエスト発注の書き換え
+        questOrderMapper.delete(world.getId());
+        world.getQuests().stream().filter(Quest::isReserved).forEach(quest ->
+                world.getPerson(quest.getReservedBy()).ifPresent(person -> questOrderMapper.insert(person, quest)));
+    }
+
+    public void saveNewResources(World world) {
+        world.getPersons().stream().filter(Person::isNotSaved)
+                .forEach(person -> personMapper.insert(person, world.getId()));
+        world.getQuests().stream().filter(Quest::isNotSaved)
+                .forEach(quest -> questMapper.insert(quest, world.getId()));
     }
 }
