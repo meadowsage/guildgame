@@ -1,6 +1,6 @@
 package com.meadowsage.guildgame.controller;
 
-import com.meadowsage.guildgame.controller.request.ScreeningRequest;
+import com.meadowsage.guildgame.controller.request.UpdateApplicantRequest;
 import com.meadowsage.guildgame.service.PersonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +17,13 @@ public class ApplicantController {
 
     @PostMapping("/{applicantId}")
     @ResponseBody
-    public void screening(
-            @RequestBody ScreeningRequest request,
+    public void updateApplicant(
+            @RequestBody UpdateApplicantRequest request,
             @PathVariable String saveDataId,
             @PathVariable long worldId,
             @PathVariable long applicantId
     ) {
         // TODO 入力チェック セーブデータと応募者の突き合わせ、支給品が使用可能かのチェック（ギルドランクが基準）
-        personService.screening(applicantId, request.getIsApproval());
+        personService.updateApplicant(applicantId, request.getIsApproval());
     }
 }

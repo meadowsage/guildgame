@@ -12,7 +12,7 @@ public class PersonService {
     /**
      * 登録届の審査
      */
-    public void screening(long applicantId, boolean isApproval) {
+    public void updateApplicant(long applicantId, boolean isApproval) {
         if(isApproval) {
             // 承認 → Adventurerに変更して申請を削除
             personRepository.updateToAdventurer(applicantId);
