@@ -15,7 +15,7 @@ public class Guild {
     public static Guild create() {
         Guild guild = new Guild();
         guild.money = Money.of(10000);
-        guild.reputation = 300; // TODO 所属する冒険者の名声合計?
+        guild.reputation = 40;
         return guild;
     }
 

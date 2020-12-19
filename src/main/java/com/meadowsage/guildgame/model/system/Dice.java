@@ -1,5 +1,9 @@
 package com.meadowsage.guildgame.model.system;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.stream.IntStream;
 
 public class Dice {
@@ -20,26 +24,33 @@ public class Dice {
     /**
      * 1d100の結果に応じた結果を返す
      */
-    public RollResult calcResult(int target) {
+    public DiceRollResult calcResult(int target) {
         System.out.println("[目標値 " + target + "]");
         int result = roll(1,100, 0);
 
         // 1,100は自動成功・自動失敗
-        if(result == 1) return RollResult.CRITICAL;
-        else if(result == 100) return RollResult.FUMBLE;
+        if(result == 1) return new DiceRollResult(result, ResultType.CRITICAL);
+        else if(result == 100) return new DiceRollResult(result, ResultType.FUMBLE);
 
-        if (result <= target && result <= 5) return RollResult.CRITICAL;
-        else if (result <= (target / 5)) return RollResult.SPECIAL;
-        else if(result <= target) return RollResult.SUCCESS;
-        else if(result >= 96) return RollResult.FUMBLE;
-        else return RollResult.FAILURE;
+        if (result <= target && result <= 5) return new DiceRollResult(result, ResultType.CRITICAL);
+        else if (result <= (target / 5)) return new DiceRollResult(result, ResultType.SPECIAL);
+        else if(result <= target) return new DiceRollResult(result, ResultType.SUCCESS);
+        else if(result >= 96) return new DiceRollResult(result, ResultType.FUMBLE);
+        else return new DiceRollResult(result, ResultType.FAILURE);
     }
 
     private int calc(int sides) {
         return (int)(Math.random() * sides + 1);
     }
 
-    public enum RollResult {
+    @Getter
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class DiceRollResult {
+        int number;
+        ResultType type;
+    }
+
+    public enum ResultType {
         CRITICAL,
         SPECIAL,
         SUCCESS,

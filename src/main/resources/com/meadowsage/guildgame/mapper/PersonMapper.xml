@@ -30,21 +30,33 @@
 
     <update id="update">
         UPDATE person p
-        SET money = #{money.value},
-            reputation = #{reputation}
+        SET money         = #{money.value},
+            reputation    = #{reputation},
+            is_adventurer = #{isAdventurer}
         WHERE p.id = #{id}
     </update>
 
-    <select id="select" resultMap="personMap">
-        SELECT id,
-               first_name as n_first_name,
-               family_name as n_family_name,
-               money as m_value,
-               reputation,
-               battle as a_battle,
-               knowledge as a_knowledge,
-               support as a_support
+    <update id="updateIsAdventurer">
+        UPDATE person p
+        SET is_adventurer = #{isAdventurer}
+        WHERE p.id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE
         FROM person
+        WHERE id = #{personId}
+    </delete>
+
+    <select id="select" resultMap="personMap">
+        SELECT p.*,
+               first_name  as n_first_name,
+               family_name as n_family_name,
+               money       as m_value,
+               battle      as a_battle,
+               knowledge   as a_knowledge,
+               support     as a_support
+        FROM person p
         WHERE world_id = #{worldId}
     </select>
 </mapper>

@@ -24,7 +24,7 @@ public class WorldService {
         world.daytime(logger);
 
         world.night();
-        worldRepository.saveNewResources(world);
+        worldRepository.saveNewDataAndSetIds(world);
 
         world.morning();
 

@@ -6,7 +6,6 @@ import com.meadowsage.guildgame.model.system.GameLog;
 import com.meadowsage.guildgame.service.GameService;
 import com.meadowsage.guildgame.service.WorldService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,14 +27,10 @@ public class WorldController {
         World world = worldService.get(saveDataId);
         List<GameLog> gameLogs = gameService.getGameLogs(world.getId(), world.getGameDate() - 1);
 
-        return new GetWorldResponse() {{
-           setWorld(world);
-           setGameLogs(gameLogs);
-        }};
+        return new GetWorldResponse(world, gameLogs);
     }
 
     @PutMapping("")
-    @Transactional
     public void toNextDay(@PathVariable String saveDataId) {
         worldService.toNextDay(saveDataId);
     }

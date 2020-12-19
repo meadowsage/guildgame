@@ -24,16 +24,13 @@ public class AttributesTest {
 
         System.out.println("0以下: " +
                 nf.format((double) IntStream.of(results).filter(val -> val <= 0).count() / (n * 3d / 100)) + "%");
-        System.out.println("1〜20: " +
-                nf.format((double) IntStream.of(results).filter(val -> val > 0 && val <= 20).count() / (n * 3d / 100)) + "%");
-        System.out.println("21〜40: " +
-                nf.format((double) IntStream.of(results).filter(val -> val > 20 && val <= 40).count() / (n * 3d / 100)) + "%");
-        System.out.println("41〜60: " +
-                nf.format((double) IntStream.of(results).filter(val -> val > 40 && val <= 60).count() / (n * 3d / 100)) + "%");
-        System.out.println("61〜80: " +
-                nf.format((double) IntStream.of(results).filter(val -> val > 60 && val <= 80).count() / (n * 3d / 100)) + "%");
-        System.out.println("81〜100: " +
-                nf.format((double) IntStream.of(results).filter(val -> val > 80 && val <= 100).count() / (n * 3d / 100)) + "%");
+        for (int i = 0; i < 9; i++) {
+            int start = i * 10 + 1;
+            int end = (i + 1) * 10;
+            System.out.println(start + "〜" + end + ": " +
+                    nf.format((double) IntStream.of(results).
+                            filter(val -> (val >= start && val <= end)).count() / (n * 3d / 100)) + "%");
+        }
         System.out.println("101以上: " +
                 nf.format((double) IntStream.of(results).filter(val -> val > 100).count() / (n * 3d / 100)) + "%");
     }

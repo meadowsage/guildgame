@@ -12,4 +12,8 @@ public interface PersonMapper {
     List<Person> select(long worldId);
 
     void update(Person person);
+
+    void delete(long personId);
+
+    void updateIsAdventurer(long id, boolean isAdventurer);
 }

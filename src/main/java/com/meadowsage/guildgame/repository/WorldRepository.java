@@ -14,6 +14,7 @@ public class WorldRepository {
     private final WorldMapper worldMapper;
     private final GuildMapper guildMapper;
     private final PersonMapper personMapper;
+    private final ApplicantMapper applicantMapper;
     private final QuestMapper questMapper;
     private final QuestOrderMapper questOrderMapper;
 
@@ -40,15 +41,20 @@ public class WorldRepository {
         world.getPersons().stream().filter(person -> !person.isNotSaved()).forEach(personMapper::update);
         world.getQuests().stream().filter(quest -> !quest.isNotSaved()).forEach(questMapper::update);
 
-        // クエスト発注の書き換え
+        // 登録届レコードの作成
+        world.getPersons().stream().filter(Person::isApplicant).forEach(applicantMapper::insert);
+
+        // クエスト発注レコードの書き換え
         questOrderMapper.delete(world.getId());
         world.getQuests().stream().filter(Quest::isReserved).forEach(quest ->
-                world.getPerson(quest.getReservedBy()).ifPresent(person -> questOrderMapper.insert(person, quest)));
+                world.getPerson(quest.getReservedBy())
+                        .ifPresent(person -> questOrderMapper.insert(person, quest)));
     }
 
-    public void saveNewResources(World world) {
+    public void saveNewDataAndSetIds(World world) {
         world.getPersons().stream().filter(Person::isNotSaved)
                 .forEach(person -> personMapper.insert(person, world.getId()));
+
         world.getQuests().stream().filter(Quest::isNotSaved)
                 .forEach(quest -> questMapper.insert(quest, world.getId()));
     }

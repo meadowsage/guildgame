@@ -28,7 +28,7 @@ public class Attributes {
      * ランダム値生成
      */
     private static int generateRandom(Random random) {
-        int value = (int) (random.nextGaussian() * 16) + 45;
+        int value = (int) (random.nextGaussian() * 14) + 35;
         return value > 0 ? value : 1;
     }
 }

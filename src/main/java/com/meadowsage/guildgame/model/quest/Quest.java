@@ -2,6 +2,7 @@ package com.meadowsage.guildgame.model.quest;
 
 import com.meadowsage.guildgame.model.person.Person;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
@@ -28,7 +29,7 @@ public class Quest {
     }
 
     public boolean isReserved() {
-        return reservedBy != null;
+        return reservedBy != null || isCompleted();
     }
 
     public boolean isNotSaved() {
@@ -51,22 +52,34 @@ public class Quest {
         return IntStream.range(0, number).mapToObj(value -> _generate(100)).collect(Collectors.toList());
     }
 
-    public static List<Quest> generate(int number, int reputation) {
-        return IntStream.range(0, number).mapToObj(value -> _generate(reputation / 10)).collect(Collectors.toList());
+    public static List<Quest> generate(int number, int baseDifficulty) {
+        return IntStream.range(0, number).mapToObj(value -> _generate(baseDifficulty)).collect(Collectors.toList());
     }
 
-    private static Quest _generate(int max) {
+    private static Quest _generate(int baseDifficulty) {
         Quest quest = new Quest();
         quest.id = -1;
         quest.type = QuestType.values()[(int) (Math.random() * QuestType.values().length)];
-        quest.difficulty = (int) (Math.random() * max);
+        quest.difficulty = (int)(baseDifficulty * 0.5 + Math.random() * baseDifficulty);
         return quest;
     }
 
+    @AllArgsConstructor
     public enum QuestType {
-        EXPLORE,
-        HUNT,
-        HARVEST,
-        CHORE;
+        // 探索
+        EXPLORE(1.0, 1.0, 1.0),
+        // 狩猟
+        HUNT(1.8, 0.8, 0.4),
+        // 採取
+        HARVEST(0.4, 1.8, 1.8),
+        // 雑務
+        TASK(0.1, 0.4, 2.5);
+
+        @Getter
+        private double battleCoefficient;
+        @Getter
+        private double knowledgeCoefficient;
+        @Getter
+        private double supportCoefficient;
     }
 }

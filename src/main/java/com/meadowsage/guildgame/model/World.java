@@ -10,7 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class World {
@@ -38,11 +40,11 @@ public class World {
         // TODO クエストの実行
         // クエスト＆受注者から、クエストプロセスを生成
         // クエストプロセスを順次実行
-        quests.stream().filter(Quest::isReserved).forEach(quest -> {
-            getPerson(quest.getReservedBy()).ifPresent(person -> {
-                new QuestProcess(quest, person).run(new Dice(), logger);
-            });
-        });
+        quests.stream().filter(Quest::isReserved).forEach(quest ->
+                getPerson(quest.getReservedBy()).ifPresent(person ->
+                        new QuestProcess(quest, person).run(new Dice(), logger)
+                )
+        );
     }
 
     public void night() {
@@ -55,10 +57,10 @@ public class World {
         // 維持費を差し引く
         guild.accountingProcess();
 
-        // 新しい冒険者の作成
-        addPersons(Person.generateRandom(1));
+        // 新しい応募者冒険者の作成
+        addPersons(Person.generateApplicant(3));
         // 新しいクエストの作成
-        addQuests(Quest.generate(1, guild.getReputation()));
+        addQuests(Quest.generate(3, guild.getReputation()));
 
         // 日付進める
         gameDate++;
@@ -71,10 +73,10 @@ public class World {
         // 冒険者がクエストを受注する
         // TODO 幸運順
         for (Person person : persons) {
+            if (!person.isAdventurer()) continue;
             // TODO 冒険者の名声や好みで重みづけを行い、一番高いものを選択
             quests.stream().filter(quest -> !quest.isReserved())
-                    .findFirst()
-                    .ifPresent(quest -> quest.reserve(person));
+                    .findFirst().ifPresent(quest -> quest.reserve(person));
         }
     }
 
@@ -83,8 +85,8 @@ public class World {
         world.id = -1;
         world.gameDate = 1;
         world.guild = Guild.create();
-        world.persons = Person.generateRandom(3);
-        world.quests = Quest.generate(3, world.getGuild().getReputation());
+        world.persons = Person.generateAdventurer(2);
+        world.quests = Quest.generate(2, world.getGuild().getReputation());
         return world;
     }
 
