@@ -71,16 +71,25 @@ public class QuestProcess {
         // TODO 他のメソッドに切り分けても良いかも
         if (successPoint > 0) {
             quest.complete();
-            // 体力消費
             persons.forEach(person -> {
-                // TODO 報酬・経験点・名声を付与
+                // 報酬・経験点・名声を付与
+                // TODO 名声に応じて報酬・経験点を調整
                 person.getMoney().add(quest.getDifficulty() * 10 / persons.size());
                 person.getReputation().add(quest.getDifficulty() / 10 / persons.size());
+                // 体力消費
                 person.getEnergy().consume(1);
-                // TODO ギルドに付与
+                // TODO 報酬の差分をギルドに付与
             });
             logger.add(persons.get(0).getName().getFirstName() + "たちがクエストをクリアした！", persons.get(0).getId());
+            logger.add(persons.get(0).getName().getFirstName() + "たちは" +
+                    (quest.getDifficulty() * 10 / persons.size()) + "Gと名声" +
+                    (quest.getDifficulty() / 10 / persons.size()) + "を獲得", persons.get(0).getId());
         } else {
+            persons.forEach(person -> {
+                person.getMoney().add(quest.getDifficulty() * 10 / persons.size() * -1);
+                person.getReputation().add(quest.getDifficulty() / 10 / persons.size() * -1);
+                person.getEnergy().consume(2);
+            });
             logger.add(persons.get(0).getName().getFirstName() + "たちはクエストに失敗した…", persons.get(0).getId());
         }
     }
