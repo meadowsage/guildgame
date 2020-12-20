@@ -10,10 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class World {
@@ -38,14 +36,14 @@ public class World {
     }
 
     public void daytime(GameLogger logger) {
-        // TODO クエストの実行
-        // クエスト＆受注者から、クエストプロセスを生成
-        // クエストプロセスを順次実行
-        quests.stream().filter(Quest::isReserved).forEach(quest ->
-                getPerson(quest.getReservedBy()).ifPresent(person ->
-                        new QuestProcess(quest, person).run(new Dice(), logger)
-                )
-        );
+        // クエスト処理の順次実行
+        quests.stream().filter(Quest::isReserved).forEach(quest -> {
+            List<Person> persons = quest.getReservedBy().stream()
+                    .map(reservedBy -> getPerson(reservedBy).orElse(null))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            new QuestProcess(quest, persons).run(new Dice(), logger);
+        });
     }
 
     public void night() {
@@ -86,8 +84,8 @@ public class World {
         world.id = -1;
         world.gameDate = 1;
         world.guild = Guild.create();
-        world.persons = Collections.singletonList(Person.TELLAN);
-        world.quests = Collections.singletonList(Quest.FIRST);
+        world.persons = Collections.singletonList(Person.UniquePerson.TELLAN.getInstance());
+        world.quests = Collections.singletonList(Quest.UniqueQuest.FIRST.getInstance());
         return world;
     }
 

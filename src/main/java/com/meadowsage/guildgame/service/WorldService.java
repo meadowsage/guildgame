@@ -23,7 +23,14 @@ public class WorldService {
         World world = World.create();
         // 作成
         worldRepository.create(world, saveData.getId());
-        // 初日の処理
+        // 初期表示用のログ生成
+        GameLogger logger = new GameLogger(world.getId(), 0);
+        logger.add("冒険者ギルドへようこそ！");
+        logger.add("「冒険者」メニューでは、所属する冒険者の情報を確認できます");
+        logger.add("「クエスト」メニューでは、クエスト受注状態の確認や編集ができます");
+        logger.add("確認が終わったら、右上のボタンで日付を進めてみましょう");
+        gameRepository.saveGameLog(logger);
+        // 初日の処理 TODO 受注サービスを作ったら単体で受注させる
         world.morning();
         // 更新
         worldRepository.save(world);

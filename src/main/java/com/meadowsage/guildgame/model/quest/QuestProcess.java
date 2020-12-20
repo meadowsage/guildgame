@@ -4,7 +4,6 @@ import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,9 +17,9 @@ public class QuestProcess {
     Quest quest;
     List<Person> persons;
 
-    public QuestProcess(Quest quest, Person person) {
+    public QuestProcess(Quest quest, List<Person> persons) {
         this.quest = quest;
-        this.persons = Collections.singletonList(person);
+        this.persons = persons;
     }
 
     public void run(Dice dice, GameLogger logger) {

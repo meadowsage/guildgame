@@ -4,6 +4,7 @@ import com.meadowsage.guildgame.model.value.Energy;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,9 +15,6 @@ import java.util.stream.IntStream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Person {
-    public static final Person TELLAN = of("テラン", "ウォレス", 38, 42, 62, 1, 2000, 10, true); // Tellan Wallace
-    public static final Person HASA = of("ハサ", "ミント", 8, 35, 78, 1, 2000, 10, true);
-
     @Getter
     private long id;
     @Getter
@@ -144,5 +142,24 @@ public class Person {
         person.energy = Energy.of(person.maxEnergy);
         person.isAdventurer = isAdventurer;
         return person;
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public enum UniquePerson {
+        TELLAN("テラン", "ウォレス", 38, 42, 62, 1, 2000, 10, true); // Tellan Wallace
+
+        private String firstName;
+        private String familyName;
+        private int battle;
+        private int knowledge;
+        private int support;
+        private int energy;
+        private int money;
+        private int reputation;
+        private boolean isAdventurer;
+
+        public Person getInstance() {
+            return of(firstName, familyName, battle, knowledge, support, energy, money, reputation, isAdventurer);
+        }
     }
 }

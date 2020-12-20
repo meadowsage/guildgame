@@ -71,8 +71,8 @@ public class GetWorldResponse {
             res.setDifficulty(quest.getDifficulty());
             res.setType(quest.getType().name());
             res.setReservedBy(this.adventurers.stream()
-                    .filter(adventurer -> adventurer.getId() == quest.getReservedBy())
-                    .findAny().orElse(null));
+                    .filter(adventurer -> quest.getReservedBy().contains(adventurer.getId()))
+                    .collect(Collectors.toList()));
             return res;
         }).collect(Collectors.toList());
 
@@ -136,7 +136,7 @@ public class GetWorldResponse {
         String type;
         String name;
         int difficulty;
-        ResponseAdventurer reservedBy;
+        List<ResponseAdventurer> reservedBy;
     }
 
     @Data

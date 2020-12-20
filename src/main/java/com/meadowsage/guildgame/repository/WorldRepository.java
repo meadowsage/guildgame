@@ -47,8 +47,8 @@ public class WorldRepository {
         // クエスト発注レコードの書き換え
         questOrderMapper.delete(world.getId());
         world.getQuests().stream().filter(Quest::isReserved).forEach(quest ->
-                world.getPerson(quest.getReservedBy())
-                        .ifPresent(person -> questOrderMapper.insert(person, quest)));
+                quest.getReservedBy().forEach(reservedBy ->
+                        world.getPerson(reservedBy).ifPresent(person -> questOrderMapper.insert(person, quest))));
     }
 
     public void saveNewDataAndSetIds(World world) {
