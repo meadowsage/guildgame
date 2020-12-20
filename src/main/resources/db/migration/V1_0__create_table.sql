@@ -64,6 +64,15 @@ CREATE TABLE quest_order
 ALTER TABLE quest_order
     ADD PRIMARY KEY (person_id, quest_id);
 
+CREATE TABLE scenario_progress
+(
+    world_id    bigint NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    scenario_id bigint NOT NULL
+);
+
+ALTER TABLE scenario_progress
+    ADD PRIMARY KEY (world_id, scenario_id);
+
 CREATE TABLE game_log
 (
     world_id  bigint       NOT NULL REFERENCES world (id) ON DELETE CASCADE,

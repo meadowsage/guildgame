@@ -3,6 +3,7 @@ package com.meadowsage.guildgame.controller;
 import com.meadowsage.guildgame.controller.response.StartNewGameResponse;
 import com.meadowsage.guildgame.model.system.SaveData;
 import com.meadowsage.guildgame.service.GameService;
+import com.meadowsage.guildgame.service.WorldService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameController {
 
     private final GameService gameService;
+    private final WorldService worldService;
 
     @PostMapping("")
     @ResponseBody
     public StartNewGameResponse startNewGame() {
-        SaveData saveData = gameService.startNewGame();
+        SaveData saveData = gameService.createNewSaveData();
+        worldService.generateNewWorld(saveData);
 
         StartNewGameResponse response = new StartNewGameResponse();
         response.setSaveDataId(saveData.getId());

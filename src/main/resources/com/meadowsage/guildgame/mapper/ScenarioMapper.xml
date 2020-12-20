@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meadowsage.guildgame.mapper.ScenarioMapper">
+    <insert id="insertCompletedRecord">
+        INSERT INTO scenario_progress(world_id, scenario_id)
+        VALUES (#{worldId}, #{scenarioId})
+        ON CONFLICT DO NOTHING
+    </insert>
+    <select id="select" resultType="java.lang.Integer">
+        SELECT scenario_id
+        FROM scenario_progress
+        WHERE world_id = #{worldId}
+    </select>
+</mapper>

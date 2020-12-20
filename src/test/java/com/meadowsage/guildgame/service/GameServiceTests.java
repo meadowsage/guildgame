@@ -15,7 +15,7 @@ public class GameServiceTests {
 
     @Test
     public void test() {
-        SaveData saveData = gameService.startNewGame();
+        SaveData saveData = gameService.createNewSaveData();
         World world = worldService.get(saveData.getId());
 
         System.out.println(saveData);

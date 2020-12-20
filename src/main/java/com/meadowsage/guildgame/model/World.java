@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,7 +61,7 @@ public class World {
         // 新しい応募者冒険者の作成
         addPersons(Person.generateApplicant(3));
         // 新しいクエストの作成
-        addQuests(Quest.generate(3, guild.getReputation()));
+        addQuests(Quest.generateRandom(3, guild.getReputation()));
 
         // 日付進める
         gameDate++;
@@ -85,8 +86,8 @@ public class World {
         world.id = -1;
         world.gameDate = 1;
         world.guild = Guild.create();
-        world.persons = Person.generateAdventurer(2);
-        world.quests = Quest.generate(2, world.getGuild().getReputation());
+        world.persons = Collections.singletonList(Person.TELLAN);
+        world.quests = Collections.singletonList(Quest.FIRST);
         return world;
     }
 

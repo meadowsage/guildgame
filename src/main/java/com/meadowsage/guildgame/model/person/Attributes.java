@@ -18,16 +18,24 @@ public class Attributes {
     public static Attributes generateRandom() {
         Attributes attributes = new Attributes();
         Random random = new Random();
-        attributes.battle = generateRandom(random);
-        attributes.knowledge = generateRandom(random);
-        attributes.support = generateRandom(random);
+        attributes.battle = getRandomValue(random);
+        attributes.knowledge = getRandomValue(random);
+        attributes.support = getRandomValue(random);
+        return attributes;
+    }
+
+    public static Attributes of(int battle, int knowledge, int support) {
+        Attributes attributes = new Attributes();
+        attributes.battle = battle;
+        attributes.knowledge = knowledge;
+        attributes.support = support;
         return attributes;
     }
 
     /**
-     * ランダム値生成
+     * 正規分布でランダム値を生成
      */
-    private static int generateRandom(Random random) {
+    private static int getRandomValue(Random random) {
         int value = (int) (random.nextGaussian() * 14) + 35;
         return value > 0 ? value : 1;
     }

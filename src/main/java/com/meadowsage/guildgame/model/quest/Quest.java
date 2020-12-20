@@ -13,10 +13,12 @@ import java.util.stream.IntStream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Quest {
+    public static final Quest FIRST = Quest.of(QuestType.TASK, "街の見回り", 10);
     @Getter
-    private long id;
+    private long id = -1;
     @Getter
     private QuestType type;
+    private String name = "";
     @Getter
     private int difficulty;
     @Nullable
@@ -36,6 +38,12 @@ public class Quest {
         return id == -1;
     }
 
+    public String getName() {
+        if(name.isEmpty()) {
+            return type.name() + " QUEST " + id;
+        } else return name;
+    }
+
     public void reserve(Person person) {
         reservedBy = person.getId();
     }
@@ -48,19 +56,19 @@ public class Quest {
         reservedBy = null;
     }
 
-    public static List<Quest> generate(int number) {
-        return IntStream.range(0, number).mapToObj(value -> _generate(100)).collect(Collectors.toList());
+    public static List<Quest> generateRandom(int number, int baseDifficulty) {
+        return IntStream.range(0, number).mapToObj(value -> {
+            QuestType type =  QuestType.values()[(int) (Math.random() * QuestType.values().length)];
+            int difficulty = (int) (baseDifficulty * 0.5 + Math.random() * baseDifficulty);
+            return Quest.of(type,"", difficulty);
+        }).collect(Collectors.toList());
     }
 
-    public static List<Quest> generate(int number, int baseDifficulty) {
-        return IntStream.range(0, number).mapToObj(value -> _generate(baseDifficulty)).collect(Collectors.toList());
-    }
-
-    private static Quest _generate(int baseDifficulty) {
+    private static Quest of(QuestType type, String name, int difficulty) {
         Quest quest = new Quest();
-        quest.id = -1;
-        quest.type = QuestType.values()[(int) (Math.random() * QuestType.values().length)];
-        quest.difficulty = (int)(baseDifficulty * 0.5 + Math.random() * baseDifficulty);
+        quest.name = name;
+        quest.type = type;
+        quest.difficulty = difficulty;
         return quest;
     }
 
@@ -76,10 +84,10 @@ public class Quest {
         TASK(0.1, 0.4, 2.5);
 
         @Getter
-        private double battleCoefficient;
+        private final double battleCoefficient;
         @Getter
-        private double knowledgeCoefficient;
+        private final double knowledgeCoefficient;
         @Getter
-        private double supportCoefficient;
+        private final double supportCoefficient;
     }
 }

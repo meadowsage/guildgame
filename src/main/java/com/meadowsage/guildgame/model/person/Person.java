@@ -14,6 +14,9 @@ import java.util.stream.IntStream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Person {
+    public static final Person TELLAN = of("テラン", "ウォレス", 38, 42, 62, 1, 2000, 10, true); // Tellan Wallace
+    public static final Person HASA = of("ハサ", "ミント", 8, 35, 78, 1, 2000, 10, true);
+
     @Getter
     private long id;
     @Getter
@@ -64,7 +67,7 @@ public class Person {
 
         if (this.getMaxEnergy() <= 1) {
             remarks.add("あまり活気がない。");
-        } else if(this.getMaxEnergy() >= 4) {
+        } else if (this.getMaxEnergy() >= 4) {
             remarks.add("活発だ。");
         }
 
@@ -103,7 +106,7 @@ public class Person {
             person.reputation = Reputation.of((int) (Math.random() * 10));
             person.maxEnergy = (int) (1 + Math.random() * 4);
             if (person.getBattle() >= 60) person.maxEnergy += 1;
-            else if(person.getBattle() <= 30) person.maxEnergy = Math.max(1, person.maxEnergy - 1);
+            else if (person.getBattle() <= 30) person.maxEnergy = Math.max(1, person.maxEnergy - 1);
             person.energy = Energy.of(person.maxEnergy);
             person.isAdventurer = true;
             return person;
@@ -118,5 +121,28 @@ public class Person {
             person.isAdventurer = false;
             return person;
         }).collect(Collectors.toList());
+    }
+
+    private static Person of(
+            String firstName,
+            String familyName,
+            int battle,
+            int knowledge,
+            int support,
+            int energy,
+            int money,
+            int reputation,
+            boolean isAdventurer
+    ) {
+        Person person = new Person();
+        person.id = -1;
+        person.name = PersonName.of(firstName, familyName);
+        person.attributes = Attributes.of(battle, knowledge, support);
+        person.money = Money.of(money);
+        person.reputation = Reputation.of(reputation);
+        person.maxEnergy = energy;
+        person.energy = Energy.of(person.maxEnergy);
+        person.isAdventurer = isAdventurer;
+        return person;
     }
 }
