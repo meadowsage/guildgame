@@ -5,9 +5,25 @@
     <resultMap id="personMap" type="com.meadowsage.guildgame.model.person.Person"
                autoMapping="true">
         <association property="name" columnPrefix="n_" autoMapping="true"/>
-        <association property="attributes" columnPrefix="a_" autoMapping="true"/>
         <association property="money" columnPrefix="m_" autoMapping="true"/>
+        <association property="reputation" columnPrefix="r_" autoMapping="true"/>
+        <association property="attributes" columnPrefix="a_" autoMapping="true"/>
+        <association property="energy" columnPrefix="e_" autoMapping="true"/>
     </resultMap>
+
+    <select id="select" resultMap="personMap">
+        SELECT p.*,
+               first_name  as n_first_name,
+               family_name as n_family_name,
+               money       as m_value,
+               reputation  as r_value,
+               battle      as a_battle,
+               knowledge   as a_knowledge,
+               support     as a_support,
+               energy      as e_value
+        FROM person p
+        WHERE world_id = #{worldId}
+    </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="person.id">
         INSERT INTO person (world_id,
@@ -17,21 +33,25 @@
                             reputation,
                             battle,
                             knowledge,
-                            support)
+                            support,
+                            energy,
+                            max_energy)
         VALUES (#{worldId},
                 #{person.name.firstName},
                 #{person.name.familyName},
                 #{person.money.value},
-                #{person.reputation},
+                #{person.reputation.value},
                 #{person.attributes.battle},
                 #{person.attributes.knowledge},
-                #{person.attributes.support})
+                #{person.attributes.support},
+                #{person.energy.value},
+                #{person.maxEnergy})
     </insert>
 
     <update id="update">
         UPDATE person p
         SET money         = #{money.value},
-            reputation    = #{reputation},
+            reputation    = #{reputation.value},
             is_adventurer = #{isAdventurer}
         WHERE p.id = #{id}
     </update>
@@ -47,16 +67,4 @@
         FROM person
         WHERE id = #{personId}
     </delete>
-
-    <select id="select" resultMap="personMap">
-        SELECT p.*,
-               first_name  as n_first_name,
-               family_name as n_family_name,
-               money       as m_value,
-               battle      as a_battle,
-               knowledge   as a_knowledge,
-               support     as a_support
-        FROM person p
-        WHERE world_id = #{worldId}
-    </select>
 </mapper>

@@ -5,6 +5,7 @@ import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.system.GameLog;
 import lombok.Data;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,16 +35,19 @@ public class GetWorldResponse {
 
         this.adventurers = world.getPersons().stream()
                 .filter(Person::isAdventurer)
+                .sorted(Comparator.comparing(Person::getId))
                 .map(_person -> {
                     ResponseAdventurer adventurer = new ResponseAdventurer();
                     adventurer.setId(_person.getId());
                     adventurer.setName(_person.getName().getFirstName());
-                    adventurer.setFamilyName(_person.getName().getFamilyName());
+                    adventurer.setFullName(_person.getName().getFullName());
                     adventurer.setMoney(_person.getMoney().getValue());
-                    adventurer.setReputation(_person.getReputation());
+                    adventurer.setReputation(_person.getReputation().getValue());
                     adventurer.setBattle(_person.getBattle());
                     adventurer.setKnowledge(_person.getKnowledge());
                     adventurer.setSupport(_person.getSupport());
+                    adventurer.setEnergy((int) _person.getEnergy().getValue());
+                    adventurer.setMaxEnergy(_person.getMaxEnergy());
                     return adventurer;
                 }).collect(Collectors.toList());
 
@@ -53,7 +57,7 @@ public class GetWorldResponse {
                     ResponseApplicant applicant = new ResponseApplicant();
                     applicant.setId(_person.getId());
                     applicant.setName(_person.getName().getFirstName());
-                    applicant.setFamilyName(_person.getName().getFamilyName());
+                    applicant.setFullName(_person.getName().getFullName());
                     applicant.setRemarks(_person.createRemarks());
                     return applicant;
                 }).collect(Collectors.toList());
@@ -91,19 +95,21 @@ public class GetWorldResponse {
     private static class ResponseAdventurer {
         long id;
         String name;
-        String familyName;
+        String fullName;
         long money;
-        int reputation;
+        long reputation;
         int battle;
         int knowledge;
         int support;
+        int energy;
+        int maxEnergy;
     }
 
     @Data
     private static class ResponseApplicant {
         long id;
         String name;
-        String familyName;
+        String fullName;
         List<String> remarks;
     }
 

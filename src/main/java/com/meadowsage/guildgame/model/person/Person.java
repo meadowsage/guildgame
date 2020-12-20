@@ -1,7 +1,8 @@
 package com.meadowsage.guildgame.model.person;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.meadowsage.guildgame.model.value.Energy;
 import com.meadowsage.guildgame.model.value.Money;
+import com.meadowsage.guildgame.model.value.Reputation;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,12 +19,15 @@ public class Person {
     @Getter
     private PersonName name;
     @Getter
-    @JsonIgnore
-    private Attributes attributes;
-    @Getter
     private Money money;
     @Getter
-    private int reputation;
+    private Reputation reputation;
+    @Getter
+    private Attributes attributes;
+    @Getter
+    private Energy energy;
+    @Getter
+    private int maxEnergy;
     @Getter
     private boolean isAdventurer;
 
@@ -58,21 +62,27 @@ public class Person {
             remarks.add("何でもこなせそうだ。");
         }
 
+        if (this.getMaxEnergy() <= 1) {
+            remarks.add("あまり活気がない。");
+        } else if(this.getMaxEnergy() >= 4) {
+            remarks.add("活発だ。");
+        }
+
         if (this.getKnowledge() <= 40 && this.getSupport() <= 40 && this.getBattle() > 60) {
             remarks.add("筋力自慢という印象だ。");
-        } else if(this.getBattle() >= 60) {
+        } else if (this.getBattle() >= 60) {
             remarks.add("モンスターにも果敢に立ち向かってくれそうだ。");
         }
 
         if (this.getBattle() <= 40 && this.getSupport() <= 40 && this.getKnowledge() > 60) {
             remarks.add("学者気質という印象だ。");
-        } else if(this.getKnowledge() > 60) {
+        } else if (this.getKnowledge() > 60) {
             remarks.add("彼の知恵はきっと役に立つだろう。");
         }
 
         if (this.getBattle() <= 40 && this.getKnowledge() <= 40 && this.getSupport() > 60) {
             remarks.add("地味だが仕事はできるようだ。");
-        } else if(this.getSupport() > 60) {
+        } else if (this.getSupport() > 60) {
             remarks.add("冒険者の心得をよく理解している。");
         }
 
@@ -89,8 +99,12 @@ public class Person {
             person.id = -1;
             person.name = PersonName.generateRandom();
             person.attributes = Attributes.generateRandom();
-            person.money = Money.of((int) (Math.random() * 1000));
-            person.reputation = (int) (Math.random() * 10);
+            person.money = Money.of((int) (500 + Math.random() * 500));
+            person.reputation = Reputation.of((int) (Math.random() * 10));
+            person.maxEnergy = (int) (1 + Math.random() * 4);
+            if (person.getBattle() >= 60) person.maxEnergy += 1;
+            else if(person.getBattle() <= 30) person.maxEnergy = Math.max(1, person.maxEnergy - 1);
+            person.energy = Energy.of(person.maxEnergy);
             person.isAdventurer = true;
             return person;
         }).collect(Collectors.toList());
@@ -98,12 +112,9 @@ public class Person {
 
     public static List<Person> generateApplicant(int number) {
         return IntStream.range(0, number).mapToObj(value -> {
-            Person person = new Person();
-            person.id = -1;
-            person.name = PersonName.generateRandom();
-            person.attributes = Attributes.generateRandom();
-            person.money = Money.of((int) (Math.random() * 500));
-            person.reputation = 0;
+            Person person = generateAdventurer(1).get(0);
+            person.money = Money.of((int) (250 + Math.random() * 250));
+            person.reputation = Reputation.of(0);
             person.isAdventurer = false;
             return person;
         }).collect(Collectors.toList());

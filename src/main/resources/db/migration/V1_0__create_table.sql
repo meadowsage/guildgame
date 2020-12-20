@@ -33,6 +33,9 @@ CREATE TABLE person
     battle        int     NOT NULL,
     knowledge     int     NOT NULL,
     support       int     NOT NULL,
+    -- 体力
+    energy        int     NOT NULL,
+    max_energy    int     NOT NULL,
     -- フラグ
     is_adventurer boolean NOT NULL DEFAULT false
 );

@@ -17,6 +17,10 @@ public class PersonName {
     @Getter
     private String familyName;
 
+    public String getFullName() {
+        return firstName + "・" + familyName;
+    }
+
     public static PersonName generateRandom() {
         PersonName personName = new PersonName();
         personName.firstName = fixName(
