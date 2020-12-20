@@ -2,6 +2,7 @@ package com.meadowsage.guildgame.controller.response;
 
 import com.meadowsage.guildgame.model.World;
 import com.meadowsage.guildgame.model.person.Person;
+import com.meadowsage.guildgame.model.person.Remark;
 import com.meadowsage.guildgame.model.scenario.Scenario;
 import com.meadowsage.guildgame.model.system.GameLog;
 import lombok.Data;
@@ -48,8 +49,8 @@ public class GetWorldResponse {
                     res.setBattle(person.getBattle());
                     res.setKnowledge(person.getKnowledge());
                     res.setSupport(person.getSupport());
-                    res.setEnergy((int) person.getEnergy().getValue());
-                    res.setMaxEnergy(person.getMaxEnergy());
+                    res.setEnergy(person.getEnergy().getValue());
+                    res.setMaxEnergy(person.getEnergy().getMax());
                     return res;
                 }).collect(Collectors.toList());
 
@@ -60,7 +61,9 @@ public class GetWorldResponse {
                     res.setId(person.getId());
                     res.setName(person.getName().getFirstName());
                     res.setFullName(person.getName().getFullName());
-                    res.setRemarks(person.createRemarks());
+                    res.setRemarks(Remark.generateRemarks(person).stream()
+                            .map(Remark::getValue)
+                            .collect(Collectors.toList()));
                     return res;
                 }).collect(Collectors.toList());
 

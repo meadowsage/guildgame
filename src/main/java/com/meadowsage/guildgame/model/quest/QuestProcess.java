@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class QuestProcess {
     private static final int TARGET_BASE = 75;
-    private  static final int TARGET_MAX = 90;
-    private  static final int TARGET_MIN = 5;
+    private static final int TARGET_MAX = 90;
+    private static final int TARGET_MIN = 5;
 
     Quest quest;
     List<Person> persons;
@@ -33,12 +33,12 @@ public class QuestProcess {
                     person.getKnowledge() * quest.getType().getKnowledgeCoefficient() +
                     person.getSupport() * quest.getType().getSupportCoefficient()) / 3;
 
-            logger.add("- " + person.getName().getFirstName() + ": 発揮値" + performance);
+            System.out.println("- " + person.getName().getFirstName() + ": 発揮値" + performance);
 
             // 目標値：発揮値との差分で補正
             // 目標値に達していない場合はマイナス補正
             int modifier = (performance - quest.getDifficulty());
-            if(modifier < 0) modifier -= 15;
+            if (modifier < 0) modifier -= 15;
             int target = TARGET_BASE + modifier;
             if (target > TARGET_MAX) target = TARGET_MAX;
             else if (target < TARGET_MIN) target = TARGET_MIN;
@@ -68,12 +68,17 @@ public class QuestProcess {
         }).sum();
 
         // 成否に応じてクエストのステータスを更新
-        // 成否に応じて冒険者に報酬・経験点・名声を付与
-        // 成否に応じてギルドに報酬、名声を付与
+        // TODO 他のメソッドに切り分けても良いかも
         if (successPoint > 0) {
             quest.complete();
-            persons.get(0).getMoney().add(quest.getDifficulty() * 10 / persons.size());
-            persons.get(0).getReputation().add(quest.getDifficulty() / 10 / persons.size());
+            // 体力消費
+            persons.forEach(person -> {
+                // TODO 報酬・経験点・名声を付与
+                person.getMoney().add(quest.getDifficulty() * 10 / persons.size());
+                person.getReputation().add(quest.getDifficulty() / 10 / persons.size());
+                person.getEnergy().consume(1);
+                // TODO ギルドに付与
+            });
             logger.add(persons.get(0).getName().getFirstName() + "たちがクエストをクリアした！", persons.get(0).getId());
         } else {
             logger.add(persons.get(0).getName().getFirstName() + "たちはクエストに失敗した…", persons.get(0).getId());

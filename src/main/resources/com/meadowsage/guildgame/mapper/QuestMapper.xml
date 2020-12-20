@@ -3,7 +3,10 @@
 
 <mapper namespace="com.meadowsage.guildgame.mapper.QuestMapper">
     <resultMap id="questMap" type="com.meadowsage.guildgame.model.quest.Quest" autoMapping="true">
-        <collection property="reservedBy" javaType="java.lang.Long"/>
+        <id column="id" property="id"/>
+        <collection property="reservedBy" ofType="Long">
+            <result column="reserved_by"/>
+        </collection>
     </resultMap>
 
     <select id="select" resultMap="questMap">
@@ -13,6 +16,7 @@
                  LEFT JOIN quest_order qo ON q.id = qo.quest_id
         WHERE q.world_id = #{worldId}
           AND q.is_completed = false
+        ORDER BY q.id
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="quest.id">

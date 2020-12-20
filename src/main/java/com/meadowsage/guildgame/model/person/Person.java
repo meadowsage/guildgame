@@ -1,14 +1,13 @@
 package com.meadowsage.guildgame.model.person;
 
-import com.meadowsage.guildgame.model.value.Energy;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
+import com.meadowsage.guildgame.model.value.Resource;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -26,9 +25,7 @@ public class Person {
     @Getter
     private Attributes attributes;
     @Getter
-    private Energy energy;
-    @Getter
-    private int maxEnergy;
+    private Resource energy;
     @Getter
     private boolean isAdventurer;
 
@@ -52,48 +49,6 @@ public class Person {
         return !isAdventurer;
     }
 
-    public List<String> createRemarks() {
-        List<String> remarks = new ArrayList<>();
-        if (this.getBattle() <= 30 && this.getKnowledge() <= 30 && this.getSupport() <= 30) {
-            remarks.add("冒険者に向いているとは思えない。");
-            return remarks;
-        }
-
-        if (this.getBattle() > 60 && this.getKnowledge() > 60 && this.getSupport() > 60) {
-            remarks.add("何でもこなせそうだ。");
-        }
-
-        if (this.getMaxEnergy() <= 1) {
-            remarks.add("あまり活気がない。");
-        } else if (this.getMaxEnergy() >= 4) {
-            remarks.add("活発だ。");
-        }
-
-        if (this.getKnowledge() <= 40 && this.getSupport() <= 40 && this.getBattle() > 60) {
-            remarks.add("筋力自慢という印象だ。");
-        } else if (this.getBattle() >= 60) {
-            remarks.add("モンスターにも果敢に立ち向かってくれそうだ。");
-        }
-
-        if (this.getBattle() <= 40 && this.getSupport() <= 40 && this.getKnowledge() > 60) {
-            remarks.add("学者気質という印象だ。");
-        } else if (this.getKnowledge() > 60) {
-            remarks.add("彼の知恵はきっと役に立つだろう。");
-        }
-
-        if (this.getBattle() <= 40 && this.getKnowledge() <= 40 && this.getSupport() > 60) {
-            remarks.add("地味だが仕事はできるようだ。");
-        } else if (this.getSupport() > 60) {
-            remarks.add("冒険者の心得をよく理解している。");
-        }
-
-        if (remarks.size() == 0) {
-            remarks.add("これといった特徴はない。");
-        }
-
-        return remarks;
-    }
-
     public static List<Person> generateAdventurer(int number) {
         return IntStream.range(0, number).mapToObj(value -> {
             Person person = new Person();
@@ -102,10 +57,10 @@ public class Person {
             person.attributes = Attributes.generateRandom();
             person.money = Money.of((int) (500 + Math.random() * 500));
             person.reputation = Reputation.of((int) (Math.random() * 10));
-            person.maxEnergy = (int) (1 + Math.random() * 4);
-            if (person.getBattle() >= 60) person.maxEnergy += 1;
-            else if (person.getBattle() <= 30) person.maxEnergy = Math.max(1, person.maxEnergy - 1);
-            person.energy = Energy.of(person.maxEnergy);
+            int energy = (int) (1 + Math.random() * 4);
+            if (person.getBattle() >= 60) energy += 1;
+            else if (person.getBattle() <= 30) energy = Math.max(1, energy - 1);
+            person.energy = Resource.of(energy);
             person.isAdventurer = true;
             return person;
         }).collect(Collectors.toList());
@@ -138,8 +93,7 @@ public class Person {
         person.attributes = Attributes.of(battle, knowledge, support);
         person.money = Money.of(money);
         person.reputation = Reputation.of(reputation);
-        person.maxEnergy = energy;
-        person.energy = Energy.of(person.maxEnergy);
+        person.energy = Resource.of(energy);
         person.isAdventurer = isAdventurer;
         return person;
     }
