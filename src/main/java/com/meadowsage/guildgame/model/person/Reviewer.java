@@ -12,41 +12,46 @@ public class Reviewer {
     public List<String> review(Person person) {
         List<String> results = new ArrayList<>();
 
-        if (person.getBattle() <= 25 && person.getKnowledge() <= 25 && person.getSupport() <= 25) {
+        int battle = person.getBattle().getValue();
+        int knowledge = person.getKnowledge().getValue();
+        int support = person.getSupport().getValue();
+        int energy = person.getEnergy().getMax();
+
+        if (battle <= 25 && knowledge <= 25 && support <= 25) {
             results.add("基礎能力がかなり低いようだ。");
-        } else if (person.getBattle() > 50 && person.getKnowledge() > 50 && person.getSupport() > 50) {
+        } else if (battle > 50 && knowledge > 50 && support > 50) {
             results.add("基礎能力が高く、何でもこなせそうだ。");
-        } else if(person.getBattle() > 100 ||  person.getKnowledge() > 100 || person.getSupport() > 100) {
+        } else if (battle > 100 || knowledge > 100 || support > 100) {
             results.add("なぜか威圧感を感じる…");
         }
 
-        if (person.getKnowledge() <= 30 && person.getSupport() <= 30 && person.getBattle() > 60) {
+        if (knowledge <= 30 && support <= 30 && battle > 60) {
             results.add("良くも悪くも、筋力自慢という印象だ。");
-        } else if (person.getBattle() > 80) {
+        } else if (battle > 80) {
             results.add("身のこなしが普通の人とは違うようだ。");
-        } else if (person.getBattle() > 60) {
+        } else if (battle > 60) {
             results.add("強そうな雰囲気が出ている。");
         }
 
-        if (person.getBattle() <= 30 && person.getSupport() <= 30 && person.getKnowledge() > 60) {
+        if (battle <= 30 && support <= 30 && knowledge > 60) {
             results.add("頭でっかちな印象を受ける。");
-        } else if (person.getKnowledge() > 80) {
+        } else if (knowledge > 80) {
             results.add("明晰な頭脳の持ち主だ。");
-        } else if (person.getKnowledge() > 60) {
+        } else if (knowledge > 60) {
             results.add("頭が良さそうだ。");
         }
 
-        if (person.getBattle() <= 30 && person.getKnowledge() <= 30 && person.getSupport() > 60) {
+        if (battle <= 30 && knowledge <= 30 && support > 60) {
             results.add("地味だが仕事はできるようだ。");
-        } else if (person.getSupport() > 80) {
+        } else if (support > 80) {
             results.add("冒険者の心得をよく理解している。");
-        } else if (person.getSupport() > 60) {
+        } else if (support > 60) {
             results.add("テキパキと手続きをこなしている。");
         }
 
-        if (person.getEnergy().getMax() <= 1) {
+        if (energy <= 1) {
             results.add("あまり元気がない。ちゃんと仕事をしてくれるだろうか…");
-        } else if (person.getEnergy().getMax() >= 4) {
+        } else if (energy >= 4) {
             results.add("気力に満ちている。精力的に働いてくれそうだ。");
         }
 
@@ -57,12 +62,8 @@ public class Reviewer {
         return results;
     }
 
-    public static Reviewer of(Type type) {
+    public static Reviewer of() {
         // TODO Interface化して、窓口担当の能力によって異なる評価を下すようにする
         return new Reviewer();
-    }
-
-    public enum Type {
-        NORMAL
     }
 }

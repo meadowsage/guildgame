@@ -14,11 +14,10 @@ public class PersonService {
      */
     public void updateApplicant(long applicantId, boolean isApproval) {
         if(isApproval) {
-            // 承認 → Adventurerに変更して申請を削除
-            personRepository.updateToAdventurer(applicantId);
+            // 承認 → 申請を削除
             personRepository.deleteApplicant(applicantId);
         } else {
-            // 拒否 → キャラクターごと削除
+            // 拒否 → キャラクターを削除
             personRepository.delete(applicantId);
         }
     }

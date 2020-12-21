@@ -19,8 +19,4 @@ public class PersonRepository {
     public void deleteApplicant(long personId) {
         applicantMapper.delete(personId);
     }
-
-    public void updateToAdventurer(long applicantId) {
-        personMapper.updateIsAdventurer(applicantId, true);
-    }
 }

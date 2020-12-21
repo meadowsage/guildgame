@@ -24,7 +24,7 @@ public class GameController {
 
     @PostMapping("")
     @ResponseBody
-    @Transactional(readOnly = true)
+    @Transactional
     public StartNewGameResponse startNewGame() {
         SaveData saveData = gameService.createNewSaveData();
         worldService.generateNewWorld(saveData);

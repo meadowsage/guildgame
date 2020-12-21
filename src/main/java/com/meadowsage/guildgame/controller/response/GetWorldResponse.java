@@ -36,8 +36,7 @@ public class GetWorldResponse {
             return res;
         }).collect(Collectors.toList());
 
-        this.adventurers = world.getPersons().stream()
-                .filter(Person::isAdventurer)
+        this.adventurers = world.getAdventurers().stream()
                 .sorted(Comparator.comparing(Person::getId))
                 .map(person -> {
                     ResponseAdventurer res = new ResponseAdventurer();
@@ -46,19 +45,18 @@ public class GetWorldResponse {
                     res.setFullName(person.getName().getFullName());
                     res.setMoney(person.getMoney().getValue());
                     res.setReputation(person.getReputation().getValue());
-                    res.setBattle(person.getBattle());
-                    res.setKnowledge(person.getKnowledge());
-                    res.setSupport(person.getSupport());
+                    res.setBattle(person.getBattle().getValue());
+                    res.setKnowledge(person.getKnowledge().getValue());
+                    res.setSupport(person.getSupport().getValue());
                     res.setEnergy(person.getEnergy().getValue());
                     res.setMaxEnergy(person.getEnergy().getMax());
                     return res;
                 }).collect(Collectors.toList());
 
-        this.applicants = world.getPersons().stream()
-                .filter(Person::isApplicant)
+        this.applicants = world.getApplicants().stream()
                 .map(person -> {
                     ResponseApplicant res = new ResponseApplicant();
-                    Reviewer reviewer = Reviewer.of(Reviewer.Type.NORMAL);
+                    Reviewer reviewer = Reviewer.of();
                     res.setId(person.getId());
                     res.setName(person.getName().getFirstName());
                     res.setFullName(person.getName().getFullName());

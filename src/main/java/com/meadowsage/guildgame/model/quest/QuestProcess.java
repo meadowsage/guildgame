@@ -29,9 +29,9 @@ public class QuestProcess {
         // 参加者ごとに成功度を算出して合算
         int successPoint = persons.stream().mapToInt(person -> {
             // 発揮値：能力値とクエスト種別の係数から算出
-            int performance = (int) (person.getBattle() * quest.getType().getBattleCoefficient() +
-                    person.getKnowledge() * quest.getType().getKnowledgeCoefficient() +
-                    person.getSupport() * quest.getType().getSupportCoefficient()) / 3;
+            int performance = (int) (person.getBattle().getValue() * quest.getType().getBattleCoefficient() +
+                    person.getKnowledge().getValue() * quest.getType().getKnowledgeCoefficient() +
+                    person.getSupport().getValue() * quest.getType().getSupportCoefficient()) / 3;
 
             System.out.println("- " + person.getName().getFirstName() + ": 発揮値" + performance);
 

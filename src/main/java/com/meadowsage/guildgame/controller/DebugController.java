@@ -1,8 +1,11 @@
 package com.meadowsage.guildgame.controller;
 
-import com.meadowsage.guildgame.model.person.Person;
+import com.meadowsage.guildgame.model.person.Applicant;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -16,7 +19,7 @@ public class DebugController {
 
     @GetMapping("/persons")
     @ResponseBody
-    public List<Person> generatePerson() {
-        return Person.generateAdventurer(10);
+    public List<Applicant> generatePerson() {
+        return Applicant.generate(10);
     }
 }

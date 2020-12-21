@@ -7,6 +7,8 @@ import com.meadowsage.guildgame.model.person.Person;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.stream.Collectors;
+
 @Repository
 @RequiredArgsConstructor
 public class WorldRepository {
@@ -21,7 +23,10 @@ public class WorldRepository {
     public World get(String saveDataId) {
         World world = worldMapper.select(saveDataId);
         world.setGuild(guildMapper.select(world.getId()));
-        world.addPersons(personMapper.select(world.getId()));
+        world.addAdventurers(personMapper.selectAdventurers(world.getId())
+                .stream().map(adventurer -> (Person) adventurer).collect(Collectors.toList()));
+        world.addApplicants(personMapper.selectApplicants(world.getId())
+                .stream().map(applicant -> (Person) applicant).collect(Collectors.toList()));
         world.addQuests(questMapper.select(world.getId()));
         return world;
     }
@@ -29,7 +34,7 @@ public class WorldRepository {
     public void create(World world, String saveDataId) {
         worldMapper.save(world, saveDataId);
         guildMapper.save(world.getGuild(), world.getId());
-        world.getPersons().forEach(person -> personMapper.insert(person, world.getId()));
+        world.getAllPersons().forEach(person -> personMapper.insert(person, world.getId()));
         world.getQuests().forEach(quest -> questMapper.insert(quest, world.getId()));
     }
 
@@ -38,26 +43,23 @@ public class WorldRepository {
         guildMapper.update(world.getGuild(), world.getId());
 
         // リソース更新
-        world.getPersons().stream().filter(person -> !person.isNotSaved())
-                .forEach(personMapper::update);
+        world.getAllPersons().stream().filter(person -> !person.isNotSaved()).forEach(personMapper::update);
         world.getQuests().stream().filter(quest -> !quest.isNotSaved()).forEach(questMapper::update);
 
         // 登録届レコードの作成
-        world.getPersons().stream().filter(Person::isApplicant)
-                .forEach(applicantMapper::insert);
+        world.getApplicants().forEach(applicantMapper::insert);
 
         // クエスト発注レコードの書き換え
         questOrderMapper.deleteAll(world.getId());
         world.getQuests().stream().filter(Quest::isReserved).forEach(quest ->
                 quest.getReservedBy().forEach(reservedBy ->
-                        world.getPerson(reservedBy)
+                        world.findPerson(reservedBy)
                                 .ifPresent(person -> questOrderMapper.insert(person.getId(), quest.getId()))));
     }
 
     public void saveNewResourcesAndGetIds(World world) {
-        world.getPersons().stream().filter(Person::isNotSaved)
+        world.getAllPersons().stream().filter(Person::isNotSaved)
                 .forEach(person -> personMapper.insert(person, world.getId()));
-
         world.getQuests().stream().filter(Quest::isNotSaved)
                 .forEach(quest -> questMapper.insert(quest, world.getId()));
     }

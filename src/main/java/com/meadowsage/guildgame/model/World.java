@@ -1,6 +1,7 @@
 package com.meadowsage.guildgame.model;
 
 import com.meadowsage.guildgame.mapper.PersonMapper;
+import com.meadowsage.guildgame.model.person.Applicant;
 import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestProcess;
@@ -14,6 +15,7 @@ import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class World {
@@ -25,9 +27,19 @@ public class World {
     @Setter
     private Guild guild;
     @Getter
-    private List<Person> persons = new ArrayList<>();
+    private List<Person> adventurers = new ArrayList<>();
+    @Getter
+    private List<Person> applicants = new ArrayList<>();
     @Getter
     private List<Quest> quests = new ArrayList<>();
+
+    public World(Guild guild, List<Person> adventurers, List<Quest> quests) {
+        this.id = -1;
+        this.gameDate = 1;
+        this.guild = guild;
+        this.adventurers = adventurers;
+        this.quests = quests;
+    }
 
     public List<Quest> getAvailableQuests() {
         return quests.stream()
@@ -35,8 +47,16 @@ public class World {
                 .collect(Collectors.toList());
     }
 
-    public void addPersons(List<Person> persons) {
-        this.persons.addAll(persons);
+    public List<Person> getAllPersons() {
+        return Stream.of(adventurers, applicants).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    public void addAdventurers(List<Person> adventurers) {
+        this.adventurers.addAll(adventurers);
+    }
+
+    public void addApplicants(List<Person> applicants) {
+        this.applicants.addAll(applicants);
     }
 
     public void addQuests(List<Quest> quests) {
@@ -47,7 +67,7 @@ public class World {
         // クエスト処理
         List<QuestProcess> questProcesses = quests.stream().filter(Quest::isReserved).map(quest -> {
             List<Person> persons = quest.getReservedBy().stream()
-                    .map(reservedBy -> getPerson(reservedBy).orElse(null))
+                    .map(reservedBy -> findPerson(reservedBy).orElse(null))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
             return new QuestProcess(quest, persons);
@@ -61,7 +81,7 @@ public class World {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
-        persons.stream().filter(person -> !questPersonIds.contains(person.getId()))
+        adventurers.stream().filter(adventurer -> !questPersonIds.contains(adventurer.getId()))
                 .forEach(person -> person.doDaytimeActivity(this, gameLogger));
     }
 
@@ -81,7 +101,9 @@ public class World {
 
     public void generateNewResources(WorldRepository worldRepository) {
         // 新しい応募者冒険者の作成
-        addPersons(Person.generateApplicant((int) (1 + Math.random() * 2)));
+        addApplicants(Applicant.generate((int) (1 + Math.random() * 2)).stream()
+                .map(applicant -> (Person) applicant)
+                .collect(Collectors.toList()));
         // 新しいクエストの作成
         addQuests(Quest.generateRandom(3, guild.getReputation()));
         // 保存とIDの払い出し
@@ -94,7 +116,7 @@ public class World {
 
         // 冒険者がクエストを受注する
         // TODO 幸運順
-        for (Person person : persons) {
+        for (Person person : adventurers) {
             if (!person.isAdventurer() || person.isTired()) continue;
             // TODO 冒険者の名声や好みで重みづけを行い、一番高いものを選択
             quests.stream().filter(quest -> !quest.isReserved())
@@ -103,25 +125,24 @@ public class World {
     }
 
     public static World create() {
-        World world = new World();
-        world.id = -1;
-        world.gameDate = 1;
-        world.guild = Guild.create();
-        world.persons = Collections.singletonList(Person.UniquePerson.TELLAN.getInstance());
-        world.quests = Collections.singletonList(Quest.UniqueQuest.FIRST.getInstance());
-        return world;
+        return new World(
+                Guild.create(),
+                Collections.singletonList(Person.UniquePerson.TELLAN.getInstance()),
+                Collections.singletonList(Quest.UniqueQuest.FIRST.getInstance())
+        );
     }
 
-    public Optional<Person> getPerson(long personId) {
-        return persons.stream().filter(person -> person.getId() == personId).findAny();
+    public Optional<Person> findPerson(long personId) {
+        Optional<Person> result = adventurers.stream().filter(adventurer -> adventurer.getId() == personId).findAny();
+        if (result.isPresent()) return result;
+        else return applicants.stream().filter(applicant -> applicant.getId() == personId).findAny();
     }
 
     public void deleteOldResources(PersonMapper personMapper) {
-        List<Long> oldApplicantIds = persons.stream()
-                .filter(person -> !person.isAdventurer())
-                .map(Person::getId).collect(Collectors.toList());
+        List<Long> oldApplicantIds = applicants.stream().map(Person::getId).collect(Collectors.toList());
         oldApplicantIds.forEach(personMapper::delete);
-        persons = persons.stream().filter(person ->
-                oldApplicantIds.contains(person.getId())).collect(Collectors.toList());
+        applicants = applicants.stream()
+                .filter(person -> oldApplicantIds.contains(person.getId()))
+                .collect(Collectors.toList());
     }
 }

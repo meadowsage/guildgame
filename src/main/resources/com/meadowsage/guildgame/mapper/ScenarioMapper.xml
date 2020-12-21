@@ -5,7 +5,6 @@
     <insert id="insertCompletedRecord">
         INSERT INTO scenario_progress(world_id, scenario_id)
         VALUES (#{worldId}, #{scenarioId})
-        ON CONFLICT DO NOTHING
     </insert>
     <select id="select" resultType="java.lang.Integer">
         SELECT scenario_id

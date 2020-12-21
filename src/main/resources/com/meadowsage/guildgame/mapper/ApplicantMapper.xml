@@ -5,7 +5,6 @@
     <insert id="insert">
         INSERT INTO applicant (person_id)
         VALUES (#{id})
-        ON CONFLICT DO NOTHING
     </insert>
     <delete id="delete">
         DELETE

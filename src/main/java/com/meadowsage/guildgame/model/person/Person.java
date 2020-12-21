@@ -2,6 +2,7 @@ package com.meadowsage.guildgame.model.person;
 
 import com.meadowsage.guildgame.model.World;
 import com.meadowsage.guildgame.model.system.GameLogger;
+import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
@@ -10,12 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Person {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class Person {
     @Getter
     private long id;
     @Getter
@@ -25,38 +22,46 @@ public class Person {
     @Getter
     private Reputation reputation;
     @Getter
-    private Attributes attributes;
+    private Attribute battle;
+    @Getter
+    private Attribute knowledge;
+    @Getter
+    private Attribute support;
+
     @Getter
     private Resource energy;
-    @Getter
-    private boolean isAdventurer;
 
-    public int getBattle() {
-        return attributes.getBattle();
-    }
-
-    public int getKnowledge() {
-        return attributes.getKnowledge();
-    }
-
-    public int getSupport() {
-        return attributes.getSupport();
+    protected Person(
+            PersonName name,
+            Attribute battle,
+            Attribute knowledge,
+            Attribute support,
+            Resource energy,
+            Money money,
+            Reputation reputation
+    ) {
+        this.id = -1;
+        this.name = name;
+        this.battle = battle;
+        this.knowledge = knowledge;
+        this.support = support;
+        this.energy = energy;
+        this.money = money;
+        this.reputation = reputation;
     }
 
     public boolean isNotSaved() {
         return id == -1;
     }
 
-    public boolean isApplicant() {
-        return !isAdventurer;
-    }
-
     public boolean isTired() {
         return this.energy.getValue() == 0;
     }
 
+    public abstract boolean isAdventurer();
+
     public void doDaytimeActivity(World world, GameLogger gameLogger) {
-        if(isTired()) {
+        if (isTired()) {
             // 休息を取る
             gameLogger.add(name.getFirstName() + "は休息をとった。", id);
             energy.recoverToMax();
@@ -64,33 +69,6 @@ public class Person {
             world.getAvailableQuests().stream().findFirst()
                     .ifPresent(quest -> quest.reserve(this));
         }
-    }
-
-    public static List<Person> generateAdventurer(int number) {
-        return IntStream.range(0, number).mapToObj(value -> {
-            Person person = new Person();
-            person.id = -1;
-            person.name = PersonName.generateRandom();
-            person.attributes = Attributes.generateRandom();
-            person.money = Money.of((int) (500 + Math.random() * 500));
-            person.reputation = Reputation.of((int) (Math.random() * 10));
-            int energy = (int) (1 + Math.random() * 4);
-            if (person.getBattle() >= 60) energy += 1;
-            else if (person.getBattle() <= 30) energy = Math.max(1, energy - 1);
-            person.energy = Resource.of(energy);
-            person.isAdventurer = true;
-            return person;
-        }).collect(Collectors.toList());
-    }
-
-    public static List<Person> generateApplicant(int number) {
-        return IntStream.range(0, number).mapToObj(value -> {
-            Person person = generateAdventurer(1).get(0);
-            person.money = Money.of((int) (250 + Math.random() * 250));
-            person.reputation = Reputation.of(0);
-            person.isAdventurer = false;
-            return person;
-        }).collect(Collectors.toList());
     }
 
     private static Person of(
@@ -104,15 +82,27 @@ public class Person {
             int reputation,
             boolean isAdventurer
     ) {
-        Person person = new Person();
-        person.id = -1;
-        person.name = PersonName.of(firstName, familyName);
-        person.attributes = Attributes.of(battle, knowledge, support);
-        person.money = Money.of(money);
-        person.reputation = Reputation.of(reputation);
-        person.energy = Resource.of(energy);
-        person.isAdventurer = isAdventurer;
-        return person;
+        if (isAdventurer) {
+            return new Adventurer(
+                    PersonName.of(firstName, familyName),
+                    Attribute.of(battle),
+                    Attribute.of(knowledge),
+                    Attribute.of(support),
+                    Resource.of(energy),
+                    Money.of(money),
+                    Reputation.of(reputation)
+            );
+        } else {
+            return new Applicant(
+                    PersonName.of(firstName, familyName),
+                    Attribute.of(battle),
+                    Attribute.of(knowledge),
+                    Attribute.of(support),
+                    Resource.of(energy),
+                    Money.of(money),
+                    Reputation.of(reputation));
+        }
+
     }
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
