@@ -1,5 +1,6 @@
 package com.meadowsage.guildgame.model;
 
+import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Money;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,7 +20,10 @@ public class Guild {
         return guild;
     }
 
-    public void accountingProcess() {
+    public void accountingProcess(GameLogger gameLogger) {
         this.money.add(1000);
+        gameLogger.add("1000Gの報酬を受け取った。");
+        this.money.add(-600);
+        gameLogger.add("600Gの維持費を支払った。");
     }
 }

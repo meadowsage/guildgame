@@ -133,7 +133,7 @@ public class GetWorldResponse {
     }
 
     @Data
-    private static class ResponseQuest {
+    static class ResponseQuest {
         long id;
         String type;
         String name;

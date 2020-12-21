@@ -38,20 +38,23 @@ public class WorldRepository {
         guildMapper.update(world.getGuild(), world.getId());
 
         // リソース更新
-        world.getPersons().stream().filter(person -> !person.isNotSaved()).forEach(personMapper::update);
+        world.getPersons().stream().filter(person -> !person.isNotSaved())
+                .forEach(personMapper::update);
         world.getQuests().stream().filter(quest -> !quest.isNotSaved()).forEach(questMapper::update);
 
         // 登録届レコードの作成
-        world.getPersons().stream().filter(Person::isApplicant).forEach(applicantMapper::insert);
+        world.getPersons().stream().filter(Person::isApplicant)
+                .forEach(applicantMapper::insert);
 
         // クエスト発注レコードの書き換え
-        questOrderMapper.delete(world.getId());
+        questOrderMapper.deleteAll(world.getId());
         world.getQuests().stream().filter(Quest::isReserved).forEach(quest ->
                 quest.getReservedBy().forEach(reservedBy ->
-                        world.getPerson(reservedBy).ifPresent(person -> questOrderMapper.insert(person, quest))));
+                        world.getPerson(reservedBy)
+                                .ifPresent(person -> questOrderMapper.insert(person.getId(), quest.getId()))));
     }
 
-    public void saveNewDataAndSetIds(World world) {
+    public void saveNewResourcesAndGetIds(World world) {
         world.getPersons().stream().filter(Person::isNotSaved)
                 .forEach(person -> personMapper.insert(person, world.getId()));
 

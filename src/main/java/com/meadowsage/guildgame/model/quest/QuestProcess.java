@@ -22,8 +22,8 @@ public class QuestProcess {
         this.persons = persons;
     }
 
-    public void run(Dice dice, GameLogger logger) {
-        logger.add(persons.get(0).getName().getFirstName() + "たちが" +
+    public void run(Dice dice, GameLogger gameLogger) {
+        gameLogger.add(persons.get(0).getName().getFirstName() + "たちが" +
                 quest.getType() + "クエスト（難易度" + quest.getDifficulty() + "）に挑戦", persons.get(0).getId());
 
         // 参加者ごとに成功度を算出して合算
@@ -44,17 +44,17 @@ public class QuestProcess {
             else if (target < TARGET_MIN) target = TARGET_MIN;
 
             Dice.DiceRollResult result = dice.calcResult(target);
-            logger.add("- " + person.getName().getFirstName() + ": [1D100 <= " + target + "] → " +
+            gameLogger.add("- " + person.getName().getFirstName() + ": [1D100 <= " + target + "] → " +
                     result.getNumber() + " " + result.getType().name());
 
             // ダイスロールの結果に応じて成功度を決定
             switch (result.getType()) {
                 case CRITICAL:
                     // TODO クエスト種別や最も高いステータスに応じてメッセージを切り替える
-                    logger.add("- " + person.getName().getFirstName() + "は一撃でモンスターを葬った！", person.getId());
+                    gameLogger.add("- " + person.getName().getFirstName() + "は一撃でモンスターを葬った！", person.getId());
                     return 3;
                 case SPECIAL:
-                    logger.add("- " + person.getName().getFirstName() + "は鮮やかな手さばきで罠を解除した！", person.getId());
+                    gameLogger.add("- " + person.getName().getFirstName() + "は鮮やかな手さばきで罠を解除した！", person.getId());
                     return 2;
                 case SUCCESS:
                     return quest.getDifficulty();
@@ -62,7 +62,7 @@ public class QuestProcess {
                     return 0;
                 case FUMBLE:
                 default:
-                    logger.add("- " + person.getName().getFirstName() + "はクエスト中に崖から転落した！", person.getId());
+                    gameLogger.add("- " + person.getName().getFirstName() + "はクエスト中に崖から転落した！", person.getId());
                     return -1;
             }
         }).sum();
@@ -80,8 +80,8 @@ public class QuestProcess {
                 person.getEnergy().consume(1);
                 // TODO 報酬の差分をギルドに付与
             });
-            logger.add(persons.get(0).getName().getFirstName() + "たちがクエストをクリアした！", persons.get(0).getId());
-            logger.add(persons.get(0).getName().getFirstName() + "たちは" +
+            gameLogger.add(persons.get(0).getName().getFirstName() + "たちがクエストをクリアした！", persons.get(0).getId());
+            gameLogger.add(persons.get(0).getName().getFirstName() + "たちは" +
                     (quest.getDifficulty() * 10 / persons.size()) + "Gと名声" +
                     (quest.getDifficulty() / 10 / persons.size()) + "を獲得", persons.get(0).getId());
         } else {
@@ -90,7 +90,7 @@ public class QuestProcess {
                 person.getReputation().add(quest.getDifficulty() / 10 / persons.size() * -1);
                 person.getEnergy().consume(2);
             });
-            logger.add(persons.get(0).getName().getFirstName() + "たちはクエストに失敗した…", persons.get(0).getId());
+            gameLogger.add(persons.get(0).getName().getFirstName() + "たちはクエストに失敗した…", persons.get(0).getId());
         }
     }
 }

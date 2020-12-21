@@ -29,4 +29,12 @@
         SET is_completed = #{isCompleted}
         WHERE q.id = #{id}
     </update>
+
+    <delete id="deleteQuestOrder">
+        DELETE
+        FROM quest_order
+        WHERE quest_id = #{questId}
+          AND person_id = #{personId}
+    </delete>
+
 </mapper>

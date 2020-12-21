@@ -21,8 +21,8 @@ public class GameRepository {
         saveDataMapper.save(saveData);
     }
 
-    public void saveGameLog(GameLogger logger) {
-        logger.getLogs().forEach(gameLogMapper::insert);
+    public void saveGameLog(GameLogger gameLogger) {
+        gameLogger.getLogs().forEach(gameLogMapper::insert);
     }
 
     public List<GameLog> getGameLogs(long worldId, int gameDate) {

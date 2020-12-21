@@ -1,5 +1,7 @@
 package com.meadowsage.guildgame.model.person;
 
+import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
@@ -47,6 +49,21 @@ public class Person {
 
     public boolean isApplicant() {
         return !isAdventurer;
+    }
+
+    public boolean isTired() {
+        return this.energy.getValue() == 0;
+    }
+
+    public void doDaytimeActivity(World world, GameLogger gameLogger) {
+        if(isTired()) {
+            // 休息を取る
+            gameLogger.add(name.getFirstName() + "は休息をとった。", id);
+            energy.recoverToMax();
+        } else {
+            world.getAvailableQuests().stream().findFirst()
+                    .ifPresent(quest -> quest.reserve(this));
+        }
     }
 
     public static List<Person> generateAdventurer(int number) {

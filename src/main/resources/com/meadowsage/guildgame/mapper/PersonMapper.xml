@@ -35,7 +35,8 @@
                             knowledge,
                             support,
                             energy,
-                            max_energy)
+                            max_energy,
+                            is_adventurer)
         VALUES (#{worldId},
                 #{person.name.firstName},
                 #{person.name.familyName},
@@ -45,14 +46,15 @@
                 #{person.attributes.knowledge},
                 #{person.attributes.support},
                 #{person.energy.value},
-                #{person.energy.max})
+                #{person.energy.max},
+                #{person.isAdventurer})
     </insert>
 
     <update id="update">
         UPDATE person p
-        SET money         = #{money.value},
-            reputation    = #{reputation.value},
-            is_adventurer = #{isAdventurer}
+        SET money      = #{money.value},
+            reputation = #{reputation.value},
+            energy     = #{energy.value}
         WHERE p.id = #{id}
     </update>
 

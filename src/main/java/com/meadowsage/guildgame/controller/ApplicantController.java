@@ -3,6 +3,7 @@ package com.meadowsage.guildgame.controller;
 import com.meadowsage.guildgame.controller.request.UpdateApplicantRequest;
 import com.meadowsage.guildgame.service.PersonService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -17,6 +18,7 @@ public class ApplicantController {
 
     @PostMapping("/{applicantId}")
     @ResponseBody
+    @Transactional
     public void updateApplicant(
             @RequestBody UpdateApplicantRequest request,
             @PathVariable String saveDataId,

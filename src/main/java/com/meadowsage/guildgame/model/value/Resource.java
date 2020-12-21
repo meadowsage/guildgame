@@ -22,6 +22,10 @@ public class Resource {
         this.value = Math.max(this.value - value, 0);
     }
 
+    public void recoverToMax() {
+        value = max;
+    }
+
     public static Resource of(int max) {
         return of(max, max);
     }
