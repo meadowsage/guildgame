@@ -57,7 +57,7 @@ public class World {
         guild.accountingProcess();
 
         // 新しい応募者冒険者の作成
-        addPersons(Person.generateApplicant((int)(1 + Math.random() * 3)));
+        addPersons(Person.generateApplicant((int)(1 + Math.random() * 10)));
         // 新しいクエストの作成
         addQuests(Quest.generateRandom(3, guild.getReputation()));
 

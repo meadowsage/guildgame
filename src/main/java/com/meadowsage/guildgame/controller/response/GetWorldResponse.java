@@ -2,7 +2,7 @@ package com.meadowsage.guildgame.controller.response;
 
 import com.meadowsage.guildgame.model.World;
 import com.meadowsage.guildgame.model.person.Person;
-import com.meadowsage.guildgame.model.person.Remark;
+import com.meadowsage.guildgame.model.person.Reviewer;
 import com.meadowsage.guildgame.model.scenario.Scenario;
 import com.meadowsage.guildgame.model.system.GameLog;
 import lombok.Data;
@@ -58,12 +58,11 @@ public class GetWorldResponse {
                 .filter(Person::isApplicant)
                 .map(person -> {
                     ResponseApplicant res = new ResponseApplicant();
+                    Reviewer reviewer = Reviewer.of(Reviewer.Type.NORMAL);
                     res.setId(person.getId());
                     res.setName(person.getName().getFirstName());
                     res.setFullName(person.getName().getFullName());
-                    res.setRemarks(Remark.generateRemarks(person).stream()
-                            .map(Remark::getValue)
-                            .collect(Collectors.toList()));
+                    res.setRemarks(reviewer.review(person));
                     return res;
                 }).collect(Collectors.toList());
 
