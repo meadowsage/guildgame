@@ -51,10 +51,11 @@ public class WorldRepository {
 
         // クエスト発注レコードの書き換え
         questOrderMapper.deleteAll(world.getId());
-        world.getQuests().stream().filter(Quest::isReserved).forEach(quest ->
-                quest.getReservedBy().forEach(reservedBy ->
-                        world.findPerson(reservedBy)
-                                .ifPresent(person -> questOrderMapper.insert(person.getId(), quest.getId()))));
+        world.getQuests().stream()
+                .filter(Quest::isReserved)
+                .forEach(quest -> quest.getReservedBy()
+                        .forEach(reservedBy -> world.findPerson(reservedBy).ifPresent(person ->
+                                questOrderMapper.insert(quest.getId(), person.getId()))));
     }
 
     public void saveNewResourcesAndGetIds(World world) {

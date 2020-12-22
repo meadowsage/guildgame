@@ -57,7 +57,7 @@ public class QuestProcess {
                     gameLogger.add("- " + person.getName().getFirstName() + "は鮮やかな手さばきで罠を解除した！", person.getId());
                     return 2;
                 case SUCCESS:
-                    return quest.getDifficulty();
+                    return 1;
                 case FAILURE:
                     return 0;
                 case FUMBLE:
@@ -75,7 +75,7 @@ public class QuestProcess {
                 // 報酬・経験点・名声を付与
                 // TODO 名声に応じて報酬・経験点を調整
                 person.getMoney().add(quest.getDifficulty() * 10 / persons.size());
-                person.getReputation().add(quest.getDifficulty() / 10 / persons.size());
+                person.getReputation().add(quest.getDifficulty() / 10 / persons.size() + 1);
                 // 体力消費
                 person.getEnergy().consume(1);
                 // TODO 報酬の差分をギルドに付与
@@ -83,7 +83,7 @@ public class QuestProcess {
             gameLogger.add(persons.get(0).getName().getFirstName() + "たちがクエストをクリアした！", persons.get(0).getId());
             gameLogger.add(persons.get(0).getName().getFirstName() + "たちは" +
                     (quest.getDifficulty() * 10 / persons.size()) + "Gと名声" +
-                    (quest.getDifficulty() / 10 / persons.size()) + "を獲得", persons.get(0).getId());
+                    (quest.getDifficulty() / 10 / persons.size() + 1) + "を獲得", persons.get(0).getId());
         } else {
             persons.forEach(person -> {
                 person.getMoney().add(quest.getDifficulty() * 10 / persons.size() * -1);
