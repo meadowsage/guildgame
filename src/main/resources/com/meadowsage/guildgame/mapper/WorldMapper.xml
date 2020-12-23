@@ -3,18 +3,21 @@
 
 <mapper namespace="com.meadowsage.guildgame.mapper.WorldMapper">
     <insert id="save" useGeneratedKeys="true" keyProperty="world.id">
-        INSERT INTO world (save_data_id, game_date)
-        VALUES (#{saveDataId},
-                #{world.gameDate})
+        INSERT INTO world (save_data_id, game_date, state)
+        VALUES (#{saveDataId}, #{world.gameDate}, #{world.state})
     </insert>
+
     <select id="select" resultType="com.meadowsage.guildgame.model.World">
         SELECT w.*
         FROM world w
         WHERE w.save_data_id = #{saveDataId}
     </select>
+
     <update id="update">
         UPDATE world w
-        SET game_date = #{gameDate}
+        SET game_date = #{gameDate},
+            state = #{state},
+            updated_at = CURRENT_TIMESTAMP
         WHERE w.id = #{id}
     </update>
 </mapper>

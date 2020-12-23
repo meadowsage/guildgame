@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Adventurer extends Person {
-
     protected Adventurer(
             PersonName name,
             Attribute battle,

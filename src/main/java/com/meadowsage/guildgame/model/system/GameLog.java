@@ -11,14 +11,17 @@ public class GameLog {
     @Getter
     Long personId;
     @Getter
+    Long questId;
+    @Getter
     String message;
     @Getter
     int gameDate;
 
-    GameLog(String message, Long worldId, Long personId, int gameDate) {
+    public GameLog(String message, Long worldId, Long personId, Long questId, int gameDate) {
         this.message = message;
         this.worldId = worldId;
         this.personId = personId;
+        this.questId = questId;
         this.gameDate = gameDate;
     }
 }

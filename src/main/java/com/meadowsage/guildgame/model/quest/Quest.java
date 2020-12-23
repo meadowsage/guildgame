@@ -21,16 +21,14 @@ public class Quest {
     @Getter
     private int difficulty;
     @Getter
-    private List<Long> reservedBy = new ArrayList<>();
+    private List<QuestOrder> questOrders = new ArrayList<>();
     @Getter
-    private boolean isCompleted = false;
+    private int processedDate;
 
-    public boolean isReserved() {
-        return !reservedBy.isEmpty() || isCompleted();
-    }
-
-    public boolean isNotSaved() {
-        return id == -1;
+    private Quest(QuestType type, String name, int difficulty) {
+        this.name = name;
+        this.type = type;
+        this.difficulty = difficulty;
     }
 
     public String getName() {
@@ -39,51 +37,55 @@ public class Quest {
         } else return name;
     }
 
-    public void reserve(Person person) {
-        reservedBy.add(person.getId());
+    /**
+     * 他の冒険者によって予約済
+     */
+    public boolean isReserved() {
+        return questOrders.size() > 0;
     }
 
-    public void complete() {
-        isCompleted = true;
+    /**
+     * 新規作成されたインスタンスかどうか
+     *
+     * @return ID未付与ならtrue
+     */
+    public boolean isNew() {
+        return id == -1;
+    }
+
+    /**
+     * クエストが実行済かどうか
+     *
+     * @param currentGameDate 今日のゲーム日付
+     * @return 実行済ならtrue
+     */
+    public boolean hasProcessed(int currentGameDate) {
+        return processedDate >= currentGameDate || questOrders.stream().noneMatch(QuestOrder::isActive);
+    }
+
+    public void reserve(Person person) {
+        questOrders.add(new QuestOrder(id, person.getId()));
+    }
+
+    public void complete(int gameDate) {
+        this.processedDate = gameDate;
+        questOrders.forEach(QuestOrder::complete);
+    }
+
+    public void fail() {
+        questOrders.forEach(QuestOrder::fail);
     }
 
     public void cancel() {
-        reservedBy.clear();
+        questOrders.clear();
     }
 
     public static List<Quest> generateRandom(int number, int baseDifficulty) {
         return IntStream.range(0, number).mapToObj(value -> {
             QuestType type = QuestType.values()[(int) (Math.random() * QuestType.values().length)];
             int difficulty = (int) (baseDifficulty * 0.5 + Math.random() * baseDifficulty);
-            return Quest.of(type, "", difficulty);
+            return new Quest(type, "", difficulty);
         }).collect(Collectors.toList());
-    }
-
-    private static Quest of(QuestType type, String name, int difficulty) {
-        Quest quest = new Quest();
-        quest.name = name;
-        quest.type = type;
-        quest.difficulty = difficulty;
-        return quest;
-    }
-
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public enum QuestType {
-        // 探索
-        EXPLORE(1.0, 1.0, 1.0),
-        // 狩猟
-        HUNT(1.8, 0.8, 0.4),
-        // 採取
-        HARVEST(0.4, 1.8, 1.8),
-        // 雑務
-        TASK(0.1, 0.4, 2.5);
-
-        @Getter
-        private final double battleCoefficient;
-        @Getter
-        private final double knowledgeCoefficient;
-        @Getter
-        private final double supportCoefficient;
     }
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -95,7 +97,7 @@ public class Quest {
         int difficulty;
 
         public Quest getInstance() {
-            return Quest.of(type, name, difficulty);
+            return new Quest(type, name, difficulty);
         }
     }
 }

@@ -10,4 +10,6 @@ public interface GameLogMapper {
     void insert(GameLog gameLog);
 
     List<GameLog> select(long worldId, long gameDate);
+
+    List<GameLog> selectByQuestId(long worldId, long questId);
 }

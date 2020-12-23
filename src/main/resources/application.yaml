@@ -1,3 +1,6 @@
+# ローカル専用
+JDBC_DATABASE_URL: jdbc:postgresql://localhost:5433/postgres?password=admin&user=admin
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -7,9 +10,6 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-
-API_KEY: dummy
-
 logging:
   level:
     root: info

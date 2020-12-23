@@ -1,6 +1,7 @@
 package com.meadowsage.guildgame.mapper;
 
 import com.meadowsage.guildgame.model.quest.Quest;
+import com.meadowsage.guildgame.model.quest.QuestOrder;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public interface QuestMapper {
     void insert(Quest quest, long worldId);
 
-    List<Quest> select(long worldId);
+    List<Quest> select(long worldId, QuestOrder.State state);
 
     void update(Quest quest);
 }

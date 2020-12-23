@@ -4,37 +4,32 @@
 <mapper namespace="com.meadowsage.guildgame.mapper.QuestMapper">
     <resultMap id="questMap" type="com.meadowsage.guildgame.model.quest.Quest" autoMapping="true">
         <id column="id" property="id"/>
-        <collection property="reservedBy" ofType="Long">
-            <result column="reserved_by"/>
+        <collection property="questOrders" ofType="com.meadowsage.guildgame.model.quest.QuestOrder"
+                    columnPrefix="qo_" autoMapping="true">
         </collection>
     </resultMap>
 
     <select id="select" resultMap="questMap">
         SELECT q.*,
-               qo.person_id as reserved_by
+               qo.id        as qo_id,
+               qo.quest_id  as qo_quest_id,
+               qo.person_id as qo_person_id,
+               qo.state     as qo_state
         FROM quest q
                  LEFT JOIN quest_order qo ON q.id = qo.quest_id
         WHERE q.world_id = #{worldId}
-          AND q.is_completed = false
+          AND (qo.state = #{state} OR qo.state IS NULL)
         ORDER BY q.id
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="quest.id">
-        INSERT INTO quest (world_id, type, difficulty)
-        VALUES (#{worldId}, #{quest.type}, #{quest.difficulty})
+        INSERT INTO quest (world_id, type, difficulty, processed_date)
+        VALUES (#{worldId}, #{quest.type}, #{quest.difficulty}, #{quest.processedDate})
     </insert>
 
     <update id="update">
-        UPDATE quest q
-        SET is_completed = #{isCompleted}
-        WHERE q.id = #{id}
+        UPDATE quest
+        SET processed_date = #{processedDate}
+        WHERE id = #{id}
     </update>
-
-    <delete id="deleteQuestOrder">
-        DELETE
-        FROM quest_order
-        WHERE quest_id = #{questId}
-          AND person_id = #{personId}
-    </delete>
-
 </mapper>

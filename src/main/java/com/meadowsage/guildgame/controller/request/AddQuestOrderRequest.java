@@ -7,5 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddQuestOrderRequest {
+    private long questId;
     private long personId;
 }

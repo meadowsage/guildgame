@@ -1,12 +1,13 @@
 package com.meadowsage.guildgame.mapper;
 
+import com.meadowsage.guildgame.model.quest.QuestOrder;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface QuestOrderMapper {
-    void insert(long questId, long personId);
+    void insert(QuestOrder questOrder);
 
-    void delete(long questId, long personId);
+    void delete(long id);
 
-    void deleteAll(long worldId);
+    void update(long id, QuestOrder.State state);
 }

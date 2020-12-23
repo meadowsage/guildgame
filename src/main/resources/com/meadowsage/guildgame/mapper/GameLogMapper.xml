@@ -3,8 +3,8 @@
 
 <mapper namespace="com.meadowsage.guildgame.mapper.GameLogMapper">
     <insert id="insert">
-        INSERT INTO game_log (world_id, person_id, message, game_date)
-        VALUES (#{worldId}, #{personId}, #{message}, #{gameDate})
+        INSERT INTO game_log (world_id, person_id, quest_id, message, game_date)
+        VALUES (#{worldId}, #{personId}, #{questId}, #{message}, #{gameDate})
     </insert>
 
     <select id="select" resultType="com.meadowsage.guildgame.model.system.GameLog">
@@ -12,5 +12,12 @@
         FROM game_log
         WHERE world_id = #{worldId}
           AND game_date = #{gameDate}
+    </select>
+
+    <select id="selectByQuestId" resultType="com.meadowsage.guildgame.model.system.GameLog">
+        SELECT *
+        FROM game_log
+        WHERE world_id = #{worldId}
+          AND quest_id = #{questId}
     </select>
 </mapper>

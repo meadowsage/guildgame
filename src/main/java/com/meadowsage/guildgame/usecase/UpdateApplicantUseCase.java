@@ -1,20 +1,17 @@
-package com.meadowsage.guildgame.service;
+package com.meadowsage.guildgame.usecase;
 
 import com.meadowsage.guildgame.repository.PersonRepository;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-public class PersonService {
+@AllArgsConstructor
+public class UpdateApplicantUseCase {
     private final PersonRepository personRepository;
 
-    /**
-     * 登録届の審査
-     */
-    public void updateApplicant(long applicantId, boolean isApproval) {
-        if(isApproval) {
-            // 承認 → 申請を削除
+    public void run(long applicantId, boolean isApproved) {
+        if(isApproved) {
+            // 承認 → 応募レコードだけ削除
             personRepository.deleteApplicant(applicantId);
         } else {
             // 拒否 → キャラクターを削除

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Person {
     @Getter
-    private long id;
+    private long id = -1;
     @Getter
     private PersonName name;
     @Getter
@@ -27,9 +27,10 @@ public abstract class Person {
     private Attribute knowledge;
     @Getter
     private Attribute support;
-
     @Getter
     private Resource energy;
+    @Getter
+    private boolean isActioned;
 
     protected Person(
             PersonName name,
@@ -40,7 +41,6 @@ public abstract class Person {
             Money money,
             Reputation reputation
     ) {
-        this.id = -1;
         this.name = name;
         this.battle = battle;
         this.knowledge = knowledge;
@@ -48,9 +48,10 @@ public abstract class Person {
         this.energy = energy;
         this.money = money;
         this.reputation = reputation;
+        this.isActioned = false;
     }
 
-    public boolean isNotSaved() {
+    public boolean isNew() {
         return id == -1;
     }
 
@@ -63,12 +64,20 @@ public abstract class Person {
     public void doDaytimeActivity(World world, GameLogger gameLogger) {
         if (isTired()) {
             // 休息を取る
-            gameLogger.add(name.getFirstName() + "は休息をとった。", id);
+            gameLogger.add(name.getFirstName() + "は休息をとった。", this);
             energy.recoverToMax();
         } else {
             world.getAvailableQuests().stream().findFirst()
                     .ifPresent(quest -> quest.reserve(this));
         }
+    }
+
+    public void setAsActioned() {
+        isActioned = true;
+    }
+
+    public void setAsNotActioned() {
+        isActioned = false;
     }
 
     private static Person of(
@@ -107,7 +116,7 @@ public abstract class Person {
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public enum UniquePerson {
-        TELLAN("テラン", "ウォレス", 38, 42, 62, 1, 2000, 10, true); // Tellan Wallace
+        TELLAN("テラン", "ウォレス", 28, 41, 62, 1, 2000, 10, true); // Tellan Wallace
 
         private String firstName;
         private String familyName;

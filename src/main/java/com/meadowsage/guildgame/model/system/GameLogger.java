@@ -1,5 +1,7 @@
 package com.meadowsage.guildgame.model.system;
 
+import com.meadowsage.guildgame.model.person.Person;
+import com.meadowsage.guildgame.model.quest.Quest;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -16,12 +18,21 @@ public class GameLogger {
         this.gameDate = gameDate;
     }
 
-    public void add(String message, Long personId) {
-        logs.add(new GameLog(message, worldId, personId, gameDate));
+    public void add(String message, Person person) {
+        logs.add(new GameLog(message, worldId, person.getId(), null, gameDate));
+        System.out.println(message); // DEBUG
+    }
+
+    public void add(String message, Quest quest) {
+        logs.add(new GameLog(message, worldId, null, quest.getId(), gameDate));
+        System.out.println(message); // DEBUG
+    }
+    public void add(String message, Person person, Quest quest) {
+        logs.add(new GameLog(message, worldId, person.getId(), quest.getId(), gameDate));
         System.out.println(message); // DEBUG
     }
 
     public void add(String message) {
-        this.add(message, null);
+        logs.add(new GameLog(message, worldId, null, null, gameDate));
     }
 }

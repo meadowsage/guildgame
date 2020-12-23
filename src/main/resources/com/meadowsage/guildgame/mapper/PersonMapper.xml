@@ -66,7 +66,8 @@
                             knowledge,
                             support,
                             max_energy,
-                            energy)
+                            energy,
+                            is_actioned)
         VALUES (#{worldId},
                 #{person.name.firstName},
                 #{person.name.familyName},
@@ -76,14 +77,16 @@
                 #{person.knowledge.value},
                 #{person.support.value},
                 #{person.energy.max},
-                #{person.energy.value})
+                #{person.energy.value},
+                #{person.isActioned})
     </insert>
 
     <update id="update">
         UPDATE person p
-        SET money      = #{money.value},
-            reputation = #{reputation.value},
-            energy     = #{energy.value}
+        SET money       = #{money.value},
+            reputation  = #{reputation.value},
+            energy      = #{energy.value},
+            is_actioned = #{isActioned}
         WHERE p.id = #{id}
     </update>
 

@@ -5,13 +5,15 @@ import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.person.Reviewer;
 import com.meadowsage.guildgame.model.scenario.Scenario;
 import com.meadowsage.guildgame.model.system.GameLog;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
+@Getter
 public class GetWorldResponse {
     ResponseWorld world;
     ResponseGuild guild;
@@ -22,93 +24,95 @@ public class GetWorldResponse {
     List<ResponseScenario> scenarios;
 
     public GetWorldResponse(World world, List<GameLog> gameLogs, List<Scenario> scenarios) {
-        this.world = new ResponseWorld();
-        this.world.id = world.getId();
-        this.world.gameDate = world.getGameDate();
+        this.world = ResponseWorld.builder()
+                .id(world.getId())
+                .gameDate(world.getGameDate())
+                .state(world.getState().name()).build();
 
-        this.guild = new ResponseGuild();
-        this.guild.money = world.getGuild().getMoney().getValue();
-        this.guild.reputation = world.getGuild().getReputation();
+        this.guild = ResponseGuild.builder()
+                .money(world.getGuild().getMoney().getValue())
+                .reputation(world.getGuild().getReputation()).build();
 
-        this.gameLogs = gameLogs.stream().map(gameLog -> {
-            ResponseGameLog res = new ResponseGameLog();
-            res.setMessage(gameLog.getMessage());
-            return res;
-        }).collect(Collectors.toList());
+        this.gameLogs = gameLogs.stream()
+                .map(gameLog -> new ResponseGameLog(gameLog.getMessage()))
+                .collect(Collectors.toList());
 
         this.adventurers = world.getAdventurers().stream()
                 .sorted(Comparator.comparing(Person::getId))
-                .map(person -> {
-                    ResponseAdventurer res = new ResponseAdventurer();
-                    res.setId(person.getId());
-                    res.setName(person.getName().getFirstName());
-                    res.setFullName(person.getName().getFullName());
-                    res.setMoney(person.getMoney().getValue());
-                    res.setReputation(person.getReputation().getValue());
-                    res.setBattle(person.getBattle().getValue());
-                    res.setKnowledge(person.getKnowledge().getValue());
-                    res.setSupport(person.getSupport().getValue());
-                    res.setEnergy(person.getEnergy().getValue());
-                    res.setMaxEnergy(person.getEnergy().getMax());
-                    return res;
-                }).collect(Collectors.toList());
+                .map(person -> ResponseAdventurer.builder()
+                        .id(person.getId())
+                        .name(person.getName().getFirstName())
+                        .fullName(person.getName().getFullName())
+                        .money(person.getMoney().getValue())
+                        .reputation(person.getReputation().getValue())
+                        .battle(person.getBattle().getValue())
+                        .knowledge(person.getKnowledge().getValue())
+                        .support(person.getSupport().getValue())
+                        .energy(person.getEnergy().getValue())
+                        .maxEnergy(person.getEnergy().getMax())
+                        .build()
+                ).collect(Collectors.toList());
 
         this.applicants = world.getApplicants().stream()
-                .map(person -> {
-                    ResponseApplicant res = new ResponseApplicant();
-                    Reviewer reviewer = Reviewer.of();
-                    res.setId(person.getId());
-                    res.setName(person.getName().getFirstName());
-                    res.setFullName(person.getName().getFullName());
-                    res.setRemarks(reviewer.review(person));
-                    return res;
-                }).collect(Collectors.toList());
+                .map(person -> ResponseApplicant.builder()
+                        .id(person.getId())
+                        .name(person.getName().getFirstName())
+                        .fullName(person.getName().getFullName())
+                        .remarks(Reviewer.of().review(person))
+                        .build()
+                ).collect(Collectors.toList());
 
-        this.quests = world.getQuests().stream().map(quest -> {
-            ResponseQuest res = new ResponseQuest();
-            res.setId(quest.getId());
-            res.setName(quest.getName());
-            res.setDifficulty(quest.getDifficulty());
-            res.setType(quest.getType().name());
-            res.setReservedBy(this.adventurers.stream()
-                    .filter(adventurer -> quest.getReservedBy().contains(adventurer.getId()))
-                    .collect(Collectors.toList()));
-            return res;
-        }).collect(Collectors.toList());
+        this.quests = world.getQuests().stream().map(quest -> ResponseQuest.builder()
+                .id(quest.getId())
+                .name(quest.getName())
+                .difficulty(quest.getDifficulty())
+                .type(quest.getType().name())
+                .questOrders(
+                        quest.getQuestOrders().stream().map(questOrder -> {
+                            ResponseAdventurer reservedBy = this.adventurers.stream()
+                                    .filter(adventurer -> adventurer.id == questOrder.getPersonId())
+                                    .findAny().orElse(null);
+                            return new ResponseQuestOrder(questOrder.getId(), reservedBy);
+                        }).collect(Collectors.toList())
+                ).build()
+        ).collect(Collectors.toList());
 
-        this.scenarios = scenarios.stream().map(scenario -> {
-            ResponseScenario res = new ResponseScenario();
-            res.id = scenario.getId();
-            res.title = scenario.getTitle();
-            res.contents = scenario.getContents().stream().map(content -> {
-                ResponseScenarioContent resContent = new ResponseScenarioContent();
-                resContent.speaker = content.getSpeaker();
-                resContent.text = content.getText();
-                resContent.image = content.getImage();
-                return resContent;
-            }).collect(Collectors.toList());
-            return res;
-        }).collect(Collectors.toList());
+        this.scenarios = scenarios.stream().map(scenario -> ResponseScenario.builder()
+                .id(scenario.getId())
+                .title(scenario.getTitle())
+                .contents(scenario.getContents().stream()
+                        .map(content -> ResponseScenarioContent.builder()
+                                .speaker(content.getSpeaker())
+                                .text(content.getText())
+                                .image(content.getImage()).build()
+                        ).collect(Collectors.toList())
+                ).build()
+        ).collect(Collectors.toList());
     }
 
-    @Data
+    @Builder
+    @Getter
     private static class ResponseWorld {
         long id;
         int gameDate;
+        String state;
     }
 
-    @Data
+    @Builder
+    @Getter
     private static class ResponseGuild {
         long money;
         int reputation;
     }
 
-    @Data
+    @AllArgsConstructor
+    @Getter
     private static class ResponseGameLog {
         String message;
     }
 
-    @Data
+    @Builder
+    @Getter
     private static class ResponseAdventurer {
         long id;
         String name;
@@ -122,7 +126,8 @@ public class GetWorldResponse {
         int maxEnergy;
     }
 
-    @Data
+    @Builder
+    @Getter
     private static class ResponseApplicant {
         long id;
         String name;
@@ -130,23 +135,33 @@ public class GetWorldResponse {
         List<String> remarks;
     }
 
-    @Data
+    @Builder
+    @Getter
     static class ResponseQuest {
         long id;
         String type;
         String name;
         int difficulty;
-        List<ResponseAdventurer> reservedBy;
+        List<ResponseQuestOrder> questOrders;
     }
 
-    @Data
+    @AllArgsConstructor
+    @Getter
+    static class ResponseQuestOrder {
+        long id;
+        ResponseAdventurer reservedBy;
+    }
+
+    @Builder
+    @Getter
     private static class ResponseScenario {
         int id;
         String title;
         List<ResponseScenarioContent> contents;
     }
 
-    @Data
+    @Builder
+    @Getter
     private static class ResponseScenarioContent {
         String speaker;
         String text;

@@ -1,17 +1,14 @@
 package com.meadowsage.guildgame.controller;
 
+import com.meadowsage.guildgame.controller.response.GetGameLogsResponse;
 import com.meadowsage.guildgame.controller.response.GetWorldResponse;
-import com.meadowsage.guildgame.model.World;
-import com.meadowsage.guildgame.model.scenario.Scenario;
-import com.meadowsage.guildgame.model.system.GameLog;
-import com.meadowsage.guildgame.service.GameService;
-import com.meadowsage.guildgame.service.ScenarioService;
-import com.meadowsage.guildgame.service.WorldService;
+import com.meadowsage.guildgame.controller.response.ToNextResponse;
+import com.meadowsage.guildgame.usecase.GetGameLogsUseCase;
+import com.meadowsage.guildgame.usecase.GetWorldDataUseCase;
+import com.meadowsage.guildgame.usecase.ToNextUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * ワールドデータに対する処理
@@ -23,38 +20,37 @@ import java.util.List;
 @Transactional
 public class WorldController {
 
-    private final GameService gameService;
-    private final WorldService worldService;
-    private final ScenarioService scenarioService;
+    private final ToNextUseCase toNextUseCase;
+    private final GetGameLogsUseCase getGameLogsUseCase;
+    private final GetWorldDataUseCase getWorldDataUseCase;
 
     // FIXME セーブデータIDはクエリパラメータで受け取る
     @GetMapping("")
     @ResponseBody
     @Transactional(readOnly = true)
     public GetWorldResponse getWorld(@PathVariable String saveDataId) {
-        World world = worldService.get(saveDataId);
-        List<GameLog> gameLogs = gameService.getGameLogs(world.getId(), world.getGameDate() - 1);
-        List<Scenario> scenarios = scenarioService.get(world);
-
-        return new GetWorldResponse(world, gameLogs, scenarios);
+        GetWorldDataUseCase.GetWorldDataUseCaseResult result = getWorldDataUseCase.run(saveDataId);
+        return new GetWorldResponse(result.getWorld(), result.getGameLogs(), result.getScenarios());
     }
 
     // FIXME セーブデータIDはフォームで受け取る
     @PutMapping("")
-    @Transactional
-    public void toNextDay(@PathVariable String saveDataId) {
-        // TODO ゲーム日付のチェック
-        worldService.toNextDay(saveDataId);
-    }
-
-    @PostMapping("/{worldId}/scenario/{scenarioId}")
     @ResponseBody
     @Transactional
-    public void doneScenario(
+    public ToNextResponse toNextDay(@PathVariable String saveDataId) {
+        // TODO ゲーム日付のチェック
+        return new ToNextResponse(toNextUseCase.run(saveDataId));
+    }
+
+    @GetMapping("/{worldId}/logs")
+    @ResponseBody
+    @Transactional(readOnly = true)
+    public GetGameLogsResponse getGameLogs(
+            @PathVariable String saveDataId,
             @PathVariable Long worldId,
-            @PathVariable Integer scenarioId
+            @RequestParam Long questId
     ) {
-        // TODO 入力チェック
-        scenarioService.done(worldId, scenarioId);
+        System.out.println(saveDataId);
+        return new GetGameLogsResponse(getGameLogsUseCase.run(worldId, questId));
     }
 }
