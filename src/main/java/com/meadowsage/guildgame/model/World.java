@@ -83,7 +83,7 @@ public class World {
 
     public void midnight() {
         // 新しい応募者の作成
-        int applicantNum = (int) (Math.random() * 2);
+        int applicantNum = (int) (1 + Math.random() * 2);
         applicants.addAll(Applicant.generate(applicantNum).stream()
                 .map(applicant -> (Person) applicant)
                 .collect(Collectors.toList()));
