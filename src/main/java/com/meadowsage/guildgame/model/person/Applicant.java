@@ -33,7 +33,7 @@ public class Applicant extends Person {
 
     public static List<Applicant> generate(int number) {
         return IntStream.range(0, number).mapToObj(value -> {
-            PersonName name = PersonName.generateRandom();
+            PersonName name = PersonName.generateRandom(new PersonNameGenerator());
             Attribute battle = Attribute.generateRandom();
             Attribute knowledge = Attribute.generateRandom();
             Attribute support = Attribute.generateRandom();

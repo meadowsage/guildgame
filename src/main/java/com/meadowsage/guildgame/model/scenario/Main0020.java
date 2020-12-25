@@ -22,8 +22,8 @@ public class Main0020 extends ScenarioBase {
     @Override
     public List<ScenarioContent> getContents() {
         Speaker me = new Speaker("", "");
-        Speaker hasa = new Speaker("『補佐係』ハサ", "face_1.png");
-        Speaker teran = new Speaker("『街の世話役』テラン", "face_2.png");
+        Speaker hasa = new Speaker("『秘書』ハサ", "face_1.png");
+        Speaker teran = new Speaker("『町の世話役』テラン", "face_2.png");
 
         return Arrays.asList(
                 teran.speak("よう、帰ったぞ")

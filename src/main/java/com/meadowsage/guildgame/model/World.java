@@ -1,8 +1,14 @@
 package com.meadowsage.guildgame.model;
 
+import com.meadowsage.guildgame.model.person.Adventurer;
 import com.meadowsage.guildgame.model.person.Applicant;
 import com.meadowsage.guildgame.model.person.Person;
+import com.meadowsage.guildgame.model.person.UniquePerson;
 import com.meadowsage.guildgame.model.quest.Quest;
+import com.meadowsage.guildgame.model.quest.QuestGenerator;
+import com.meadowsage.guildgame.model.quest.QuestProcess;
+import com.meadowsage.guildgame.model.quest.UniqueQuest;
+import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.system.SaveData;
 import com.meadowsage.guildgame.repository.WorldRepository;
@@ -22,7 +28,6 @@ public class World {
     @Getter
     private int gameDate;
     @Getter
-    @Setter
     private State state;
     @Getter
     @Setter
@@ -33,36 +38,30 @@ public class World {
     private List<Person> applicants = new ArrayList<>();
     @Getter
     private List<Quest> quests = new ArrayList<>();
+    @Getter
+    private List<Place> places = new ArrayList<>();
 
-    public World(Guild guild, List<Person> adventurers, List<Quest> quests) {
+    private World(
+            Guild guild,
+            List<Person> adventurers,
+            List<Quest> quests,
+            List<Place> places
+    ) {
         this.id = -1;
         this.gameDate = 1;
-        this.state = State.MORNING;
+        this.state = State.MIDDAY;
         this.guild = guild;
         this.adventurers = adventurers;
         this.quests = quests;
+        this.places = places;
     }
 
     public List<Quest> getAvailableQuests() {
-        return quests.stream()
-                .filter(quest -> !quest.isReserved())
-                .collect(Collectors.toList());
+        return quests.stream().filter(Quest::isNotOrdered).collect(Collectors.toList());
     }
 
     public List<Person> getAllPersons() {
         return Stream.of(adventurers, applicants).flatMap(Collection::stream).collect(Collectors.toList());
-    }
-
-    public void addAdventurers(List<Person> adventurers) {
-        this.adventurers.addAll(adventurers);
-    }
-
-    public void addApplicants(List<Person> applicants) {
-        this.applicants.addAll(applicants);
-    }
-
-    public void addQuests(List<Quest> quests) {
-        this.quests.addAll(quests);
     }
 
     /**
@@ -79,17 +78,28 @@ public class World {
         // 維持費を差し引く
         guild.accountingProcess(gameLogger);
 
-        // 日付進める
-        gameDate++;
+        state = State.MIDNIGHT;
     }
 
-    public void godTime() {
+    public void midnight() {
         // 新しい応募者の作成
-        addApplicants(Applicant.generate((int) (1 + Math.random() * 2)).stream()
+        int applicantNum = (int) (Math.random() * 2);
+        applicants.addAll(Applicant.generate(applicantNum).stream()
                 .map(applicant -> (Person) applicant)
                 .collect(Collectors.toList()));
+
         // 新しいクエストの作成
-        addQuests(Quest.generateRandom(3, guild.getReputation()));
+        int questNum = (int) (1 + Math.random() * 2);
+        quests.addAll(new QuestGenerator(
+                guild.getReputation(),
+                Arrays.stream(Place.values()).collect(Collectors.toList()),
+                new Dice()
+        ).generate(questNum));
+
+        // 日付進める
+        gameDate++;
+
+        state = State.MORNING;
     }
 
     /**
@@ -104,9 +114,10 @@ public class World {
         for (Person person : adventurers) {
             if (!person.isAdventurer() || person.isTired()) continue;
             // TODO 冒険者の名声や好みで重みづけを行い、一番高いものを選択
-            quests.stream().filter(quest -> !quest.isReserved())
-                    .findFirst().ifPresent(quest -> quest.reserve(person));
+            quests.stream().filter(Quest::isNotOrdered).findFirst().ifPresent(quest -> quest.reserve(person));
         }
+
+        state = State.MIDDAY;
     }
 
     /**
@@ -117,12 +128,13 @@ public class World {
         // 初期リソース生成
         World world = new World(
                 Guild.create(),
-                Collections.singletonList(Person.UniquePerson.TELLAN.getInstance()),
-                Collections.singletonList(Quest.UniqueQuest.FIRST.getInstance())
+                Collections.singletonList(UniquePerson.TELLAN.getInstance()),
+                Collections.singletonList(UniqueQuest.FIRST.getInstance()),
+                Collections.singletonList(Place.CITY)
         );
 
         // 生成したリソースの保存・ID払い出し
-        worldRepository.create(world, saveData.getId());
+        worldRepository.saveNew(world, saveData.getId());
 
         // クエスト受注を作成
         world.getQuests().get(0).reserve(world.getAdventurers().get(0));
@@ -140,9 +152,34 @@ public class World {
         return this.quests.stream().filter(quest -> !quest.hasProcessed(gameDate)).findAny();
     }
 
+    public void afternoon(GameLogger gameLogger) {
+        if (state.equals(State.MIDDAY)) state = State.AFTERNOON;
+
+        // 未完了のクエストを１個ずつ実行
+        Optional<Quest> nextQuest = getNextQuest(gameDate);
+        if (nextQuest.isPresent()) {
+            List<Person> party = nextQuest.get().getQuestOrders().stream()
+                    .map(questOrder -> findPerson(questOrder.getPersonId()).orElse(null))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            QuestProcess questProcess = new QuestProcess(nextQuest.get(), party, gameDate);
+            questProcess.run(new Dice(), gameLogger);
+        } else {
+            // クエスト処理が完了していれば、未行動のキャラクターの行動
+            adventurers.stream()
+                    .filter(person -> person instanceof Adventurer) // 念のためフィルタ
+                    .map(person -> (Adventurer) person)
+                    .filter(adventurer -> !adventurer.isActioned())
+                    .forEach(person -> person.doDaytimeActivity(this, gameLogger));
+            state = State.NIGHT;
+        }
+    }
+
     public enum State {
-        MORNING, // 朝（ユーザ操作待ち）
-        DAYTIME, // 昼（クエスト進行、その他行動）
-        NIGHT // 夜（ワールド更新、結果表示）
+        MORNING, // 朝（キャラクター行動決定）
+        MIDDAY, // 昼（ユーザ操作待ち）
+        AFTERNOON, // 午後（キャラクター行動）
+        NIGHT, // 夜（結果表示）
+        MIDNIGHT // 深夜（ワールド更新）
     }
 }

@@ -7,7 +7,6 @@ import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -80,7 +79,7 @@ public abstract class Person {
         isActioned = false;
     }
 
-    private static Person of(
+    static Person of(
             String firstName,
             String familyName,
             int battle,
@@ -110,26 +109,6 @@ public abstract class Person {
                     Resource.of(energy),
                     Money.of(money),
                     Reputation.of(reputation));
-        }
-
-    }
-
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public enum UniquePerson {
-        TELLAN("テラン", "ウォレス", 28, 41, 62, 1, 2000, 10, true); // Tellan Wallace
-
-        private String firstName;
-        private String familyName;
-        private int battle;
-        private int knowledge;
-        private int support;
-        private int energy;
-        private int money;
-        private int reputation;
-        private boolean isAdventurer;
-
-        public Person getInstance() {
-            return of(firstName, familyName, battle, knowledge, support, energy, money, reputation, isAdventurer);
         }
     }
 }

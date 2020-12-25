@@ -24,20 +24,20 @@ CREATE TABLE guild
 
 CREATE TABLE person
 (
-    id           bigserial PRIMARY KEY,
-    world_id     bigint  NOT NULL REFERENCES world (id) ON DELETE CASCADE,
-    first_name   text    NOT NULL,
-    family_name  text    NOT NULL,
+    id          bigserial PRIMARY KEY,
+    world_id    bigint  NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    first_name  text    NOT NULL,
+    family_name text    NOT NULL,
     -- 所持金・名声
-    money        int     NOT NULL,
-    reputation   int     NOT NULL,
+    money       int     NOT NULL,
+    reputation  int     NOT NULL,
     -- 能力値
-    battle       int     NOT NULL,
-    knowledge    int     NOT NULL,
-    support      int     NOT NULL,
+    battle      int     NOT NULL,
+    knowledge   int     NOT NULL,
+    support     int     NOT NULL,
     -- 体力
-    max_energy   int     NOT NULL,
-    energy       int     NOT NULL,
+    max_energy  int     NOT NULL,
+    energy      int     NOT NULL,
     -- その他
     is_actioned boolean NOT NULL default false
 );
@@ -50,10 +50,12 @@ CREATE TABLE applicant
 CREATE TABLE quest
 (
     id             bigserial PRIMARY KEY,
-    world_id       bigint      NOT NULL REFERENCES world (id) ON DELETE CASCADE,
-    type           varchar(10) NOT NULL,
-    difficulty     int         NOT NULL,
-    processed_date int         NOT NULL
+    world_id       bigint       NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    name           varchar(100) NOT NULL,
+    type           varchar(10)  NOT NULL,
+    place          varchar(40)  NOT NULL,
+    difficulty     int          NOT NULL,
+    processed_date int          NOT NULL
 );
 
 CREATE TABLE quest_order
@@ -64,14 +66,19 @@ CREATE TABLE quest_order
     state     varchar(20) NOT NULL
 );
 
+CREATE TABLE opened_place
+(
+    world_id bigint      NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    place    varchar(40) NOT NULL,
+    PRIMARY KEY (world_id, place)
+);
+
 CREATE TABLE scenario_progress
 (
     world_id    bigint NOT NULL REFERENCES world (id) ON DELETE CASCADE,
-    scenario_id bigint NOT NULL
+    scenario_id bigint NOT NULL,
+    PRIMARY KEY (world_id, scenario_id)
 );
-
-ALTER TABLE scenario_progress
-    ADD PRIMARY KEY (world_id, scenario_id);
 
 CREATE TABLE game_log
 (

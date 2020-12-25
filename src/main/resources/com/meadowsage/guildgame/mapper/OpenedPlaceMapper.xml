@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meadowsage.guildgame.mapper.OpenedPlaceMapper">
+    <insert id="insert">
+        INSERT INTO opened_place (world_id, place)
+        VALUES (#{worldId}, #{place.name})
+    </insert>
+
+    <select id="select" resultType="com.meadowsage.guildgame.model.Place">
+        SELECT place
+        FROM opened_place
+        WHERE world_id = #{worldId}
+    </select>
+</mapper>

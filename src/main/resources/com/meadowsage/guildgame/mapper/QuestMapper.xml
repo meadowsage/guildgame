@@ -23,8 +23,8 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="quest.id">
-        INSERT INTO quest (world_id, type, difficulty, processed_date)
-        VALUES (#{worldId}, #{quest.type}, #{quest.difficulty}, #{quest.processedDate})
+        INSERT INTO quest (world_id, type, name, place, difficulty, processed_date)
+        VALUES (#{worldId}, #{quest.type}, #{quest.name}, #{quest.place}, #{quest.difficulty}, #{quest.processedDate})
     </insert>
 
     <update id="update">

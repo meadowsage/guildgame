@@ -8,7 +8,7 @@ public class PersonNameTest {
     void test() {
         int n = 100;
         for (int i = 0; i < n; i++) {
-            System.out.println(PersonName.generateRandom().getFullName());
+            System.out.println(new PersonNameGenerator().generate());
         }
     }
 }

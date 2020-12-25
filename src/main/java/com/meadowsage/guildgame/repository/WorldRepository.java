@@ -22,23 +22,26 @@ public class WorldRepository {
     private final ApplicantMapper applicantMapper;
     private final QuestMapper questMapper;
     private final QuestOrderMapper questOrderMapper;
+    private final OpenedPlaceMapper openedPlaceMapper;
 
     public World get(String saveDataId) {
         World world = worldMapper.select(saveDataId);
         world.setGuild(guildMapper.select(world.getId()));
-        world.addAdventurers(personMapper.selectAdventurers(world.getId())
+        world.getAdventurers().addAll(personMapper.selectAdventurers(world.getId())
                 .stream().map(adventurer -> (Person) adventurer).collect(Collectors.toList()));
-        world.addApplicants(personMapper.selectApplicants(world.getId())
+        world.getApplicants().addAll(personMapper.selectApplicants(world.getId())
                 .stream().map(applicant -> (Person) applicant).collect(Collectors.toList()));
-        world.addQuests(questMapper.select(world.getId(), QuestOrder.State.ONGOING));
+        world.getQuests().addAll(questMapper.select(world.getId(), QuestOrder.State.ONGOING));
+        world.getPlaces().addAll(openedPlaceMapper.select(world.getId()));
         return world;
     }
 
-    public void create(World world, String saveDataId) {
+    public void saveNew(World world, String saveDataId) {
         worldMapper.save(world, saveDataId);
         guildMapper.save(world.getGuild(), world.getId());
         world.getAllPersons().forEach(person -> personMapper.insert(person, world.getId()));
         world.getQuests().forEach(quest -> questMapper.insert(quest, world.getId()));
+        world.getPlaces().forEach(place -> openedPlaceMapper.insert(place, world.getId()));
     }
 
     public void save(World world) {

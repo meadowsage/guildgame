@@ -1,15 +1,13 @@
 package com.meadowsage.guildgame.model.quest;
 
+import com.meadowsage.guildgame.model.Place;
 import com.meadowsage.guildgame.model.person.Person;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Quest {
@@ -17,31 +15,29 @@ public class Quest {
     private long id = -1;
     @Getter
     private QuestType type;
+    @Getter
     private String name = "";
     @Getter
     private int difficulty;
     @Getter
-    private List<QuestOrder> questOrders = new ArrayList<>();
+    private Place place;
     @Getter
     private int processedDate;
+    @Getter
+    private List<QuestOrder> questOrders = new ArrayList<>();
 
-    private Quest(QuestType type, String name, int difficulty) {
+    Quest(QuestType type, String name, int difficulty, Place place) {
         this.name = name;
         this.type = type;
         this.difficulty = difficulty;
-    }
-
-    public String getName() {
-        if (name.isEmpty()) {
-            return type.name() + " QUEST " + id;
-        } else return name;
+        this.place = place;
     }
 
     /**
-     * 他の冒険者によって予約済
+     * まだ誰にも受注されていない
      */
-    public boolean isReserved() {
-        return questOrders.size() > 0;
+    public boolean isNotOrdered() {
+        return questOrders.size() == 0;
     }
 
     /**
@@ -74,30 +70,5 @@ public class Quest {
 
     public void fail() {
         questOrders.forEach(QuestOrder::fail);
-    }
-
-    public void cancel() {
-        questOrders.clear();
-    }
-
-    public static List<Quest> generateRandom(int number, int baseDifficulty) {
-        return IntStream.range(0, number).mapToObj(value -> {
-            QuestType type = QuestType.values()[(int) (Math.random() * QuestType.values().length)];
-            int difficulty = (int) (baseDifficulty * 0.5 + Math.random() * baseDifficulty);
-            return new Quest(type, "", difficulty);
-        }).collect(Collectors.toList());
-    }
-
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public enum UniqueQuest {
-        FIRST(QuestType.TASK, "街の見回り", 10);
-
-        QuestType type;
-        String name;
-        int difficulty;
-
-        public Quest getInstance() {
-            return new Quest(type, name, difficulty);
-        }
     }
 }
