@@ -22,13 +22,13 @@ public class Main0030 extends ScenarioBase {
     @Override
     public List<ScenarioContent> getContents() {
         Speaker me = new Speaker("", "");
-        Speaker hasa = new Speaker("『秘書』ハサ", "face_1.png");
+        Speaker elif = new Speaker("『秘書』エリフ", "face_1.png");
         Speaker teran = new Speaker("『町の世話役』テラン", "face_2.png");
 
         return Arrays.asList(
                 teran.speak("ここは作成中だ")
                 , me.speak("なんだ、そうなのか")
-                , hasa.speak("文章考えるのって、時間がかかりますね")
+                , elif.speak("文章考えるのって、時間がかかりますね")
         );
     }
 }

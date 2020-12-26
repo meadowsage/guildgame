@@ -11,7 +11,7 @@ import java.util.Arrays;
 @Getter
 @AllArgsConstructor
 public enum Place {
-    CITY("町中",
+    CITY("町",
             new int[]{80, 0, 20, 0},
             new String[]{"警備", "運搬手伝い", "工事手伝い"},
             new String[]{""},
