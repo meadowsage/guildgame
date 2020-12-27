@@ -20,6 +20,8 @@ public class Quest {
     @Getter
     private int difficulty;
     @Getter
+    private int danger = 1;
+    @Getter
     private Place place;
     @Getter
     private int processedDate;
@@ -31,6 +33,10 @@ public class Quest {
         this.type = type;
         this.difficulty = difficulty;
         this.place = place;
+    }
+
+    public long calcRewards() {
+        return (long) (Math.pow(difficulty, 2) * 3 + Math.pow(danger, 3) * 300);
     }
 
     /**

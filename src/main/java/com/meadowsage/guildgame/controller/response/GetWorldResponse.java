@@ -20,7 +20,6 @@ public class GetWorldResponse {
     List<ResponseGameLog> gameLogs;
     List<ResponseAdventurer> adventurers;
     List<ResponseApplicant> applicants;
-    List<ResponseQuest> quests;
     List<ResponseScenario> scenarios;
 
     public GetWorldResponse(World world, List<GameLog> gameLogs, List<Scenario> scenarios) {
@@ -61,21 +60,6 @@ public class GetWorldResponse {
                         .remarks(Reviewer.of().review(person))
                         .build()
                 ).collect(Collectors.toList());
-
-        this.quests = world.getQuests().stream().map(quest -> ResponseQuest.builder()
-                .id(quest.getId())
-                .name(quest.getName())
-                .difficulty(quest.getDifficulty())
-                .type(quest.getType().name())
-                .questOrders(
-                        quest.getQuestOrders().stream().map(questOrder -> {
-                            ResponseAdventurer reservedBy = this.adventurers.stream()
-                                    .filter(adventurer -> adventurer.id == questOrder.getPersonId())
-                                    .findAny().orElse(null);
-                            return new ResponseQuestOrder(questOrder.getId(), reservedBy);
-                        }).collect(Collectors.toList())
-                ).build()
-        ).collect(Collectors.toList());
 
         this.scenarios = scenarios.stream().map(scenario -> ResponseScenario.builder()
                 .id(scenario.getId())
@@ -133,23 +117,6 @@ public class GetWorldResponse {
         String name;
         String fullName;
         List<String> remarks;
-    }
-
-    @Builder
-    @Getter
-    static class ResponseQuest {
-        long id;
-        String type;
-        String name;
-        int difficulty;
-        List<ResponseQuestOrder> questOrders;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    static class ResponseQuestOrder {
-        long id;
-        ResponseAdventurer reservedBy;
     }
 
     @Builder

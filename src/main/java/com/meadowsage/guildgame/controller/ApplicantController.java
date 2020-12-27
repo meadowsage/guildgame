@@ -17,7 +17,6 @@ public class ApplicantController {
     private final UpdateApplicantUseCase updateApplicantUseCase;
 
     @PostMapping("/{applicantId}")
-    @ResponseBody
     @Transactional
     public void updateApplicant(
             @RequestBody UpdateApplicantRequest request,

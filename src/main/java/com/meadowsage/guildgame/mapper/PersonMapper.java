@@ -11,7 +11,7 @@ import java.util.List;
 public interface PersonMapper {
     void insert(Person person, long worldId);
 
-    List<Adventurer> selectAdventurers(long worldId);
+    List<Adventurer> selectAdventurers(Long worldId, List<Long> ids, boolean notOrdering);
 
     List<Applicant> selectApplicants(long worldId);
 

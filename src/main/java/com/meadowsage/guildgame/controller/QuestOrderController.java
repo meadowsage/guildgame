@@ -1,8 +1,8 @@
 package com.meadowsage.guildgame.controller;
 
 import com.meadowsage.guildgame.controller.request.AddQuestOrderRequest;
-import com.meadowsage.guildgame.usecase.AddQuestOrderUseCase;
-import com.meadowsage.guildgame.usecase.CancelQuestOrderUseCase;
+import com.meadowsage.guildgame.usecase.quest.AddQuestOrderUseCase;
+import com.meadowsage.guildgame.usecase.quest.CancelQuestOrderUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +26,7 @@ public class QuestOrderController {
             @PathVariable long worldId
     ) {
         // TODO 入力チェック セーブデータとクエスト、冒険者の突き合わせ
+        // TODO 重複チェック
         System.out.println(saveDataId + worldId);
         addQuestOrderUseCase.run(request.getQuestId(), request.getPersonId());
     }

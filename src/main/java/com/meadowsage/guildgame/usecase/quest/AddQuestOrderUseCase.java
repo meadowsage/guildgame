@@ -1,4 +1,4 @@
-package com.meadowsage.guildgame.usecase;
+package com.meadowsage.guildgame.usecase.quest;
 
 import com.meadowsage.guildgame.mapper.QuestOrderMapper;
 import com.meadowsage.guildgame.model.quest.QuestOrder;

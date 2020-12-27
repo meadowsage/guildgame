@@ -2,7 +2,6 @@ package com.meadowsage.guildgame.repository;
 
 import com.meadowsage.guildgame.mapper.*;
 import com.meadowsage.guildgame.model.World;
-import com.meadowsage.guildgame.model.person.Applicant;
 import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestOrder;
@@ -18,7 +17,7 @@ public class WorldRepository {
 
     private final WorldMapper worldMapper;
     private final GuildMapper guildMapper;
-    private final PersonMapper personMapper;
+    private final PersonRepository personRepository;
     private final ApplicantMapper applicantMapper;
     private final QuestMapper questMapper;
     private final QuestOrderMapper questOrderMapper;
@@ -27,11 +26,11 @@ public class WorldRepository {
     public World get(String saveDataId) {
         World world = worldMapper.select(saveDataId);
         world.setGuild(guildMapper.select(world.getId()));
-        world.getAdventurers().addAll(personMapper.selectAdventurers(world.getId())
+        world.getAdventurers().addAll(personRepository.getAdventurers(world.getId())
                 .stream().map(adventurer -> (Person) adventurer).collect(Collectors.toList()));
-        world.getApplicants().addAll(personMapper.selectApplicants(world.getId())
+        world.getApplicants().addAll(personRepository.getApplicants(world.getId())
                 .stream().map(applicant -> (Person) applicant).collect(Collectors.toList()));
-        world.getQuests().addAll(questMapper.select(world.getId(), QuestOrder.State.ONGOING));
+        world.getQuests().addAll(questMapper.selectAll(world.getId(), QuestOrder.State.ONGOING));
         world.getPlaces().addAll(openedPlaceMapper.select(world.getId()));
         return world;
     }
@@ -39,7 +38,7 @@ public class WorldRepository {
     public void saveNew(World world, String saveDataId) {
         worldMapper.save(world, saveDataId);
         guildMapper.save(world.getGuild(), world.getId());
-        world.getAllPersons().forEach(person -> personMapper.insert(person, world.getId()));
+        world.getAllPersons().forEach(person -> personRepository.save(person, world.getId()));
         world.getQuests().forEach(quest -> questMapper.insert(quest, world.getId()));
         world.getPlaces().forEach(place -> openedPlaceMapper.insert(place, world.getId()));
     }
@@ -54,13 +53,7 @@ public class WorldRepository {
             if (quest.isNew()) questMapper.insert(quest, world.getId());
             else questMapper.update(quest);
         });
-        world.getAllPersons().forEach(person -> {
-            if (person.isNew()) {
-                personMapper.insert(person, world.getId());
-                if(person instanceof Applicant) applicantMapper.insert(person);
-            }
-            else personMapper.update(person);
-        });
+        world.getAllPersons().forEach(person -> personRepository.save(person, world.getId()));
 
         // クエスト発注レコードの作成・更新
         world.getQuests().stream()

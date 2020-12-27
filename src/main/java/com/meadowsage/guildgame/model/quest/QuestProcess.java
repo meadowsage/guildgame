@@ -26,8 +26,7 @@ public class QuestProcess {
     }
 
     public void run(Dice dice, GameLogger gameLogger) {
-        gameLogger.add(party.get(0).getName().getFirstName() + "たちが" +
-                quest.getName() + "（難易度" + quest.getDifficulty() + "）に挑戦", party.get(0), quest);
+        gameLogger.add("-----" + quest.getName());
 
         // パーティ全員が成否判定を行い、成功度を合算
         int successPoint = party.stream().mapToInt(person -> roll(person, dice, gameLogger)).sum();
@@ -111,7 +110,7 @@ public class QuestProcess {
 
         // ギルドに報酬を付与
 
-        gameLogger.add(party.get(0).getName().getFirstName() + "たちが" + quest.getName() + "クエストをクリアした！", party.get(0), quest);
+        gameLogger.add(party.get(0).getName().getFirstName() + "たちが" + quest.getName() + "を完了した！", party.get(0), quest);
         gameLogger.add(party.get(0).getName().getFirstName() + "たちは" +
                 (quest.getDifficulty() * 10 / party.size()) + "Gと名声" +
                 (quest.getDifficulty() / 10 / party.size() + 1) + "を獲得", party.get(0), quest);

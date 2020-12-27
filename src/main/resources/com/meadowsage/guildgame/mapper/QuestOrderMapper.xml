@@ -7,6 +7,12 @@
         VALUES (#{questId}, #{personId}, #{state})
     </insert>
 
+    <select id="selectAll" resultType="com.meadowsage.guildgame.model.quest.QuestOrder">
+        SELECT *
+        FROM quest_order
+        WHERE quest_id = #{questId}
+    </select>
+
     <update id="update">
         UPDATE quest_order qo
         SET state = #{state}

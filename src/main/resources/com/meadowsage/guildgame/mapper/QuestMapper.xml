@@ -9,7 +9,7 @@
         </collection>
     </resultMap>
 
-    <select id="select" resultMap="questMap">
+    <select id="selectAll" resultMap="questMap">
         SELECT q.*,
                qo.id        as qo_id,
                qo.quest_id  as qo_quest_id,
@@ -20,6 +20,12 @@
         WHERE q.world_id = #{worldId}
           AND (qo.state = #{state} OR qo.state IS NULL)
         ORDER BY q.id
+    </select>
+
+    <select id="select" resultType="com.meadowsage.guildgame.model.quest.Quest">
+        SELECT *
+        FROM quest
+        WHERE id = #{questId}
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="quest.id">
