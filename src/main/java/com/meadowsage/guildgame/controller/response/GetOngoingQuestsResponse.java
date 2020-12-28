@@ -2,6 +2,7 @@ package com.meadowsage.guildgame.controller.response;
 
 import com.meadowsage.guildgame.model.person.Adventurer;
 import com.meadowsage.guildgame.model.quest.Quest;
+import com.meadowsage.guildgame.model.quest.QuestOrder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,31 +20,21 @@ public class GetOngoingQuestsResponse {
             List<Adventurer> adventurers
     ) {
         this.quests = quests.stream().map(quest -> {
-            List<ResponseQuestOrder> questOrders = quest.getQuestOrders().stream()
-                    .map(questOrder -> {
-                        Adventurer target = adventurers.stream()
-                                .filter(adventurer -> adventurer.getId() == questOrder.getPersonId())
-                                .findAny().orElse(null);
-                        ResponseReservedBy reservedBy = (target != null) ?
-                                new ResponseReservedBy(
-                                        target.getId(),
-                                        target.getName().getFirstName(),
-                                        target.calcRewards(quest)
-                                ) : null;
-                        return new ResponseQuestOrder(questOrder.getId(), reservedBy);
-                    }).collect(Collectors.toList());
+            List<ResponseQuestOrder> responseQuestOrders = quest.getQuestOrders().stream()
+                    .map(questOrder -> new ResponseQuestOrder(quest, questOrder, adventurers))
+                    .collect(Collectors.toList());
 
-            return ResponseQuest.builder()
+           return ResponseQuest.builder()
                     .id(quest.getId())
                     .type(quest.getType().name())
                     .name(quest.getName())
                     .difficulty(quest.getDifficulty())
-                    .reward(quest.calcRewards())
-                    .questOrders(questOrders)
+                    .rewards(quest.getRewards())
+                    .questOrders(responseQuestOrders)
+                    .income(quest.calcIncome(adventurers))
                     .build();
         }).collect(Collectors.toList());
     }
-
 
     @Builder
     @Getter
@@ -52,15 +43,28 @@ public class GetOngoingQuestsResponse {
         String type;
         String name;
         int difficulty;
-        long reward;
+        long rewards;
+        long income;
         List<ResponseQuestOrder> questOrders;
     }
 
-    @AllArgsConstructor
     @Getter
     static class ResponseQuestOrder {
         long id;
         ResponseReservedBy reservedBy;
+
+        public ResponseQuestOrder(Quest quest, QuestOrder questOrder, List<Adventurer> adventurers) {
+            this.id = questOrder.getId();
+
+            Adventurer target = adventurers.stream()
+                    .filter(adventurer -> adventurer.getId() == questOrder.getPersonId())
+                    .findAny().orElse(null);
+            this.reservedBy = (target != null) ? new ResponseReservedBy(
+                    target.getId(),
+                    target.getName().getFirstName(),
+                    target.calcRewards(quest)
+            ) : null;
+        }
     }
 
     @AllArgsConstructor

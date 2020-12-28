@@ -1,5 +1,6 @@
 package com.meadowsage.guildgame.model.quest;
 
+import com.meadowsage.guildgame.model.person.Adventurer;
 import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
@@ -16,10 +17,10 @@ public class QuestProcess {
     private static final int TARGET_MIN = 5;
 
     Quest quest;
-    List<Person> party;
+    List<Adventurer> party;
     int gameDate;
 
-    public QuestProcess(Quest quest, List<Person> party, int gameDate) {
+    public QuestProcess(Quest quest, List<Adventurer> party, int gameDate) {
         this.quest = quest;
         this.party = party;
         this.gameDate = gameDate;
@@ -52,13 +53,10 @@ public class QuestProcess {
         party.forEach(Person::setAsActioned);
     }
 
-    private int roll(Person person, Dice dice, GameLogger gameLogger) {
-        // 発揮値：能力値とクエスト種別の係数から算出
-        int performance = (int) (person.getBattle().getValue() * quest.getType().getBattleCoefficient() +
-                person.getKnowledge().getValue() * quest.getType().getKnowledgeCoefficient() +
-                person.getSupport().getValue() * quest.getType().getSupportCoefficient()) / 3;
-
-        System.out.println("- " + person.getName().getFirstName() + ": 発揮値" + performance);
+    private int roll(Adventurer adventurer, Dice dice, GameLogger gameLogger) {
+        // 発揮値を算出
+        int performance = adventurer.getPerformance(quest.getType());
+        System.out.println("- " + adventurer.getName().getFirstName() + ": 発揮値" + performance);
 
         // 目標値：発揮値との差分で補正
         // 目標値に達していない場合はマイナス補正
@@ -69,7 +67,7 @@ public class QuestProcess {
         else if (target < TARGET_MIN) target = TARGET_MIN;
 
         Dice.DiceRollResult result = dice.calcResult(target);
-        gameLogger.add("- " + person.getName().getFirstName() + ": [1D100 <= " + target + "] → " +
+        gameLogger.add("- " + adventurer.getName().getFirstName() + ": [1D100 <= " + target + "] → " +
                 result.getNumber() + " " + result.getType().name(), quest);
 
         // ダイスロールの結果に応じて成功度を決定
@@ -82,10 +80,10 @@ public class QuestProcess {
             case SUCCESS:
                 return 1;
             case FAILURE:
-                person.getEnergy().consume(1);
+                adventurer.getEnergy().consume(1);
                 return 0;
             case FUMBLE:
-                person.getEnergy().consume(2);
+                adventurer.getEnergy().consume(2);
                 return -1;
             default:
                 return 0;

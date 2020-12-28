@@ -1,6 +1,7 @@
 package com.meadowsage.guildgame.model.quest;
 
 import com.meadowsage.guildgame.model.Place;
+import com.meadowsage.guildgame.model.person.Adventurer;
 import com.meadowsage.guildgame.model.person.Person;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Quest {
@@ -28,19 +30,31 @@ public class Quest {
     @Getter
     private List<QuestOrder> questOrders = new ArrayList<>();
 
-    Quest(QuestType type, String name, int difficulty, Place place) {
+    Quest(QuestType type, String name, int difficulty, int danger, Place place) {
         this.name = name;
         this.type = type;
         this.difficulty = difficulty;
+        this.danger = danger;
         this.place = place;
     }
 
-    public long calcRewards() {
-        return (long) (Math.pow(difficulty, 2) * 3 + Math.pow(danger, 3) * 300);
+    public long getRewards() {
+        return (long) (Math.pow(difficulty, 2) * 3 + Math.pow(danger, 2) * 300);
     }
 
     /**
-     * まだ誰にも受注されていない
+     * 現在の収入見込みを算出する
+     *
+     * @param adventurers 冒険者リスト（パーティメンバを含む）
+     * @return 報酬 - 冒険者コスト合計
+     */
+    public long calcIncome(List<Adventurer> adventurers) {
+        return getRewards() - extractPartyMembers(adventurers).stream()
+                .mapToLong(partyMember -> partyMember.calcRewards(this)).sum();
+    }
+
+    /**
+     * 未受注かどうか
      */
     public boolean isNotOrdered() {
         return questOrders.size() == 0;
@@ -48,8 +62,6 @@ public class Quest {
 
     /**
      * 新規作成されたインスタンスかどうか
-     *
-     * @return ID未付与ならtrue
      */
     public boolean isNew() {
         return id == -1;
@@ -65,7 +77,7 @@ public class Quest {
         return processedDate >= currentGameDate || questOrders.stream().noneMatch(QuestOrder::isActive);
     }
 
-    public void reserve(Person person) {
+    public void order(Person person) {
         questOrders.add(new QuestOrder(id, person.getId()));
     }
 
@@ -76,5 +88,21 @@ public class Quest {
 
     public void fail() {
         questOrders.forEach(QuestOrder::fail);
+    }
+
+    /**
+     * 冒険者リストからパーティメンバを抽出する
+     *
+     * @param adventurers 冒険者リスト（パーティメンバを含む）
+     * @return このクエストを受注している冒険者のリスト
+     */
+    private List<Adventurer> extractPartyMembers(List<Adventurer> adventurers) {
+        if (isNotOrdered()) return new ArrayList<>();
+
+        List<Long> memberIds = this.questOrders.stream().map(QuestOrder::getPersonId).collect(Collectors.toList());
+
+        return adventurers.stream().filter(adventurer ->
+                memberIds.contains(adventurer.getId())
+        ).collect(Collectors.toList());
     }
 }

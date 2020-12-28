@@ -67,7 +67,7 @@ public abstract class Person {
             energy.recoverToMax();
         } else {
             world.getAvailableQuests().stream().findFirst()
-                    .ifPresent(quest -> quest.reserve(this));
+                    .ifPresent(quest -> quest.order(this));
         }
     }
 

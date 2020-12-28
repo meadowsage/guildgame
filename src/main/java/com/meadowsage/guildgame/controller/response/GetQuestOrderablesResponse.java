@@ -1,12 +1,13 @@
 package com.meadowsage.guildgame.controller.response;
 
 import com.meadowsage.guildgame.model.person.Adventurer;
+import com.meadowsage.guildgame.model.quest.EstimatesForQuest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GetAdventurerRewardsResponse {
+public class GetQuestOrderablesResponse {
     long id;
     String name;
     long money;
@@ -17,8 +18,14 @@ public class GetAdventurerRewardsResponse {
     int energy;
     int maxEnergy;
     long rewards;
+    boolean isAlright;
+    boolean isTired;
+    boolean isSmallLackOfSkills;
+    boolean isLackOfSkills;
+    boolean isNotInterestedIn;
+    boolean isCostOverrun;
 
-    public GetAdventurerRewardsResponse(Adventurer adventurer, long rewards) {
+    public GetQuestOrderablesResponse(Adventurer adventurer, EstimatesForQuest estimatesForQuest, long rewards) {
         this.id = adventurer.getId();
         this.name = adventurer.getName().getFirstName();
         this.money = adventurer.getMoney().getValue();
@@ -29,5 +36,11 @@ public class GetAdventurerRewardsResponse {
         this.energy = adventurer.getEnergy().getValue();
         this.maxEnergy = adventurer.getEnergy().getMax();
         this.rewards = rewards;
+        this.isAlright = estimatesForQuest.isAlright();
+        this.isTired = estimatesForQuest.isTired();
+        this.isSmallLackOfSkills = estimatesForQuest.isSmallLackOfSkills();
+        this.isLackOfSkills = estimatesForQuest.isLackOfSkills();
+        this.isNotInterestedIn = estimatesForQuest.isNotInterestedIn();
+        this.isCostOverrun = estimatesForQuest.isCostOverrun();
     }
 }

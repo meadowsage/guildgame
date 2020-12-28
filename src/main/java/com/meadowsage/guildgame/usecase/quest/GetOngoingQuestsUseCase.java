@@ -19,6 +19,12 @@ public class GetOngoingQuestsUseCase {
     private final QuestRepository questRepository;
     private final PersonRepository personRepository;
 
+    /**
+     * 進行中のクエストと、受注している冒険者のリストを返します。
+     *
+     * @param worldId ワールドID
+     * @return GetQuestsUseCaseResult
+     */
     public GetQuestsUseCaseResult run(long worldId) {
         List<Quest> ongoingQuests = questRepository.getOngoingQuests(worldId);
         List<Adventurer> adventurers = personRepository.getAdventurers(
@@ -26,6 +32,7 @@ public class GetOngoingQuestsUseCase {
                 ongoingQuests.stream().map(Quest::getQuestOrders)
                         .flatMap(Collection::stream)
                         .map(QuestOrder::getPersonId)
+                        .distinct()
                         .collect(Collectors.toList())
         );
         return new GetQuestsUseCaseResult(ongoingQuests, adventurers);

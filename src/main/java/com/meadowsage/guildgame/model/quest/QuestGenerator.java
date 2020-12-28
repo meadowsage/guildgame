@@ -32,7 +32,8 @@ public class QuestGenerator {
             QuestType type = place.decideQuestType(dice);
             String name = place.decideQuestName(type, dice);
             int difficulty = decideDifficulty(type, place);
-            return new Quest(type, name, difficulty, place);
+            int danger = decideDanger(type);
+            return new Quest(type, name, difficulty, danger, place);
         }).collect(Collectors.toList());
     }
 
@@ -49,5 +50,11 @@ public class QuestGenerator {
         base *= type.getDifficultyCoefficient();
         System.out.println(place);
         return base;
+    }
+
+    private int decideDanger(QuestType type) {
+        // FIXME 場所のベース難易度、討伐対象に応じて値を変える
+        if (type.equals(QuestType.TASK) || type.equals(QuestType.HARVEST)) return 0;
+        else return 1;
     }
 }

@@ -6,14 +6,15 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum UniqueQuest {
-    FIRST(QuestType.TASK, "町の草むしり", 10, Place.CITY);
+    FIRST(QuestType.TASK, "町の草むしり", 10, 0, Place.CITY);
 
     QuestType type;
     String name;
     int difficulty;
+    int danger;
     Place place;
 
     public Quest getInstance() {
-        return new Quest(type, name, difficulty, place);
+        return new Quest(type, name, difficulty, danger, place);
     }
 }

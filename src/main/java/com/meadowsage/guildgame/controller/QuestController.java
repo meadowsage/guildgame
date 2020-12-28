@@ -1,6 +1,6 @@
 package com.meadowsage.guildgame.controller;
 
-import com.meadowsage.guildgame.controller.response.GetAdventurerRewardsResponse;
+import com.meadowsage.guildgame.controller.response.GetQuestOrderablesResponse;
 import com.meadowsage.guildgame.controller.response.GetOngoingQuestsResponse;
 import com.meadowsage.guildgame.usecase.quest.GetOngoingQuestsUseCase;
 import com.meadowsage.guildgame.usecase.quest.GetQuestOrderablesUseCase;
@@ -40,7 +40,7 @@ public class QuestController {
     @GetMapping("/{questId}/orderables")
     @ResponseBody
     @Transactional
-    public List<GetAdventurerRewardsResponse> estimateAdventurerRewards(
+    public List<GetQuestOrderablesResponse> getQuestOrderables(
             @PathVariable String saveDataId,
             @PathVariable long worldId,
             @PathVariable long questId
@@ -51,8 +51,11 @@ public class QuestController {
         GetQuestOrderablesUseCase.GetQuestOrderablesUseCaseResult result
                 = getQuestOrderablesUseCase.run(worldId, questId);
 
-        return result.getRewardsByPerson().entrySet().stream()
-                .map(entry -> new GetAdventurerRewardsResponse(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
+        return result.getQuestOrderables().stream()
+                .map(questOrderable -> new GetQuestOrderablesResponse(
+                        questOrderable.getAdventurer(),
+                        questOrderable.getEstimatesForQuest(),
+                        questOrderable.getRewards()
+                )).collect(Collectors.toList());
     }
 }

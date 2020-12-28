@@ -114,7 +114,7 @@ public class World {
         for (Person person : adventurers) {
             if (!person.isAdventurer() || person.isTired()) continue;
             // TODO 冒険者の名声や好みで重みづけを行い、一番高いものを選択
-            quests.stream().filter(Quest::isNotOrdered).findFirst().ifPresent(quest -> quest.reserve(person));
+            quests.stream().filter(Quest::isNotOrdered).findFirst().ifPresent(quest -> quest.order(person));
         }
 
         state = State.MIDDAY;
@@ -137,15 +137,16 @@ public class World {
         worldRepository.saveNew(world, saveData.getId());
 
         // クエスト受注を作成
-        world.getQuests().get(0).reserve(world.getAdventurers().get(0));
+        world.getQuests().get(0).order(world.getAdventurers().get(0));
 
         return world;
     }
 
-    public Optional<Person> findPerson(long personId) {
-        Optional<Person> result = adventurers.stream().filter(adventurer -> adventurer.getId() == personId).findAny();
-        if (result.isPresent()) return result;
-        else return applicants.stream().filter(applicant -> applicant.getId() == personId).findAny();
+    public Optional<Adventurer> findAdventurer(long personId) {
+        return adventurers.stream()
+                .filter(adventurers -> adventurers instanceof Adventurer)
+                .map(adventurer -> (Adventurer) adventurer)
+                .filter(adventurer -> adventurer.getId() == personId).findAny();
     }
 
     public Optional<Quest> getNextQuest(int gameDate) {
@@ -158,8 +159,8 @@ public class World {
         // 未完了のクエストを１個ずつ実行
         Optional<Quest> nextQuest = getNextQuest(gameDate);
         if (nextQuest.isPresent()) {
-            List<Person> party = nextQuest.get().getQuestOrders().stream()
-                    .map(questOrder -> findPerson(questOrder.getPersonId()).orElse(null))
+            List<Adventurer> party = nextQuest.get().getQuestOrders().stream()
+                    .map(questOrder -> findAdventurer(questOrder.getPersonId()).orElse(null))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
             QuestProcess questProcess = new QuestProcess(nextQuest.get(), party, gameDate);
