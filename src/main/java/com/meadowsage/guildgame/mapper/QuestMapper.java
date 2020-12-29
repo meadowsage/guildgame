@@ -10,9 +10,7 @@ import java.util.List;
 public interface QuestMapper {
     void insert(Quest quest, long worldId);
 
-    List<Quest> selectAll(long worldId, QuestOrder.State state);
-
-    Quest select(long questId);
+    List<Quest> select(Long worldId, Long questId, QuestOrder.State state);
 
     void update(Quest quest);
 }

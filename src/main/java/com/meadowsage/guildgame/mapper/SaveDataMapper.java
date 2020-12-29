@@ -6,5 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SaveDataMapper {
     void save(SaveData saveData);
-    void select(String id);
+    SaveData select(String id);
+    void delete(String saveDataId);
 }

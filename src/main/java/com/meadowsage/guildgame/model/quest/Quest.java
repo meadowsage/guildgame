@@ -2,7 +2,7 @@ package com.meadowsage.guildgame.model.quest;
 
 import com.meadowsage.guildgame.model.Place;
 import com.meadowsage.guildgame.model.person.Adventurer;
-import com.meadowsage.guildgame.model.person.Person;
+import com.meadowsage.guildgame.model.value.Money;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +22,8 @@ public class Quest {
     @Getter
     private int difficulty;
     @Getter
+    private Money rewards;
+    @Getter
     private int danger = 1;
     @Getter
     private Place place;
@@ -36,10 +38,11 @@ public class Quest {
         this.difficulty = difficulty;
         this.danger = danger;
         this.place = place;
+        this.rewards = calcRewards();
     }
 
-    public long getRewards() {
-        return (long) (Math.pow(difficulty, 2) * 3 + Math.pow(danger, 2) * 300);
+    private Money calcRewards() {
+        return Money.of((int) (Math.pow(difficulty, 2) * 3 + Math.pow(danger, 2) * 300 + 200));
     }
 
     /**
@@ -48,9 +51,10 @@ public class Quest {
      * @param adventurers 冒険者リスト（パーティメンバを含む）
      * @return 報酬 - 冒険者コスト合計
      */
-    public long calcIncome(List<Adventurer> adventurers) {
-        return getRewards() - extractPartyMembers(adventurers).stream()
-                .mapToLong(partyMember -> partyMember.calcRewards(this)).sum();
+    public int calcIncome(List<Adventurer> adventurers) {
+        int totalCosts = extractPartyMembers(adventurers).stream()
+                .mapToInt(partyMember -> partyMember.calcRewards(this).getValue()).sum();
+        return getRewards().getValue() - totalCosts;
     }
 
     /**
@@ -77,8 +81,8 @@ public class Quest {
         return processedDate >= currentGameDate || questOrders.stream().noneMatch(QuestOrder::isActive);
     }
 
-    public void order(Person person) {
-        questOrders.add(new QuestOrder(id, person.getId()));
+    public void order(Adventurer adventurer) {
+        questOrders.add(new QuestOrder(this, adventurer));
     }
 
     public void complete(int gameDate) {

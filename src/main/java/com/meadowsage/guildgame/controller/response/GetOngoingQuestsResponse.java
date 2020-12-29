@@ -29,7 +29,7 @@ public class GetOngoingQuestsResponse {
                     .type(quest.getType().name())
                     .name(quest.getName())
                     .difficulty(quest.getDifficulty())
-                    .rewards(quest.getRewards())
+                    .rewards(quest.getRewards().getValue())
                     .questOrders(responseQuestOrders)
                     .income(quest.calcIncome(adventurers))
                     .build();
@@ -62,7 +62,7 @@ public class GetOngoingQuestsResponse {
             this.reservedBy = (target != null) ? new ResponseReservedBy(
                     target.getId(),
                     target.getName().getFirstName(),
-                    target.calcRewards(quest)
+                    target.calcRewards(quest).getValue()
             ) : null;
         }
     }

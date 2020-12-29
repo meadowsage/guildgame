@@ -1,7 +1,9 @@
 package com.meadowsage.guildgame.model.person;
 
+import com.meadowsage.guildgame.model.World;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestType;
+import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
@@ -28,15 +30,36 @@ public class Adventurer extends Person {
         return true;
     }
 
+    @Override
+    public void doDaytimeActivity(World world, GameLogger gameLogger) {
+        if (isTired()) {
+            // 疲労状態の場合、休息を取る
+            gameLogger.add(getName().getFirstName() + "は休息をとった。", this);
+            getEnergy().recoverToMax();
+        } else {
+            world.getAvailableQuests().stream().findFirst().ifPresent(quest -> quest.order(this));
+        }
+    }
+
+    public void doMorningActivity(World world) {
+        // クエストを受注する
+        // TODO クエスト中じゃなければ
+        // TODO 冒険者の名声や好みで重みづけを行い、一番高いものを選択
+        world.getAvailableQuests().stream()
+                .filter(Quest::isNotOrdered)
+                .findFirst().ifPresent(quest -> quest.order(this));
+    }
+
+
     /**
      * 報酬額の計算
      *
      * @param quest 対象クエスト
      * @return 金額
      */
-    public long calcRewards(Quest quest) {
+    public Money calcRewards(Quest quest) {
         double base = 100 + getReputation().getValue() * 2;
-        return Math.round(base * (quest.getDifficulty() * 0.1) + (quest.getDanger() * 100));
+        return Money.of((int)Math.round(base * (quest.getDifficulty() * 0.1) + (quest.getDanger() * 100)));
     }
 
     /**

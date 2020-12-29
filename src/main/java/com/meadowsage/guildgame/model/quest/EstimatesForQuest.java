@@ -7,18 +7,19 @@ import java.util.List;
 public class EstimatesForQuest {
     private final Quest quest;
     private final Adventurer adventurer;
-    private final long currentCost;
+    private final int nextCost;
     private final int diffOfPerformanceAndDifficulty;
 
     public EstimatesForQuest(Quest quest, Adventurer adventurer, List<Adventurer> party) {
         this.quest = quest;
         this.adventurer = adventurer;
-        this.currentCost = party.stream().mapToLong(partyMember -> partyMember.calcRewards(quest)).sum();
+        int currentCost = party.stream().mapToInt(partyMember -> partyMember.calcRewards(quest).getValue()).sum();
+        this.nextCost = adventurer.calcRewards(quest).add(currentCost).getValue();
         this.diffOfPerformanceAndDifficulty = quest.getDifficulty() - adventurer.getPerformance(quest.getType());
     }
 
     public boolean isAlright() {
-        return !isTired() && !isSmallLackOfSkills() && !isNotInterestedIn();
+        return !isTired() && !isSmallLackOfSkills() && !isNotInterestedIn() && !isCostOverrun();
     }
 
     public boolean isTired() {
@@ -39,6 +40,6 @@ public class EstimatesForQuest {
     }
 
     public boolean isCostOverrun() {
-        return adventurer.calcRewards(quest) + currentCost > quest.getRewards();
+        return nextCost > quest.getRewards().getValue();
     }
 }

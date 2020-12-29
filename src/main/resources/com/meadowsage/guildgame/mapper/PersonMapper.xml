@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.meadowsage.guildgame.mapper.PersonMapper">
+
     <resultMap id="adventurerMap" type="com.meadowsage.guildgame.model.person.Adventurer" autoMapping="true">
         <association property="name" columnPrefix="n_" autoMapping="true"/>
         <association property="money" columnPrefix="m_" autoMapping="true"/>
@@ -47,8 +48,11 @@
                 #{id}
             </foreach>
         </if>
-        <if test="notOrdering">
+        <if test="notOrdering != null &amp;&amp; notOrdering == true">
             AND qo.id IS NULL
+        </if>
+        <if test="notOrdering != null &amp;&amp; notOrdering == false">
+            AND qo.id IS NOT NULL
         </if>
     </select>
 

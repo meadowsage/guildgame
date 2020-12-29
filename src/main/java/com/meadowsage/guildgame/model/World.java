@@ -33,9 +33,9 @@ public class World {
     @Setter
     private Guild guild;
     @Getter
-    private List<Person> adventurers = new ArrayList<>();
+    private List<Adventurer> adventurers = new ArrayList<>();
     @Getter
-    private List<Person> applicants = new ArrayList<>();
+    private List<Applicant> applicants = new ArrayList<>();
     @Getter
     private List<Quest> quests = new ArrayList<>();
     @Getter
@@ -43,7 +43,7 @@ public class World {
 
     private World(
             Guild guild,
-            List<Person> adventurers,
+            List<Adventurer> adventurers,
             List<Quest> quests,
             List<Place> places
     ) {
@@ -84,9 +84,7 @@ public class World {
     public void midnight() {
         // 新しい応募者の作成
         int applicantNum = (int) (1 + Math.random() * 2);
-        applicants.addAll(Applicant.generate(applicantNum).stream()
-                .map(applicant -> (Person) applicant)
-                .collect(Collectors.toList()));
+        applicants.addAll(Applicant.generate(applicantNum));
 
         // 新しいクエストの作成
         int questNum = (int) (1 + Math.random() * 2);
@@ -109,13 +107,7 @@ public class World {
     public void morning() {
         // キャラクターを全員未行動状態にする
         getAllPersons().forEach(Person::setAsNotActioned);
-
-        // 冒険者がクエストを受注する
-        for (Person person : adventurers) {
-            if (!person.isAdventurer() || person.isTired()) continue;
-            // TODO 冒険者の名声や好みで重みづけを行い、一番高いものを選択
-            quests.stream().filter(Quest::isNotOrdered).findFirst().ifPresent(quest -> quest.order(person));
-        }
+        adventurers.forEach(adventurer -> adventurer.doMorningActivity(this));
 
         state = State.MIDDAY;
     }
@@ -128,7 +120,7 @@ public class World {
         // 初期リソース生成
         World world = new World(
                 Guild.create(),
-                Collections.singletonList(UniquePerson.TELLAN.getInstance()),
+                Collections.singletonList((Adventurer) UniquePerson.TELLAN.getInstance()),
                 Collections.singletonList(UniqueQuest.FIRST.getInstance()),
                 Collections.singletonList(Place.CITY)
         );
@@ -144,8 +136,6 @@ public class World {
 
     public Optional<Adventurer> findAdventurer(long personId) {
         return adventurers.stream()
-                .filter(adventurers -> adventurers instanceof Adventurer)
-                .map(adventurer -> (Adventurer) adventurer)
                 .filter(adventurer -> adventurer.getId() == personId).findAny();
     }
 
@@ -153,9 +143,12 @@ public class World {
         return this.quests.stream().filter(quest -> !quest.hasProcessed(gameDate)).findAny();
     }
 
-    public void afternoon(GameLogger gameLogger) {
-        if (state.equals(State.MIDDAY)) state = State.AFTERNOON;
 
+    public void midday() {
+        state = State.AFTERNOON;
+    }
+
+    public Optional<Quest> afternoon(GameLogger gameLogger) {
         // 未完了のクエストを１個ずつ実行
         Optional<Quest> nextQuest = getNextQuest(gameDate);
         if (nextQuest.isPresent()) {
@@ -168,12 +161,11 @@ public class World {
         } else {
             // クエスト処理が完了していれば、未行動のキャラクターの行動
             adventurers.stream()
-                    .filter(person -> person instanceof Adventurer) // 念のためフィルタ
-                    .map(person -> (Adventurer) person)
                     .filter(adventurer -> !adventurer.isActioned())
                     .forEach(person -> person.doDaytimeActivity(this, gameLogger));
             state = State.NIGHT;
         }
+        return nextQuest;
     }
 
     public enum State {

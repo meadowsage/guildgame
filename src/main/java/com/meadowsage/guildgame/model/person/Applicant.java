@@ -1,5 +1,7 @@
 package com.meadowsage.guildgame.model.person;
 
+import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
@@ -29,6 +31,16 @@ public class Applicant extends Person {
     @Override
     public boolean isAdventurer() {
         return true;
+    }
+
+    @Override
+    public void doDaytimeActivity(World world, GameLogger gameLogger) {
+        // 何もしない
+    }
+
+    @Override
+    public void doMorningActivity(World world) {
+        // 何もしない
     }
 
     public static List<Applicant> generate(int number) {

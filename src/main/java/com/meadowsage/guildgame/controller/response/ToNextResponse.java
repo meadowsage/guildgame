@@ -12,10 +12,12 @@ import java.util.stream.Collectors;
 public class ToNextResponse {
     World.State state;
     List<ResponseGameLog> gameLogs;
+    String title;
 
     public ToNextResponse(ToNextUseCase.ToNextUseCaseResult result) {
         this.state = result.getWorld().getState();
         this.gameLogs = result.getGameLogs().stream().map(ResponseGameLog::new).collect(Collectors.toList());
+        this.title = result.getTitle();
     }
 
     @Data

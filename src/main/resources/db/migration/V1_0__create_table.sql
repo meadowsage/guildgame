@@ -8,7 +8,7 @@ CREATE TABLE save_data
 CREATE TABLE world
 (
     id           bigserial PRIMARY KEY,
-    save_data_id varchar(36) NOT NULL REFERENCES save_data (id),
+    save_data_id varchar(36) NOT NULL REFERENCES save_data (id) ON DELETE CASCADE,
     game_date    int         NOT NULL,
     state        varchar(20) NOT NULL,
     created_at   timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -55,6 +55,7 @@ CREATE TABLE quest
     type           varchar(10)  NOT NULL,
     place          varchar(40)  NOT NULL,
     difficulty     int          NOT NULL,
+    rewards        int          NOT NULL,
     processed_date int          NOT NULL
 );
 
@@ -63,6 +64,7 @@ CREATE TABLE quest_order
     id        bigserial PRIMARY KEY,
     quest_id  bigint      NOT NULL REFERENCES quest (id) ON DELETE CASCADE,
     person_id bigint      NOT NULL REFERENCES person (id) ON DELETE CASCADE,
+    rewards   int         NOT NULL,
     state     varchar(20) NOT NULL
 );
 

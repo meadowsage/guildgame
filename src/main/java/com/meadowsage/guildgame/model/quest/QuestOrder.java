@@ -1,5 +1,7 @@
 package com.meadowsage.guildgame.model.quest;
 
+import com.meadowsage.guildgame.model.person.Adventurer;
+import com.meadowsage.guildgame.model.value.Money;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,13 +14,16 @@ public class QuestOrder {
     @Getter
     private long personId;
     @Getter
+    private Money rewards;
+    @Getter
     private State state;
 
-    public QuestOrder(long questId, long personId) {
+    public QuestOrder(Quest quest, Adventurer adventurer) {
         this.id = -1;
-        this.questId = questId;
-        this.personId = personId;
+        this.questId = quest.getId();
+        this.personId = adventurer.getId();
         this.state = State.ONGOING;
+        this.rewards = adventurer.calcRewards(quest);
     }
 
     public boolean isNew() {

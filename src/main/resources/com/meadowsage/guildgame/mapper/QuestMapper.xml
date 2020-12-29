@@ -2,35 +2,49 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.meadowsage.guildgame.mapper.QuestMapper">
+
     <resultMap id="questMap" type="com.meadowsage.guildgame.model.quest.Quest" autoMapping="true">
         <id column="id" property="id"/>
+        <association property="rewards" columnPrefix="r_" autoMapping="true"/>
         <collection property="questOrders" ofType="com.meadowsage.guildgame.model.quest.QuestOrder"
                     columnPrefix="qo_" autoMapping="true">
         </collection>
     </resultMap>
 
-    <select id="selectAll" resultMap="questMap">
+    <select id="select" resultMap="questMap">
         SELECT q.*,
-               qo.id        as qo_id,
-               qo.quest_id  as qo_quest_id,
-               qo.person_id as qo_person_id,
-               qo.state     as qo_state
+        q.rewards as r_value,
+        qo.id as qo_id,
+        qo.quest_id as qo_quest_id,
+        qo.person_id as qo_person_id,
+        qo.state as qo_state
         FROM quest q
-                 LEFT JOIN quest_order qo ON q.id = qo.quest_id
-        WHERE q.world_id = #{worldId}
-          AND (qo.state = #{state} OR qo.state IS NULL)
-        ORDER BY q.id
-    </select>
-
-    <select id="select" resultType="com.meadowsage.guildgame.model.quest.Quest">
-        SELECT *
-        FROM quest
-        WHERE id = #{questId}
+        LEFT JOIN quest_order qo ON q.id = qo.quest_id
+        <if test="questId != null">
+            WHERE q.id = #{questId}
+        </if>
+        <if test="worldId != null">
+            WHERE q.world_id = #{worldId}
+            AND (qo.state = #{state} OR qo.state IS NULL)
+            ORDER BY q.id
+        </if>
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="quest.id">
-        INSERT INTO quest (world_id, type, name, place, difficulty, processed_date)
-        VALUES (#{worldId}, #{quest.type}, #{quest.name}, #{quest.place}, #{quest.difficulty}, #{quest.processedDate})
+        INSERT INTO quest (world_id,
+                           type,
+                           name,
+                           place,
+                           difficulty,
+                           processed_date,
+                           rewards)
+        VALUES (#{worldId},
+                #{quest.type},
+                #{quest.name},
+                #{quest.place},
+                #{quest.difficulty},
+                #{quest.processedDate},
+                #{quest.rewards.value})
     </insert>
 
     <update id="update">

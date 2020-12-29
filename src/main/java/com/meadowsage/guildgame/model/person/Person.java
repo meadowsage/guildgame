@@ -60,16 +60,9 @@ public abstract class Person {
 
     public abstract boolean isAdventurer();
 
-    public void doDaytimeActivity(World world, GameLogger gameLogger) {
-        if (isTired()) {
-            // 休息を取る
-            gameLogger.add(name.getFirstName() + "は休息をとった。", this);
-            energy.recoverToMax();
-        } else {
-            world.getAvailableQuests().stream().findFirst()
-                    .ifPresent(quest -> quest.order(this));
-        }
-    }
+    public abstract void doMorningActivity(World world);
+
+    public abstract void doDaytimeActivity(World world, GameLogger gameLogger);
 
     public void setAsActioned() {
         isActioned = true;

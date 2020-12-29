@@ -2,13 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.meadowsage.guildgame.mapper.QuestOrderMapper">
+
+    <resultMap id="questOrderMap" type="com.meadowsage.guildgame.model.quest.QuestOrder" autoMapping="true">
+        <id column="id" property="id"/>
+        <association property="rewards" columnPrefix="r_" autoMapping="true"/>
+    </resultMap>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO quest_order (quest_id, person_id, state)
-        VALUES (#{questId}, #{personId}, #{state})
+        INSERT INTO quest_order (quest_id, person_id, state, rewards)
+        VALUES (#{questId}, #{personId}, #{state}, #{rewards.value})
     </insert>
 
     <select id="selectAll" resultType="com.meadowsage.guildgame.model.quest.QuestOrder">
-        SELECT *
+        SELECT *,
+               rewards as r_value
         FROM quest_order
         WHERE quest_id = #{questId}
     </select>

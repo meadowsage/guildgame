@@ -6,6 +6,7 @@ import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * クエストの処理
@@ -27,7 +28,9 @@ public class QuestProcess {
     }
 
     public void run(Dice dice, GameLogger gameLogger) {
-        gameLogger.add("-----" + quest.getName());
+        gameLogger.add(party.stream()
+                .map(adventurer -> adventurer.getName().getFirstName())
+                .collect(Collectors.joining("、")) + "が" + quest.getName() + "を開始");
 
         // パーティ全員が成否判定を行い、成功度を合算
         int successPoint = party.stream().mapToInt(person -> roll(person, dice, gameLogger)).sum();

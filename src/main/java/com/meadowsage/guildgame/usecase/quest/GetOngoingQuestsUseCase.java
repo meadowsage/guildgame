@@ -32,7 +32,6 @@ public class GetOngoingQuestsUseCase {
                 ongoingQuests.stream().map(Quest::getQuestOrders)
                         .flatMap(Collection::stream)
                         .map(QuestOrder::getPersonId)
-                        .distinct()
                         .collect(Collectors.toList())
         );
         return new GetQuestsUseCaseResult(ongoingQuests, adventurers);

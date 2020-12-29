@@ -3,9 +3,19 @@
 
 <mapper namespace="com.meadowsage.guildgame.mapper.SaveDataMapper">
     <insert id="save" keyProperty="id">
-        INSERT INTO save_data (id) VALUES (#{id})
+        INSERT INTO save_data (id)
+        VALUES (#{id})
     </insert>
+
     <select id="select" resultType="com.meadowsage.guildgame.model.system.SaveData">
-        SELECT * FROM save_data WHERE id = #{id}
+        SELECT *
+        FROM save_data
+        WHERE id = #{id}
     </select>
+
+    <delete id="delete">
+        DELETE
+        FROM save_data
+        WHERE id = #{saveDataId}
+    </delete>
 </mapper>
