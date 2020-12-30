@@ -1,4 +1,4 @@
-package com.meadowsage.guildgame.usecase;
+package com.meadowsage.guildgame.usecase.game;
 
 import com.meadowsage.guildgame.mapper.SaveDataMapper;
 import lombok.AllArgsConstructor;

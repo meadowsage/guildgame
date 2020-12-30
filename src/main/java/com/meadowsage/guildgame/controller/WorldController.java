@@ -2,7 +2,7 @@ package com.meadowsage.guildgame.controller;
 
 import com.meadowsage.guildgame.controller.response.world.DoAfternoonProcessResponse;
 import com.meadowsage.guildgame.controller.response.world.GetWorldResponse;
-import com.meadowsage.guildgame.usecase.GetWorldDataUseCase;
+import com.meadowsage.guildgame.usecase.world.GetWorldDataUseCase;
 import com.meadowsage.guildgame.usecase.world.DoAfternoonProcessUseCase;
 import com.meadowsage.guildgame.usecase.world.DoMidnightProcessUseCase;
 import com.meadowsage.guildgame.usecase.world.DoMorningProcessUseCase;

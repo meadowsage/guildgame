@@ -1,4 +1,4 @@
-package com.meadowsage.guildgame.usecase;
+package com.meadowsage.guildgame.usecase.world;
 
 import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.scenario.Scenario;
