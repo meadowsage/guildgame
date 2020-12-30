@@ -14,7 +14,7 @@ public class GameLogRepository {
 
     private final GameLogMapper gameLogMapper;
 
-    public void saveGameLog(GameLogger gameLogger) {
+    public void save(GameLogger gameLogger) {
         gameLogger.getLogs().forEach(gameLogMapper::insert);
     }
 

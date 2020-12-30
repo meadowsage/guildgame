@@ -1,8 +1,8 @@
 package com.meadowsage.guildgame.controller.response;
 
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.person.Person;
-import com.meadowsage.guildgame.model.person.Reviewer;
+import com.meadowsage.guildgame.model.person.ApplicantReviewer;
 import com.meadowsage.guildgame.model.scenario.Scenario;
 import com.meadowsage.guildgame.model.system.GameLog;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ public class GetWorldResponse {
     List<ResponseApplicant> applicants;
     List<ResponseScenario> scenarios;
 
-    public GetWorldResponse(World world, List<GameLog> gameLogs, List<Scenario> scenarios) {
+    public GetWorldResponse(GameWorld world, List<GameLog> gameLogs, List<Scenario> scenarios) {
         this.world = ResponseWorld.builder()
                 .id(world.getId())
                 .gameDate(world.getGameDate())
@@ -57,7 +57,7 @@ public class GetWorldResponse {
                         .id(person.getId())
                         .name(person.getName().getFirstName())
                         .fullName(person.getName().getFullName())
-                        .remarks(Reviewer.of().review(person))
+                        .remarks(ApplicantReviewer.of().review(person))
                         .build()
                 ).collect(Collectors.toList());
 

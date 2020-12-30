@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class QuestOrder {
     @Getter
     private long id;
+    @Getter
     private long questId;
     @Getter
     private long personId;
@@ -34,12 +35,16 @@ public class QuestOrder {
         return this.state.equals(State.ONGOING);
     }
 
-    void complete() {
+    void markAsSucceeded() {
         this.state = State.SUCCESS;
     }
 
-    void fail() {
+    void markAsFailed() {
         this.state = State.FAILURE;
+    }
+
+    public boolean isSucceeded() {
+        return this.state.equals(State.SUCCESS);
     }
 
     public enum State {

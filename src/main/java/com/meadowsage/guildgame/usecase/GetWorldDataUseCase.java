@@ -1,6 +1,6 @@
 package com.meadowsage.guildgame.usecase;
 
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.scenario.Scenario;
 import com.meadowsage.guildgame.model.system.GameLog;
 import com.meadowsage.guildgame.repository.GameLogRepository;
@@ -20,7 +20,7 @@ public class GetWorldDataUseCase {
     private final GameLogRepository gameLogRepository;
 
     public GetWorldDataUseCaseResult run(String saveDataId) {
-        World world = worldRepository.get(saveDataId);
+        GameWorld world = worldRepository.getGameWorld(saveDataId);
         List<GameLog> gameLogs = gameLogRepository.getGameLogs(world.getId(), world.getGameDate() - 1);
         List<Scenario> scenarios = scenarioRepository.getNextScenarios(world);
         return new GetWorldDataUseCaseResult(world, gameLogs, scenarios);
@@ -29,7 +29,7 @@ public class GetWorldDataUseCase {
     @Data
     @AllArgsConstructor
     public static class GetWorldDataUseCaseResult {
-        World world;
+        GameWorld world;
         List<GameLog> gameLogs;
         List<Scenario> scenarios;
     }

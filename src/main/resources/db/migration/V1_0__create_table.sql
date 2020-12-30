@@ -5,6 +5,8 @@ CREATE TABLE save_data
     updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ワールドデータ
+
 CREATE TABLE world
 (
     id           bigserial PRIMARY KEY,
@@ -49,14 +51,16 @@ CREATE TABLE applicant
 
 CREATE TABLE quest
 (
-    id             bigserial PRIMARY KEY,
-    world_id       bigint       NOT NULL REFERENCES world (id) ON DELETE CASCADE,
-    name           varchar(100) NOT NULL,
-    type           varchar(10)  NOT NULL,
-    place          varchar(40)  NOT NULL,
-    difficulty     int          NOT NULL,
-    rewards        int          NOT NULL,
-    processed_date int          NOT NULL
+    id           bigserial PRIMARY KEY,
+    world_id     bigint       NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    name         varchar(100) NOT NULL,
+    type         varchar(10)  NOT NULL,
+    place        varchar(40)  NOT NULL,
+    difficulty   int          NOT NULL,
+    danger       int          NOT NULL,
+    rewards      int          NOT NULL,
+    processed_at int          NOT NULL, -- ゲーム日付
+    is_closed    boolean      NOT NULL DEFAULT false
 );
 
 CREATE TABLE quest_order
@@ -75,13 +79,6 @@ CREATE TABLE opened_place
     PRIMARY KEY (world_id, place)
 );
 
-CREATE TABLE scenario_progress
-(
-    world_id    bigint NOT NULL REFERENCES world (id) ON DELETE CASCADE,
-    scenario_id bigint NOT NULL,
-    PRIMARY KEY (world_id, scenario_id)
-);
-
 CREATE TABLE game_log
 (
     world_id  bigint       NOT NULL REFERENCES world (id) ON DELETE CASCADE,
@@ -89,4 +86,38 @@ CREATE TABLE game_log
     quest_id  bigint REFERENCES quest (id) ON DELETE CASCADE,
     message   varchar(100) NOT NULL,
     game_date int          NOT NULL
+);
+
+-- ゲーム管理
+
+CREATE TABLE scenario_progress
+(
+    world_id    bigint NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    scenario_id bigint NOT NULL,
+    PRIMARY KEY (world_id, scenario_id)
+);
+
+-- 会計
+
+CREATE TABLE quest_payment
+(
+    quest_id  bigint NOT NULL REFERENCES quest (id) ON DELETE CASCADE,
+    person_id bigint REFERENCES person (id) ON DELETE CASCADE,
+    game_date int    NOT NULL,
+    value     bigint NOT NULL
+);
+
+CREATE TABLE quest_income
+(
+    quest_id  bigint NOT NULL REFERENCES quest (id) ON DELETE CASCADE,
+    game_date int    NOT NULL,
+    value     bigint NOT NULL
+);
+
+CREATE TABLE guild_balance
+(
+    world_id  bigint NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    game_date int    NOT NULL,
+    value     bigint NOT NULL,
+    UNIQUE (world_id, game_date)
 );

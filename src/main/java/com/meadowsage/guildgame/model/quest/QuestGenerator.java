@@ -44,8 +44,8 @@ public class QuestGenerator {
     }
 
     private int decideDifficulty(QuestType type, Place place) {
-        // 名声x0.5〜1.5の範囲
-        int base = (int) (reputation * 0.5 + Math.random() * reputation);
+        // 10 + 名声x0.5〜1.5の範囲
+        int base = 10 + (int) (reputation * 0.5 + Math.random() * reputation);
         // 補正
         base *= type.getDifficultyCoefficient();
         System.out.println(place);

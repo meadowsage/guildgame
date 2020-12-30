@@ -1,6 +1,6 @@
 package com.meadowsage.guildgame.controller.response;
 
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.system.GameLog;
 import com.meadowsage.guildgame.usecase.ToNextUseCase;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class ToNextResponse {
-    World.State state;
+    GameWorld.State state;
     List<ResponseGameLog> gameLogs;
     String title;
 

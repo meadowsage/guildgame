@@ -1,13 +1,14 @@
 package com.meadowsage.guildgame.mapper;
 
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
+import com.meadowsage.guildgame.model.world.World;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface WorldMapper {
-    void save(World world, String saveDataId);
+    void save(GameWorld world, String saveDataId);
 
     World select(String saveDataId);
 
-    void update(World world);
+    void update(GameWorld world);
 }

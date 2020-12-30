@@ -1,7 +1,7 @@
 package com.meadowsage.guildgame.repository;
 
 import com.meadowsage.guildgame.mapper.ScenarioMapper;
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -15,7 +15,7 @@ public class ScenarioRepository {
 
     private final ScenarioMapper scenarioMapper;
 
-    public List<Scenario> getNextScenarios(World world) {
+    public List<Scenario> getNextScenarios(GameWorld world) {
         // 進行状況を取得
         List<Integer> completedScenarioIds = scenarioMapper.select(world.getId());
         // 未完了で開始条件を満たすイベントを抽出

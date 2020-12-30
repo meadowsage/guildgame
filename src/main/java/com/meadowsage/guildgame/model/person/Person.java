@@ -1,6 +1,6 @@
 package com.meadowsage.guildgame.model.person;
 
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
@@ -60,9 +60,9 @@ public abstract class Person {
 
     public abstract boolean isAdventurer();
 
-    public abstract void doMorningActivity(World world);
+    public abstract void doMorningActivity(GameWorld world);
 
-    public abstract void doDaytimeActivity(World world, GameLogger gameLogger);
+    public abstract void doDaytimeActivity(GameWorld world, GameLogger gameLogger);
 
     public void setAsActioned() {
         isActioned = true;

@@ -24,11 +24,12 @@ public class GetOngoingQuestsResponse {
                     .map(questOrder -> new ResponseQuestOrder(quest, questOrder, adventurers))
                     .collect(Collectors.toList());
 
-           return ResponseQuest.builder()
+            return ResponseQuest.builder()
                     .id(quest.getId())
                     .type(quest.getType().name())
                     .name(quest.getName())
                     .difficulty(quest.getDifficulty())
+                    .danger(quest.getDanger())
                     .rewards(quest.getRewards().getValue())
                     .questOrders(responseQuestOrders)
                     .income(quest.calcIncome(adventurers))
@@ -43,6 +44,7 @@ public class GetOngoingQuestsResponse {
         String type;
         String name;
         int difficulty;
+        int danger;
         long rewards;
         long income;
         List<ResponseQuestOrder> questOrders;
@@ -72,6 +74,6 @@ public class GetOngoingQuestsResponse {
     private static class ResponseReservedBy {
         long id;
         String name;
-        long reward;
+        long rewards;
     }
 }

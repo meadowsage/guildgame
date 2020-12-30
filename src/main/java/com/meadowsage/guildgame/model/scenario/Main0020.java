@@ -1,7 +1,7 @@
 package com.meadowsage.guildgame.model.scenario;
 
 
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +14,7 @@ public class Main0020 extends ScenarioBase {
     }
 
     @Override
-    public boolean canStart(World world) {
+    public boolean canStart(GameWorld world) {
         // 条件：2日目以降
         return world.getGameDate() >= 2;
     }
@@ -42,9 +42,10 @@ public class Main0020 extends ScenarioBase {
                 , me.speak("登録？")
                 , elif.speak("はい。冒険者ギルドは登録制です。誰でもクエストを受けられるわけではなく、事前に審査を受けて通過した者に限られます。")
                 , me.speak("なるほど。怪しい奴を入れてしまっては信用に関わるわけか。")
-                , elif.speak("とはいっても、厳密な審査や試験などを行うわけではありません。\n簡単なチェックを行い、最低限の素養があるかを確認できれば十分でしょう。")
-                , elif.speak("今はとにかく人手が足りません。よほどのことがない限り、今日来る予定の冒険者は登録するつもりでいてください。")
-                , me.speak("「わかりました、そうしましょう」")
+                , elif.speak("とはいっても、厳密な審査や試験などを行うわけではありません。\n簡単なチェックを行い、最低限の素養があるかを確認する程度です。")
+                , elif.speak("チェックの結果は共有しますので、よほど問題がない限りは登録を許可して良いと思います。")
+                , elif.speak("ただし、たくさん集めればいいというわけではありません。仕事が無い期間が続くと、冒険者はギルドを去ってしまいます。\nしばらくは２〜３人くらいが妥当でしょう。")
+                , me.speak("「わかりました、そうします」")
                 , teran.speak("俺からも頼むわ。なんせ久々の仕事で疲れちまってな、今日は動けそうにない。")
                 , elif.speak("…草むしりで？")
                 , teran.speak("…おう、腰が痛えんだわ。")

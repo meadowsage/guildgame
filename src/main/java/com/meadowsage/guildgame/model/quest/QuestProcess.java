@@ -33,6 +33,7 @@ public class QuestProcess {
                 .collect(Collectors.joining("、")) + "が" + quest.getName() + "を開始");
 
         // パーティ全員が成否判定を行い、成功度を合算
+        // TODO 発揮値順
         int successPoint = party.stream().mapToInt(person -> roll(person, dice, gameLogger)).sum();
 
         // TODO ランダムイベント
@@ -52,7 +53,7 @@ public class QuestProcess {
             failure(gameLogger);
         }
 
-        // 行動完了フラグをONにする
+        // 行動済フラグをONにする
         party.forEach(Person::setAsActioned);
     }
 
@@ -99,7 +100,7 @@ public class QuestProcess {
 
     private void success(GameLogger gameLogger) {
         // クエストを完了状態に変更
-        quest.complete(gameDate);
+        quest.markAsSucceeded(gameDate);
 
         // 報酬・経験点・名声を付与
         party.forEach(person -> {
@@ -112,13 +113,11 @@ public class QuestProcess {
         // ギルドに報酬を付与
 
         gameLogger.add(party.get(0).getName().getFirstName() + "たちが" + quest.getName() + "を完了した！", party.get(0), quest);
-        gameLogger.add(party.get(0).getName().getFirstName() + "たちは" +
-                (quest.getDifficulty() * 10 / party.size()) + "Gと名声" +
-                (quest.getDifficulty() / 10 / party.size() + 1) + "を獲得", party.get(0), quest);
+        gameLogger.add("TODO 名声と経験点の獲得処理");
     }
 
     private void failure(GameLogger gameLogger) {
-        quest.fail();
+        quest.markAsFailed();
         party.forEach(person -> {
             person.getMoney().add(quest.getDifficulty() * 10 / party.size() * -1);
             person.getReputation().add(quest.getDifficulty() / 10 / party.size() * -1);

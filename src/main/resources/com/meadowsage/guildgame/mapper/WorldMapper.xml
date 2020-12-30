@@ -7,7 +7,7 @@
         VALUES (#{saveDataId}, #{world.gameDate}, #{world.state})
     </insert>
 
-    <select id="select" resultType="com.meadowsage.guildgame.model.World">
+    <select id="select" resultType="com.meadowsage.guildgame.model.world.World">
         SELECT w.*
         FROM world w
         WHERE w.save_data_id = #{saveDataId}

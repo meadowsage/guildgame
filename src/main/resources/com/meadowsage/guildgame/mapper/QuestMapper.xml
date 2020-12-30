@@ -6,7 +6,7 @@
     <resultMap id="questMap" type="com.meadowsage.guildgame.model.quest.Quest" autoMapping="true">
         <id column="id" property="id"/>
         <association property="rewards" columnPrefix="r_" autoMapping="true"/>
-        <collection property="questOrders" ofType="com.meadowsage.guildgame.model.quest.QuestOrder"
+        <collection property="questOrders" resultMap="com.meadowsage.guildgame.mapper.QuestOrderMapper.questOrderMap"
                     columnPrefix="qo_" autoMapping="true">
         </collection>
     </resultMap>
@@ -17,6 +17,7 @@
         qo.id as qo_id,
         qo.quest_id as qo_quest_id,
         qo.person_id as qo_person_id,
+        qo.rewards as qo_r_value,
         qo.state as qo_state
         FROM quest q
         LEFT JOIN quest_order qo ON q.id = qo.quest_id
@@ -24,10 +25,10 @@
             WHERE q.id = #{questId}
         </if>
         <if test="worldId != null">
-            WHERE q.world_id = #{worldId}
-            AND (qo.state = #{state} OR qo.state IS NULL)
-            ORDER BY q.id
+            WHERE q.is_closed = false
+            AND q.world_id = #{worldId}
         </if>
+        ORDER BY q.id
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="quest.id">
@@ -36,20 +37,23 @@
                            name,
                            place,
                            difficulty,
-                           processed_date,
+                           danger,
+                           processed_at,
                            rewards)
         VALUES (#{worldId},
                 #{quest.type},
                 #{quest.name},
                 #{quest.place},
                 #{quest.difficulty},
-                #{quest.processedDate},
+                #{quest.danger},
+                #{quest.processedAt},
                 #{quest.rewards.value})
     </insert>
 
     <update id="update">
         UPDATE quest
-        SET processed_date = #{processedDate}
+        SET processed_at = #{processedAt},
+            is_closed    = #{isClosed}
         WHERE id = #{id}
     </update>
 </mapper>

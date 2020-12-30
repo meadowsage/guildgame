@@ -1,7 +1,7 @@
 package com.meadowsage.guildgame.model.scenario;
 
 
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +14,7 @@ public class Main0030 extends ScenarioBase {
     }
 
     @Override
-    public boolean canStart(World world) {
+    public boolean canStart(GameWorld world) {
         // 条件：3日目以降
         return world.getGameDate() >= 3;
     }

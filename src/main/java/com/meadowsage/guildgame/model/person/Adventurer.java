@@ -1,6 +1,6 @@
 package com.meadowsage.guildgame.model.person;
 
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestType;
 import com.meadowsage.guildgame.model.system.GameLogger;
@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Adventurer extends Person {
+    private Long orderingQuestId;
+
     protected Adventurer(
             PersonName name,
             Attribute battle,
@@ -31,25 +33,29 @@ public class Adventurer extends Person {
     }
 
     @Override
-    public void doDaytimeActivity(World world, GameLogger gameLogger) {
+    public void doDaytimeActivity(GameWorld world, GameLogger gameLogger) {
         if (isTired()) {
             // 疲労状態の場合、休息を取る
             gameLogger.add(getName().getFirstName() + "は休息をとった。", this);
             getEnergy().recoverToMax();
         } else {
-            world.getAvailableQuests().stream().findFirst().ifPresent(quest -> quest.order(this));
+            // TODO クエスト中でないキャラクターの行動
+            gameLogger.add(getName().getFirstName() + "は何もしなかった。", this);
         }
     }
 
-    public void doMorningActivity(World world) {
-        // クエストを受注する
-        // TODO クエスト中じゃなければ
-        // TODO 冒険者の名声や好みで重みづけを行い、一番高いものを選択
-        world.getAvailableQuests().stream()
-                .filter(Quest::isNotOrdered)
-                .findFirst().ifPresent(quest -> quest.order(this));
+    public boolean isOrderingQuest() {
+        return orderingQuestId != null;
     }
 
+    public void doMorningActivity(GameWorld world) {
+        // クエストを受注していない場合、クエストを受注する
+        if(!isOrderingQuest()) {
+            world.getAvailableQuests().stream().findFirst().ifPresent(quest -> quest.order(this));
+        } else {
+            // TODO 受注していない場合の行動
+        }
+    }
 
     /**
      * 報酬額の計算
@@ -59,7 +65,7 @@ public class Adventurer extends Person {
      */
     public Money calcRewards(Quest quest) {
         double base = 100 + getReputation().getValue() * 2;
-        return Money.of((int)Math.round(base * (quest.getDifficulty() * 0.1) + (quest.getDanger() * 100)));
+        return Money.of(100 + (int)Math.round(base * (quest.getDifficulty() * 0.1) + (quest.getDanger() * 100)));
     }
 
     /**
@@ -72,5 +78,13 @@ public class Adventurer extends Person {
         return (int) (getBattle().getValue() * questType.getBattleCoefficient() +
                 getKnowledge().getValue() * questType.getKnowledgeCoefficient() +
                 getSupport().getValue() * questType.getSupportCoefficient()) / 3;
+    }
+
+    public void earnMoney(Money money) {
+        getMoney().add(money);
+    }
+
+    public void payMoney(Money money) {
+        getMoney().subtract(money);
     }
 }

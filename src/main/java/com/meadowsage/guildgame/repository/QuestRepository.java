@@ -2,7 +2,6 @@ package com.meadowsage.guildgame.repository;
 
 import com.meadowsage.guildgame.mapper.QuestMapper;
 import com.meadowsage.guildgame.model.quest.Quest;
-import com.meadowsage.guildgame.model.quest.QuestOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,12 +14,12 @@ public class QuestRepository {
 
     private final QuestMapper questMapper;
 
-    public List<Quest> getOngoingQuests(long worldId) {
-        return questMapper.select(worldId, null, QuestOrder.State.ONGOING);
+    public List<Quest> getQuests(long worldId) {
+        return questMapper.select(worldId, null);
     }
 
     public Optional<Quest> get(long questId) {
-        List<Quest> result = questMapper.select(null, questId, null);
+        List<Quest> result = questMapper.select(null, questId);
         if(result.isEmpty()) return Optional.empty();
         else return Optional.of(result.get(0));
     }

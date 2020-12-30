@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.meadowsage.guildgame.mapper.QuestIncomeMapper">
+    <insert id="insert">
+        INSERT INTO quest_income(value, quest_id, game_date)
+        VALUES (#{value}, #{questId}, #{gameDate});
+    </insert>
+
+    <select id="select" resultType="com.meadowsage.guildgame.model.accounting.QuestIncome">
+        SELECT qi.*
+        FROM quest_income qi
+                 INNER JOIN quest q on q.id = qi.quest_id
+        WHERE q.world_id = #{worldId}
+          AND qi.game_date = #{gameDate}
+    </select>
+</mapper>

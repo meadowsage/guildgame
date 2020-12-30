@@ -24,11 +24,13 @@ public class Quest {
     @Getter
     private Money rewards;
     @Getter
-    private int danger = 1;
+    private int danger;
     @Getter
     private Place place;
     @Getter
-    private int processedDate;
+    private int processedAt;
+    @Getter
+    private boolean isClosed;
     @Getter
     private List<QuestOrder> questOrders = new ArrayList<>();
 
@@ -78,20 +80,33 @@ public class Quest {
      * @return 実行済ならtrue
      */
     public boolean hasProcessed(int currentGameDate) {
-        return processedDate >= currentGameDate || questOrders.stream().noneMatch(QuestOrder::isActive);
+        return processedAt >= currentGameDate || questOrders.stream().noneMatch(QuestOrder::isActive);
+    }
+
+    /**
+     * クエストが成功したかどうか
+     *
+     * @return 成功していればtrue
+     */
+    public boolean isSucceeded() {
+        return questOrders.stream().anyMatch(QuestOrder::isSucceeded);
     }
 
     public void order(Adventurer adventurer) {
         questOrders.add(new QuestOrder(this, adventurer));
     }
 
-    public void complete(int gameDate) {
-        this.processedDate = gameDate;
-        questOrders.forEach(QuestOrder::complete);
+    public void markAsSucceeded(int gameDate) {
+        this.processedAt = gameDate;
+        questOrders.forEach(QuestOrder::markAsSucceeded);
     }
 
-    public void fail() {
-        questOrders.forEach(QuestOrder::fail);
+    public void markAsFailed() {
+        questOrders.forEach(QuestOrder::markAsFailed);
+    }
+
+    public void close() {
+        isClosed = true;
     }
 
     /**

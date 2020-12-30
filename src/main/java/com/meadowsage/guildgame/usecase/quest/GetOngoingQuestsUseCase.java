@@ -26,7 +26,7 @@ public class GetOngoingQuestsUseCase {
      * @return GetQuestsUseCaseResult
      */
     public GetQuestsUseCaseResult run(long worldId) {
-        List<Quest> ongoingQuests = questRepository.getOngoingQuests(worldId);
+        List<Quest> ongoingQuests = questRepository.getQuests(worldId);
         List<Adventurer> adventurers = personRepository.getAdventurers(
                 worldId,
                 ongoingQuests.stream().map(Quest::getQuestOrders)

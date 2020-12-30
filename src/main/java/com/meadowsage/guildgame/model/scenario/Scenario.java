@@ -1,6 +1,6 @@
 package com.meadowsage.guildgame.model.scenario;
 
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +19,7 @@ public interface Scenario {
 
     String getTitle();
 
-    boolean canStart(World world);
+    boolean canStart(GameWorld world);
 
     List<ScenarioContent> getContents();
 

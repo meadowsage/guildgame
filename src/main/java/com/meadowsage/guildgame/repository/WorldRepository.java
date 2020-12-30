@@ -4,8 +4,9 @@ import com.meadowsage.guildgame.mapper.GuildMapper;
 import com.meadowsage.guildgame.mapper.OpenedPlaceMapper;
 import com.meadowsage.guildgame.mapper.QuestOrderMapper;
 import com.meadowsage.guildgame.mapper.WorldMapper;
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.quest.Quest;
+import com.meadowsage.guildgame.model.world.World;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -22,17 +23,25 @@ public class WorldRepository {
     private final QuestOrderMapper questOrderMapper;
     private final OpenedPlaceMapper openedPlaceMapper;
 
-    public World get(String saveDataId) {
-        World world = worldMapper.select(saveDataId);
-        world.setGuild(guildMapper.select(world.getId()));
-        world.getAdventurers().addAll(personRepository.getAdventurers(world.getId()));
-        world.getApplicants().addAll(personRepository.getApplicants(world.getId()));
-        world.getQuests().addAll(questRepository.getOngoingQuests(world.getId()));
-        world.getPlaces().addAll(openedPlaceMapper.select(world.getId()));
-        return world;
+    public World getWorld(String saveDataId) {
+        return worldMapper.select(saveDataId);
     }
 
-    public void saveNew(World world, String saveDataId) {
+    public GameWorld getGameWorld(String saveDataId) {
+        World world = worldMapper.select(saveDataId);
+        return GameWorld.builder()
+                .id(world.getId())
+                .gameDate(world.getGameDate())
+                .state(world.getState())
+                .guild(guildMapper.select(world.getId()))
+                .adventurers(personRepository.getAdventurers(world.getId()))
+                .applicants(personRepository.getApplicants(world.getId()))
+                .quests(questRepository.getQuests(world.getId()))
+                .places(openedPlaceMapper.select(world.getId()))
+                .build();
+    }
+
+    public void saveNew(GameWorld world, String saveDataId) {
         worldMapper.save(world, saveDataId);
         guildMapper.save(world.getGuild(), world.getId());
         world.getAllPersons().forEach(person -> personRepository.save(person, world.getId()));
@@ -40,7 +49,7 @@ public class WorldRepository {
         world.getPlaces().forEach(place -> openedPlaceMapper.insert(place, world.getId()));
     }
 
-    public void save(World world) {
+    public void save(GameWorld world) {
         // TODO updated_atで排他制御
         worldMapper.update(world);
         guildMapper.update(world.getGuild(), world.getId());

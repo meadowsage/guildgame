@@ -7,8 +7,8 @@ import org.apache.commons.math3.distribution.LogNormalDistribution;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Attributes {
-    private static final double MU = 0.8; // ln(x)の平均 μ scale 大きいほど分布の右側が大きくなる
-    private static final double SIGMA = 0.35; // ln(x)の標準偏差 σ shape 大きいほど分布が横に広がる
+    private static final double MU = 1.0; // ln(x)の平均 μ scale 大きいほど分布の右側が大きくなる
+    private static final double SIGMA = 0.2; // ln(x)の標準偏差 σ shape 大きいほど分布が横に広がる
     private static final LogNormalDistribution logNormalDistribution = new LogNormalDistribution(MU, SIGMA);
 
     @Getter
@@ -38,7 +38,7 @@ public class Attributes {
      * 対数正規分布でランダム値を生成
      */
     private static int getRandomValue() {
-        int value = ((int)(logNormalDistribution.sample() * 20) - 15) % 200;
+        int value = ((int)(logNormalDistribution.sample() * 20) - 30) % 150;
         return value > 0 ? value : 1;
     }
 }

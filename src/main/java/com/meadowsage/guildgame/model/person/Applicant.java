@@ -1,6 +1,6 @@
 package com.meadowsage.guildgame.model.person;
 
-import com.meadowsage.guildgame.model.World;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
@@ -34,12 +34,12 @@ public class Applicant extends Person {
     }
 
     @Override
-    public void doDaytimeActivity(World world, GameLogger gameLogger) {
+    public void doDaytimeActivity(GameWorld world, GameLogger gameLogger) {
         // 何もしない
     }
 
     @Override
-    public void doMorningActivity(World world) {
+    public void doMorningActivity(GameWorld world) {
         // 何もしない
     }
 

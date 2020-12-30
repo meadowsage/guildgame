@@ -20,8 +20,17 @@ public class Money {
         return this;
     }
 
+    public Money add(Money money) {
+        this.add((int) money.value);
+        return this;
+    }
+
     public Money subtract(int value) {
         return add(value * -1);
+    }
+
+    public Money subtract(Money money) {
+        return subtract(money.getValue());
     }
 
     public static Money of(int value) {

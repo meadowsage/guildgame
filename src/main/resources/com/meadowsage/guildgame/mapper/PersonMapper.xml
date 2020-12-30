@@ -25,20 +25,20 @@
 
     <select id="selectAdventurers" resultMap="adventurerMap">
         SELECT p.*,
-        first_name as n_first_name,
-        family_name as n_family_name,
-        money as m_value,
-        reputation as r_value,
-        battle as b_value,
-        knowledge as k_value,
-        support as s_value,
-        max_energy as e_max,
-        energy as e_value
+        first_name AS n_first_name,
+        family_name AS n_family_name,
+        money AS m_value,
+        reputation AS r_value,
+        battle AS b_value,
+        knowledge AS k_value,
+        support AS s_value,
+        max_energy AS e_max,
+        energy AS e_value,
+        qo.id AS ordering_quest_id
         FROM person p
         LEFT JOIN applicant a on p.id = a.person_id
         LEFT JOIN quest_order qo on p.id = qo.person_id AND qo.state = 'ONGOING'
-        WHERE
-        a.person_id IS NULL
+        WHERE a.person_id IS NULL
         <if test="worldId != null">
             AND world_id = #{worldId}
         </if>
