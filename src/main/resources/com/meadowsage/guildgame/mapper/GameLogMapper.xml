@@ -7,17 +7,25 @@
         VALUES (#{worldId}, #{personId}, #{questId}, #{message}, #{gameDate})
     </insert>
 
-    <select id="select" resultType="com.meadowsage.guildgame.model.system.GameLog">
+    <select id="selectAll" resultType="com.meadowsage.guildgame.model.system.GameLog">
         SELECT *
         FROM game_log
         WHERE world_id = #{worldId}
           AND game_date = #{gameDate}
+        ORDER BY created_at
     </select>
 
-    <select id="selectByQuestId" resultType="com.meadowsage.guildgame.model.system.GameLog">
+    <select id="select" resultType="com.meadowsage.guildgame.model.system.GameLog">
         SELECT *
         FROM game_log
         WHERE world_id = #{worldId}
-          AND quest_id = #{questId}
+        <if test="questId != null">
+            AND quest_id = #{questId}
+        </if>
+        <if test="otherActions == true">
+            AND quest_id IS NULL
+        </if>
+        AND game_date = #{gameDate}
+        ORDER BY created_at
     </select>
 </mapper>

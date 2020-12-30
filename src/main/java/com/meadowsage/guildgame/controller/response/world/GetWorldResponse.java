@@ -1,4 +1,4 @@
-package com.meadowsage.guildgame.controller.response;
+package com.meadowsage.guildgame.controller.response.world;
 
 import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.person.Person;

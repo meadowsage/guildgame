@@ -49,8 +49,10 @@ public class Adventurer extends Person {
     }
 
     public void doMorningActivity(GameWorld world) {
-        // クエストを受注していない場合、クエストを受注する
-        if(!isOrderingQuest()) {
+        if (isTired()) {
+            // 疲れている場合は休養を取る
+        } else if (!isOrderingQuest()) {
+            // クエストを受注していない場合、クエストを受注する
             world.getAvailableQuests().stream().findFirst().ifPresent(quest -> quest.order(this));
         } else {
             // TODO 受注していない場合の行動
@@ -65,7 +67,7 @@ public class Adventurer extends Person {
      */
     public Money calcRewards(Quest quest) {
         double base = 100 + getReputation().getValue() * 2;
-        return Money.of(100 + (int)Math.round(base * (quest.getDifficulty() * 0.1) + (quest.getDanger() * 100)));
+        return Money.of(100 + (int) Math.round(base * (quest.getDifficulty() * 0.1) + (quest.getDanger() * 100)));
     }
 
     /**

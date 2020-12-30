@@ -15,11 +15,15 @@ public class QuestRepository {
     private final QuestMapper questMapper;
 
     public List<Quest> getQuests(long worldId) {
-        return questMapper.select(worldId, null);
+        return questMapper.select(worldId, null, false);
+    }
+
+    public List<Quest> getOngoingQuests(long worldId) {
+        return questMapper.select(worldId, null, true);
     }
 
     public Optional<Quest> get(long questId) {
-        List<Quest> result = questMapper.select(null, questId);
+        List<Quest> result = questMapper.select(null, questId, false);
         if(result.isEmpty()) return Optional.empty();
         else return Optional.of(result.get(0));
     }

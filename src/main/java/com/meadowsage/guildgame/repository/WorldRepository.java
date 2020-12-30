@@ -24,21 +24,18 @@ public class WorldRepository {
     private final OpenedPlaceMapper openedPlaceMapper;
 
     public World getWorld(String saveDataId) {
-        return worldMapper.select(saveDataId);
+        return worldMapper.selectBySaveDataId(saveDataId);
     }
 
     public GameWorld getGameWorld(String saveDataId) {
-        World world = worldMapper.select(saveDataId);
-        return GameWorld.builder()
-                .id(world.getId())
-                .gameDate(world.getGameDate())
-                .state(world.getState())
-                .guild(guildMapper.select(world.getId()))
-                .adventurers(personRepository.getAdventurers(world.getId()))
-                .applicants(personRepository.getApplicants(world.getId()))
-                .quests(questRepository.getQuests(world.getId()))
-                .places(openedPlaceMapper.select(world.getId()))
-                .build();
+        World world = worldMapper.selectBySaveDataId(saveDataId);
+        return buildGameWorld(world);
+
+    }
+
+    public GameWorld getGameWorld(long worldId) {
+        World world = worldMapper.select(worldId);
+        return buildGameWorld(world);
     }
 
     public void saveNew(GameWorld world, String saveDataId) {
@@ -67,5 +64,18 @@ public class WorldRepository {
                     if (questOrder.isNew()) questOrderMapper.insert(questOrder);
                     else questOrderMapper.update(questOrder.getId(), questOrder.getState());
                 });
+    }
+
+    private GameWorld buildGameWorld(World world) {
+        return GameWorld.builder()
+                .id(world.getId())
+                .gameDate(world.getGameDate())
+                .state(world.getState())
+                .guild(guildMapper.select(world.getId()))
+                .adventurers(personRepository.getAdventurers(world.getId()))
+                .applicants(personRepository.getApplicants(world.getId()))
+                .quests(questRepository.getQuests(world.getId()))
+                .places(openedPlaceMapper.select(world.getId()))
+                .build();
     }
 }

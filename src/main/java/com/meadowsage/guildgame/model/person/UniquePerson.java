@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum UniquePerson {
     // Tellan Wallace
-    TELLAN("テラン", "ウォレス", 28, 34, 45, 1, 2000, 30, true);
+    TELLAN("テラン", "ウォレス", 32, 34, 58, 1, 2000, 30, true);
 
     private final String firstName;
     private final String familyName;

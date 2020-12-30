@@ -1,11 +1,12 @@
 package com.meadowsage.guildgame.controller;
 
-import com.meadowsage.guildgame.controller.response.GetGameLogsResponse;
-import com.meadowsage.guildgame.controller.response.GetWorldResponse;
-import com.meadowsage.guildgame.controller.response.ToNextResponse;
-import com.meadowsage.guildgame.usecase.GetGameLogsUseCase;
+import com.meadowsage.guildgame.controller.response.world.DoAfternoonProcessResponse;
+import com.meadowsage.guildgame.controller.response.world.GetWorldResponse;
 import com.meadowsage.guildgame.usecase.GetWorldDataUseCase;
-import com.meadowsage.guildgame.usecase.ToNextUseCase;
+import com.meadowsage.guildgame.usecase.world.DoAfternoonProcessUseCase;
+import com.meadowsage.guildgame.usecase.world.DoMidnightProcessUseCase;
+import com.meadowsage.guildgame.usecase.world.DoMorningProcessUseCase;
+import com.meadowsage.guildgame.usecase.world.DoNightProcessUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,10 @@ import org.springframework.web.bind.annotation.*;
 @Transactional
 public class WorldController {
 
-    private final ToNextUseCase toNextUseCase;
-    private final GetGameLogsUseCase getGameLogsUseCase;
+    private final DoMorningProcessUseCase doMorningProcessUseCase;
+    private final DoAfternoonProcessUseCase doAfternoonProcessUseCase;
+    private final DoNightProcessUseCase doNightProcessUseCase;
+    private final DoMidnightProcessUseCase doMidnightProcessUseCase;
     private final GetWorldDataUseCase getWorldDataUseCase;
 
     // FIXME セーブデータIDはクエリパラメータで受け取る
@@ -33,24 +36,28 @@ public class WorldController {
         return new GetWorldResponse(result.getWorld(), result.getGameLogs(), result.getScenarios());
     }
 
-    // FIXME セーブデータIDはフォームで受け取る
-    @PutMapping("")
-    @ResponseBody
+    @PutMapping("/{worldId}/morning")
     @Transactional
-    public ToNextResponse toNextDay(@PathVariable String saveDataId) {
-        // TODO ゲーム日付のチェック
-        return new ToNextResponse(toNextUseCase.run(saveDataId));
+    public void doMorningProcess(@PathVariable long worldId) {
+        doMorningProcessUseCase.run(worldId);
     }
 
-    @GetMapping("/{worldId}/logs")
+    @PutMapping("/{worldId}/afternoon")
     @ResponseBody
-    @Transactional(readOnly = true)
-    public GetGameLogsResponse getGameLogs(
-            @PathVariable String saveDataId,
-            @PathVariable Long worldId,
-            @RequestParam Long questId
-    ) {
-        System.out.println(saveDataId);
-        return new GetGameLogsResponse(getGameLogsUseCase.run(worldId, questId));
+    @Transactional
+    public DoAfternoonProcessResponse doAfternoonProcess(@PathVariable long worldId) {
+        return new DoAfternoonProcessResponse(doAfternoonProcessUseCase.run(worldId));
+    }
+
+    @PutMapping("/{worldId}/night")
+    @Transactional
+    public void doNightProcess(@PathVariable long worldId) {
+        doNightProcessUseCase.run(worldId);
+    }
+
+    @PutMapping("/{worldId}/midnight")
+    @Transactional
+    public void doMidnightProcess(@PathVariable long worldId) {
+        doMidnightProcessUseCase.run(worldId);
     }
 }

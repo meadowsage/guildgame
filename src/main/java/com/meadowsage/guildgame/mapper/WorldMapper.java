@@ -8,7 +8,9 @@ import org.apache.ibatis.annotations.Mapper;
 public interface WorldMapper {
     void save(GameWorld world, String saveDataId);
 
-    World select(String saveDataId);
+    World select(long worldId);
+
+    World selectBySaveDataId(String saveDataId);
 
     void update(GameWorld world);
 }

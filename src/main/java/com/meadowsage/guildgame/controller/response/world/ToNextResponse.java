@@ -1,8 +1,8 @@
-package com.meadowsage.guildgame.controller.response;
+package com.meadowsage.guildgame.controller.response.world;
 
 import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.system.GameLog;
-import com.meadowsage.guildgame.usecase.ToNextUseCase;
+import com.meadowsage.guildgame.usecase.world.ToNextUseCase;
 import lombok.Data;
 
 import java.util.List;

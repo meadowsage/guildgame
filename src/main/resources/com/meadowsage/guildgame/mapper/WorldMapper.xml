@@ -8,9 +8,15 @@
     </insert>
 
     <select id="select" resultType="com.meadowsage.guildgame.model.world.World">
-        SELECT w.*
+        SELECT *
         FROM world w
-        WHERE w.save_data_id = #{saveDataId}
+        WHERE w.id = #{worldId}
+    </select>
+
+    <select id="selectBySaveDataId" resultType="com.meadowsage.guildgame.model.world.World">
+        SELECT *
+        FROM world
+        WHERE save_data_id = #{saveDataId}
     </select>
 
     <update id="update">

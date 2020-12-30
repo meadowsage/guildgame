@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 // FIXME /api/world
 @RequestMapping("/api/{saveDataId}/world/{worldId}")
-@Transactional
 public class ReportController {
 
     private final GetDailyReportUseCase getDailyReportUseCase;

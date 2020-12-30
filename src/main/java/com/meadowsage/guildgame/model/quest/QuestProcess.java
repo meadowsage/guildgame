@@ -30,7 +30,7 @@ public class QuestProcess {
     public void run(Dice dice, GameLogger gameLogger) {
         gameLogger.add(party.stream()
                 .map(adventurer -> adventurer.getName().getFirstName())
-                .collect(Collectors.joining("、")) + "が" + quest.getName() + "を開始");
+                .collect(Collectors.joining("、")) + "が" + quest.getName() + "を開始", quest);
 
         // パーティ全員が成否判定を行い、成功度を合算
         // TODO 発揮値順

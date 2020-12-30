@@ -1,4 +1,4 @@
-package com.meadowsage.guildgame.usecase;
+package com.meadowsage.guildgame.usecase.world;
 
 import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.accounting.Treasurer;
@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Deprecated
 public class ToNextUseCase {
     private final WorldRepository worldRepository;
     private final GameLogRepository gameLogRepository;

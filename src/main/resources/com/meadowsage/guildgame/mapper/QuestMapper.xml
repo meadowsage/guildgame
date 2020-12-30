@@ -21,12 +21,16 @@
         qo.state as qo_state
         FROM quest q
         LEFT JOIN quest_order qo ON q.id = qo.quest_id
+        WHERE true
         <if test="questId != null">
-            WHERE q.id = #{questId}
+            AND q.id = #{questId}
         </if>
         <if test="worldId != null">
-            WHERE q.is_closed = false
+            AND q.is_closed = false
             AND q.world_id = #{worldId}
+        </if>
+        <if test="ongoing == true">
+            AND (qo.state = 'ONGOING' OR qo.state IS NULL)
         </if>
         ORDER BY q.id
     </select>

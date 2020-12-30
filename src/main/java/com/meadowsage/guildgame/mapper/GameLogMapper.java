@@ -9,7 +9,7 @@ import java.util.List;
 public interface GameLogMapper {
     void insert(GameLog gameLog);
 
-    List<GameLog> select(long worldId, long gameDate);
+    List<GameLog> selectAll(long worldId, long gameDate);
 
-    List<GameLog> selectByQuestId(long worldId, long questId);
+    List<GameLog> select(long worldId, int gameDate, Long questId, Boolean otherActions);
 }
