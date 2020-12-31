@@ -41,10 +41,10 @@ public class StartNewGameUseCase {
 
         // 初期表示用のログ生成
         GameLogger gameLogger = new GameLogger(world.getId(), world.getGameDate() - 1);
-        gameLogger.add("冒険者ギルドへようこそ！");
-        gameLogger.add("「冒険者」メニューでは、ギルドに所属する冒険者の情報を確認できます。");
-        gameLogger.add("「クエスト」メニューでは、クエスト受注状態を編集ができます。");
-        gameLogger.add("右下の「NEXT」ボタンを押して、日付を進めてみましょう。");
+        gameLogger.important("冒険者ギルドへようこそ！");
+        gameLogger.info("「冒険者」メニューでは、ギルドに所属する冒険者の情報を確認できます。");
+        gameLogger.info("「クエスト」メニューでは、クエスト受注状態を編集ができます。");
+        gameLogger.info("右下の「NEXT」ボタンを押して、日付を進めてみましょう。");
         gameLogRepository.save(gameLogger);
 
         // 保存

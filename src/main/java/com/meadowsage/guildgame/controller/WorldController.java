@@ -1,12 +1,9 @@
 package com.meadowsage.guildgame.controller;
 
 import com.meadowsage.guildgame.controller.response.world.DoAfternoonProcessResponse;
+import com.meadowsage.guildgame.controller.response.world.GetRandomCommentResponse;
 import com.meadowsage.guildgame.controller.response.world.GetWorldResponse;
-import com.meadowsage.guildgame.usecase.world.GetWorldDataUseCase;
-import com.meadowsage.guildgame.usecase.world.DoAfternoonProcessUseCase;
-import com.meadowsage.guildgame.usecase.world.DoMidnightProcessUseCase;
-import com.meadowsage.guildgame.usecase.world.DoMorningProcessUseCase;
-import com.meadowsage.guildgame.usecase.world.DoNightProcessUseCase;
+import com.meadowsage.guildgame.usecase.world.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +23,7 @@ public class WorldController {
     private final DoNightProcessUseCase doNightProcessUseCase;
     private final DoMidnightProcessUseCase doMidnightProcessUseCase;
     private final GetWorldDataUseCase getWorldDataUseCase;
+    private final GetRandomCommentUseCase getRandomCommentUseCase;
 
     // FIXME セーブデータIDはクエリパラメータで受け取る
     @GetMapping("")
@@ -33,7 +31,7 @@ public class WorldController {
     @Transactional(readOnly = true)
     public GetWorldResponse getWorld(@PathVariable String saveDataId) {
         GetWorldDataUseCase.GetWorldDataUseCaseResult result = getWorldDataUseCase.run(saveDataId);
-        return new GetWorldResponse(result.getWorld(), result.getGameLogs(), result.getScenarios());
+        return new GetWorldResponse(result.getWorld(), result.getScenarios());
     }
 
     @PutMapping("/{worldId}/morning")
@@ -59,5 +57,11 @@ public class WorldController {
     @Transactional
     public void doMidnightProcess(@PathVariable long worldId) {
         doMidnightProcessUseCase.run(worldId);
+    }
+
+    @GetMapping("/{worldId}/comment")
+    @Transactional(readOnly = true)
+    public GetRandomCommentResponse getRandomComment(@PathVariable long worldId) {
+        return new GetRandomCommentResponse(getRandomCommentUseCase.run(worldId));
     }
 }

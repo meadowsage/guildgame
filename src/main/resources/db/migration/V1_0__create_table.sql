@@ -86,6 +86,7 @@ CREATE TABLE game_log
     quest_id   bigint REFERENCES quest (id) ON DELETE CASCADE,
     message    varchar(100) NOT NULL,
     game_date  int          NOT NULL,
+    log_level  smallint     NOT NULL,
     created_at timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

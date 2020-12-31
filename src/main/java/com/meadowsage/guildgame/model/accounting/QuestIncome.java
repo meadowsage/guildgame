@@ -21,7 +21,7 @@ public class QuestIncome {
                 gameDate);
 
         guild.earnMoney(quest.getRewards());
-        gameLogger.add(quest.getName() + "の報酬として" + quest.getRewards().getValue() + "Gを獲得した。");
+        gameLogger.detail(quest.getName() + "の報酬として" + quest.getRewards().getValue() + "Gを獲得した。");
 
         return questIncome;
     }

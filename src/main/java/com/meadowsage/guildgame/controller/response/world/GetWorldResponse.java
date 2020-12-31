@@ -1,11 +1,9 @@
 package com.meadowsage.guildgame.controller.response.world;
 
-import com.meadowsage.guildgame.model.world.GameWorld;
-import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.person.ApplicantReviewer;
+import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.scenario.Scenario;
-import com.meadowsage.guildgame.model.system.GameLog;
-import lombok.AllArgsConstructor;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,12 +15,11 @@ import java.util.stream.Collectors;
 public class GetWorldResponse {
     ResponseWorld world;
     ResponseGuild guild;
-    List<ResponseGameLog> gameLogs;
     List<ResponseAdventurer> adventurers;
     List<ResponseApplicant> applicants;
     List<ResponseScenario> scenarios;
 
-    public GetWorldResponse(GameWorld world, List<GameLog> gameLogs, List<Scenario> scenarios) {
+    public GetWorldResponse(GameWorld world, List<Scenario> scenarios) {
         this.world = ResponseWorld.builder()
                 .id(world.getId())
                 .gameDate(world.getGameDate())
@@ -31,10 +28,6 @@ public class GetWorldResponse {
         this.guild = ResponseGuild.builder()
                 .money(world.getGuild().getMoney().getValue())
                 .reputation(world.getGuild().getReputation()).build();
-
-        this.gameLogs = gameLogs.stream()
-                .map(gameLog -> new ResponseGameLog(gameLog.getMessage()))
-                .collect(Collectors.toList());
 
         this.adventurers = world.getAdventurers().stream()
                 .sorted(Comparator.comparing(Person::getId))
@@ -87,12 +80,6 @@ public class GetWorldResponse {
     private static class ResponseGuild {
         long money;
         int reputation;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    private static class ResponseGameLog {
-        String message;
     }
 
     @Builder

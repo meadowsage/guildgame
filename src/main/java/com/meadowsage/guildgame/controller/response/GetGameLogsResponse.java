@@ -14,6 +14,7 @@ public class GetGameLogsResponse {
         this.gameLogs = gameLogs.stream().map(gameLog -> {
             ResponseGameLog res = new ResponseGameLog();
             res.setMessage(gameLog.getMessage());
+            res.setLogLevel(gameLog.getLogLevel());
             return res;
         }).collect(Collectors.toList());
     }
@@ -21,5 +22,6 @@ public class GetGameLogsResponse {
     @Data
     private static class ResponseGameLog {
         String message;
+        int logLevel;
     }
 }

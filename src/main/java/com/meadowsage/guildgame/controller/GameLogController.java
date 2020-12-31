@@ -16,12 +16,12 @@ public class GameLogController {
     @GetMapping("")
     @ResponseBody
     @Transactional(readOnly = true)
-    public GetGameLogsResponse getQuestGameLogs(
+    public GetGameLogsResponse getGameLogs(
             @PathVariable Long worldId,
             @RequestParam Integer gameDate,
-            @RequestParam Boolean otherActions,
+            @RequestParam(required = false) Boolean noQuestId,
             @RequestParam(required = false) Long questId
     ) {
-        return new GetGameLogsResponse(getGameLogsUseCase.run(worldId, gameDate, questId, otherActions));
+        return new GetGameLogsResponse(getGameLogsUseCase.run(worldId, gameDate, questId, noQuestId));
     }
 }

@@ -11,5 +11,5 @@ public interface GameLogMapper {
 
     List<GameLog> selectAll(long worldId, long gameDate);
 
-    List<GameLog> select(long worldId, int gameDate, Long questId, Boolean otherActions);
+    List<GameLog> select(long worldId, int gameDate, Long questId, Boolean withQuestIdNull);
 }

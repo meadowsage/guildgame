@@ -3,11 +3,11 @@ package com.meadowsage.guildgame.controller.response;
 import com.meadowsage.guildgame.model.person.Adventurer;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestOrder;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,10 +15,7 @@ import java.util.stream.Collectors;
 public class GetOngoingQuestsResponse {
     List<ResponseQuest> quests;
 
-    public GetOngoingQuestsResponse(
-            List<Quest> quests,
-            List<Adventurer> adventurers
-    ) {
+    public GetOngoingQuestsResponse(List<Quest> quests, List<Adventurer> adventurers) {
         this.quests = quests.stream().map(quest -> {
             List<ResponseQuestOrder> responseQuestOrders = quest.getQuestOrders().stream()
                     .map(questOrder -> new ResponseQuestOrder(quest, questOrder, adventurers))
@@ -61,19 +58,29 @@ public class GetOngoingQuestsResponse {
             Adventurer target = adventurers.stream()
                     .filter(adventurer -> adventurer.getId() == questOrder.getPersonId())
                     .findAny().orElse(null);
-            this.reservedBy = (target != null) ? new ResponseReservedBy(
-                    target.getId(),
-                    target.getName().getFirstName(),
-                    target.calcRewards(quest).getValue()
-            ) : null;
+            this.reservedBy = (target != null) ? ResponseReservedBy.builder()
+                    .id(target.getId())
+                    .name(target.getName().getFirstName())
+                    .fullName(target.getName().getFullName())
+                    .battle(target.getBattle().getValue())
+                    .knowledge(target.getKnowledge().getValue())
+                    .support(target.getSupport().getValue())
+                    .skills(Arrays.asList("ベテラン", "剣士"))
+                    .rewards(target.calcRewards(quest).getValue())
+                    .build() : null;
         }
     }
 
-    @AllArgsConstructor
     @Getter
+    @Builder
     private static class ResponseReservedBy {
         long id;
         String name;
+        String fullName;
+        int battle;
+        int knowledge;
+        int support;
+        List<String> skills;
         long rewards;
     }
 }

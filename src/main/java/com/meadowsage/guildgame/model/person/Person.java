@@ -1,11 +1,12 @@
 package com.meadowsage.guildgame.model.person;
 
-import com.meadowsage.guildgame.model.world.GameWorld;
+import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -103,5 +104,22 @@ public abstract class Person {
                     Money.of(money),
                     Reputation.of(reputation));
         }
+    }
+
+    public String getRandomComment() {
+        // TODO 性格や状況で変える
+        if (isTired()) return "疲れた……今日は休ませてくれ。";
+
+        String[] comments = new String[]{
+                "いいクエストある？",
+                "こんにちはー",
+                "仕事したくない…",
+                "暇だなあ。",
+                "支部長さん、調子どう？",
+                "ここは平和だねえ。",
+                "腕がなまってきたかもしれん。"
+        };
+        int result = new Dice().roll(1, comments.length);
+        return comments[result - 1];
     }
 }

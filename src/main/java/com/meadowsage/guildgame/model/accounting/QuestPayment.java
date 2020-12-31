@@ -33,7 +33,7 @@ public class QuestPayment {
 
         guild.payMoney(questOrder.getRewards());
         adventurer.earnMoney(questOrder.getRewards());
-        gameLogger.add(adventurer.getName().getFirstName() + "にクエスト報酬として"
+        gameLogger.detail(adventurer.getName().getFirstName() + "にクエスト報酬として"
                 + questOrder.getRewards().getValue() + "Gを支払った。");
 
         return questIncome;

@@ -28,9 +28,10 @@ public class QuestProcess {
     }
 
     public void run(Dice dice, GameLogger gameLogger) {
-        gameLogger.add(party.stream()
+        gameLogger.detail(party.stream()
                 .map(adventurer -> adventurer.getName().getFirstName())
-                .collect(Collectors.joining("、")) + "が" + quest.getName() + "を開始", quest);
+                .collect(Collectors.joining("、")) + "が" + quest.getName() + "を開始した。",
+                null, quest);
 
         // パーティ全員が成否判定を行い、成功度を合算
         // TODO 発揮値順
@@ -71,8 +72,9 @@ public class QuestProcess {
         else if (target < TARGET_MIN) target = TARGET_MIN;
 
         Dice.DiceRollResult result = dice.calcResult(target);
-        gameLogger.add("- " + adventurer.getName().getFirstName() + ": [1D100 <= " + target + "] → " +
-                result.getNumber() + " " + result.getType().name(), quest);
+        String message = adventurer.getName().getFirstName() + ": [1D100 <= " + target + "] → " +
+                result.getNumber() + " " + result.getType().name();
+        gameLogger.debug(message, null, quest);
 
         // ダイスロールの結果に応じて成功度を決定
         // 失敗した場合は体力を消費
@@ -112,8 +114,8 @@ public class QuestProcess {
 
         // ギルドに報酬を付与
 
-        gameLogger.add(party.get(0).getName().getFirstName() + "たちが" + quest.getName() + "を完了した！", party.get(0), quest);
-        gameLogger.add("TODO 名声と経験点の獲得処理");
+        gameLogger.important(party.get(0).getName().getFirstName() + "たちが" + quest.getName() + "を完了した！", party.get(0), quest);
+        gameLogger.debug("TODO 名声と経験点の獲得処理", null, quest);
     }
 
     private void failure(GameLogger gameLogger) {
@@ -123,6 +125,6 @@ public class QuestProcess {
             person.getReputation().add(quest.getDifficulty() / 10 / party.size() * -1);
             person.getEnergy().consume(2);
         });
-        gameLogger.add(party.get(0).getName().getFirstName() + "たちは" + quest.getName() + "に失敗した…", party.get(0), quest);
+        gameLogger.fatal(party.get(0).getName().getFirstName() + "たちは" + quest.getName() + "に失敗した…", party.get(0), quest);
     }
 }

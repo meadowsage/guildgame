@@ -36,11 +36,11 @@ public class Adventurer extends Person {
     public void doDaytimeActivity(GameWorld world, GameLogger gameLogger) {
         if (isTired()) {
             // 疲労状態の場合、休息を取る
-            gameLogger.add(getName().getFirstName() + "は休息をとった。", this);
+            gameLogger.info(getName().getFirstName() + "は休息をとった。", this, null);
             getEnergy().recoverToMax();
         } else {
             // TODO クエスト中でないキャラクターの行動
-            gameLogger.add(getName().getFirstName() + "は何もしなかった。", this);
+            gameLogger.info(getName().getFirstName() + "は何もしなかった。", this, null);
         }
     }
 

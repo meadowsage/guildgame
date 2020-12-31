@@ -12,11 +12,14 @@ import java.util.List;
 public class GetQuestGameLogsUseCase {
     private final GameLogRepository gameLogRepository;
 
-    public List<GameLog> run(long worldId, int gameDate, Long questId, Boolean otherActions) {
-        if(otherActions) {
-            return gameLogRepository.getOtherActionGameLogs(worldId, gameDate);
-        } else {
+    public List<GameLog> run(long worldId, int gameDate, Long questId, Boolean noQuestId) {
+        if(noQuestId != null && noQuestId) {
+            // クエストIDがNULL（その他行動）のログのみ取得
+            return gameLogRepository.getGameLogsWithQuestIdNull(worldId, gameDate);
+        } else if(questId != null) {
             return gameLogRepository.getQuestGameLogs(worldId, gameDate, questId);
+        } else {
+            return gameLogRepository.getGameLogs(worldId, gameDate);
         }
     }
 }

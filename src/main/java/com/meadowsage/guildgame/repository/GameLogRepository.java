@@ -26,7 +26,7 @@ public class GameLogRepository {
         return gameLogMapper.select(worldId, gameDate, questId, null);
     }
 
-    public List<GameLog> getOtherActionGameLogs(long worldId, int gameDate) {
+    public List<GameLog> getGameLogsWithQuestIdNull(long worldId, int gameDate) {
         return gameLogMapper.select(worldId, gameDate, null, true);
     }
 }
