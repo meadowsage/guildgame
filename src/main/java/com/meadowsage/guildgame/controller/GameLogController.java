@@ -1,7 +1,7 @@
 package com.meadowsage.guildgame.controller;
 
 import com.meadowsage.guildgame.controller.response.GetGameLogsResponse;
-import com.meadowsage.guildgame.usecase.GetQuestGameLogsUseCase;
+import com.meadowsage.guildgame.usecase.GetGameLogsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/{saveDataId}/world/{worldId}/logs")
 public class GameLogController {
 
-    private final GetQuestGameLogsUseCase getGameLogsUseCase;
+    private final GetGameLogsUseCase getGameLogsUseCase;
 
     @GetMapping("")
     @ResponseBody

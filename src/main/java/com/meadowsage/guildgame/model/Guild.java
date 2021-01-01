@@ -49,11 +49,11 @@ public class Guild {
                                 QuestPayment.process(quest, questOrder, adventurer, this, gameDate, gameLogger))
                         );
             });
-            // 残高を保存
-            treasurer.setGuildBalance(new GuildBalance(worldId, money.getValue(), gameDate));
             // クエストをクローズ
             quest.close();
         });
+        // 残高を保存
+        treasurer.setGuildBalance(new GuildBalance(worldId, money.getValue(), gameDate));
     }
 
     public void earnMoney(Money money) {

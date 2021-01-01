@@ -53,7 +53,7 @@ CREATE TABLE quest
 (
     id           bigserial PRIMARY KEY,
     world_id     bigint       NOT NULL REFERENCES world (id) ON DELETE CASCADE,
-    name         varchar(100) NOT NULL,
+    content      varchar(40) NOT NULL,
     type         varchar(10)  NOT NULL,
     place        varchar(40)  NOT NULL,
     difficulty   int          NOT NULL,

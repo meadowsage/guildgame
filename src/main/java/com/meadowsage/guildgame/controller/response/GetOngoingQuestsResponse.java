@@ -65,7 +65,13 @@ public class GetOngoingQuestsResponse {
                     .battle(target.getBattle().getValue())
                     .knowledge(target.getKnowledge().getValue())
                     .support(target.getSupport().getValue())
-                    .skills(Arrays.asList("ベテラン", "剣士"))
+                    .energy(target.getEnergy().getValue())
+                    .skills(Arrays.asList(
+                            ResponseSkill.builder().name("ベテラン").color("green").build(),
+                            ResponseSkill.builder().name("不運").color("red").build(),
+                            ResponseSkill.builder().name("剣術").color("purple").level(9).build(),
+                            ResponseSkill.builder().name("回復魔法").color("grey").level(1).build()
+                    ))
                     .rewards(target.calcRewards(quest).getValue())
                     .build() : null;
         }
@@ -80,7 +86,16 @@ public class GetOngoingQuestsResponse {
         int battle;
         int knowledge;
         int support;
-        List<String> skills;
+        int energy;
+        List<ResponseSkill> skills;
         long rewards;
+    }
+
+    @Getter
+    @Builder
+    private static class ResponseSkill {
+        String name;
+        Integer level;
+        String color;
     }
 }

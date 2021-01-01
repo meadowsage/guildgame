@@ -1,5 +1,6 @@
 package com.meadowsage.guildgame.model;
 
+import com.meadowsage.guildgame.model.quest.QuestContent;
 import com.meadowsage.guildgame.model.quest.QuestType;
 import com.meadowsage.guildgame.model.system.Dice;
 import lombok.AllArgsConstructor;
@@ -12,24 +13,24 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum Place {
     CITY("町",
-            new int[]{80, 0, 20, 0},
-            new String[]{"警備", "運搬手伝い", "工事手伝い"},
-            new String[]{""},
-            new String[]{"ワイルドハウンド退治", "ラージラット退治"},
-            new String[]{""}),
+            new int[]{100, 0, 0, 0},
+            new QuestContent[]{QuestContent.CITY_GUARD, QuestContent.CITY_ASSIST_HAUL, QuestContent.CITY_ASSIST_CONSTRUCTION},
+            new QuestContent[]{},
+            new QuestContent[]{},
+            new QuestContent[]{}),
     MUSHROOM_FOREST("茸の森",
             new int[]{10, 40, 25, 25},
-            new String[]{"職人警護", "運搬手伝い"},
-            new String[]{"薬草の採集", "食卓キノコの採集", "薬用キノコの採集"},
-            new String[]{"暴れラビット退治", "フォレストスライム退治"},
-            new String[]{"奥地探索"});
+            new QuestContent[]{},
+            new QuestContent[]{},
+            new QuestContent[]{},
+            new QuestContent[]{});
 
     private final String placeName;
     private final int[] questTypeTable;
-    private final String[] taskQuestNames;
-    private final String[] harvestQuestNames;
-    private final String[] huntQuestNames;
-    private final String[] exploreQuestNames;
+    private final QuestContent[] taskQuestContents;
+    private final QuestContent[] harvestQuestContents;
+    private final QuestContent[] huntQuestContents;
+    private final QuestContent[] exploreQuestContents;
 
     public QuestType decideQuestType(Dice dice) {
         int result = dice.roll(1, Arrays.stream(questTypeTable).sum());
@@ -43,14 +44,16 @@ public enum Place {
         return QuestType.values()[QuestType.values().length - 1];
     }
 
-    public String decideQuestName(QuestType type, Dice dice) {
-        String[] options = new String[]{""};
-        if (type.equals(QuestType.TASK)) options = taskQuestNames;
-        else if (type.equals(QuestType.HARVEST)) options = harvestQuestNames;
-        else if (type.equals(QuestType.HUNT)) options = huntQuestNames;
-        else if (type.equals(QuestType.EXPLORE)) options = exploreQuestNames;
+    public QuestContent decideQuestDetail(QuestType type, Dice dice) {
+        QuestContent[] options = new QuestContent[]{};
+        if (type.equals(QuestType.TASK)) options = taskQuestContents;
+        else if (type.equals(QuestType.HARVEST)) options = harvestQuestContents;
+        else if (type.equals(QuestType.HUNT)) options = huntQuestContents;
+        else if (type.equals(QuestType.EXPLORE)) options = exploreQuestContents;
+
+        if (options.length == 0) throw new IllegalStateException();
 
         int choice = dice.roll(1, options.length);
-        return placeName + "の" + options[choice - 1];
+        return options[choice - 1];
     }
 }

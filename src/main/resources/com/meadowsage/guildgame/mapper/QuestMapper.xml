@@ -38,7 +38,7 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="quest.id">
         INSERT INTO quest (world_id,
                            type,
-                           name,
+                           content,
                            place,
                            difficulty,
                            danger,
@@ -46,7 +46,7 @@
                            rewards)
         VALUES (#{worldId},
                 #{quest.type},
-                #{quest.name},
+                #{quest.content},
                 #{quest.place},
                 #{quest.difficulty},
                 #{quest.danger},

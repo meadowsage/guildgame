@@ -29,13 +29,18 @@ public class QuestProcess {
 
     public void run(Dice dice, GameLogger gameLogger) {
         gameLogger.detail(party.stream()
-                .map(adventurer -> adventurer.getName().getFirstName())
-                .collect(Collectors.joining("、")) + "が" + quest.getName() + "を開始した。",
+                        .map(adventurer -> adventurer.getName().getFirstName())
+                        .collect(Collectors.joining("、")) + "が" + quest.getName() + "を開始した。",
                 null, quest);
+
 
         // パーティ全員が成否判定を行い、成功度を合算
         // TODO 発揮値順
-        int successPoint = party.stream().mapToInt(person -> roll(person, dice, gameLogger)).sum();
+        int successPoint = 0;
+
+        for (Adventurer adventurer : party) {
+            successPoint += tryQuest(adventurer, dice, gameLogger);
+        }
 
         // TODO ランダムイベント
 
@@ -58,10 +63,9 @@ public class QuestProcess {
         party.forEach(Person::setAsActioned);
     }
 
-    private int roll(Adventurer adventurer, Dice dice, GameLogger gameLogger) {
+    private int tryQuest(Adventurer adventurer, Dice dice, GameLogger gameLogger) {
         // 発揮値を算出
         int performance = adventurer.getPerformance(quest.getType());
-        System.out.println("- " + adventurer.getName().getFirstName() + ": 発揮値" + performance);
 
         // 目標値：発揮値との差分で補正
         // 目標値に達していない場合はマイナス補正
@@ -71,26 +75,29 @@ public class QuestProcess {
         if (target > TARGET_MAX) target = TARGET_MAX;
         else if (target < TARGET_MIN) target = TARGET_MIN;
 
-        Dice.DiceRollResult result = dice.calcResult(target);
-        String message = adventurer.getName().getFirstName() + ": [1D100 <= " + target + "] → " +
-                result.getNumber() + " " + result.getType().name();
-        gameLogger.debug(message, null, quest);
+        gameLogger.debug(
+                adventurer.getName().getFirstName() + ": 発揮値" + performance
+                        + " / 難易度" + quest.getDifficulty() + " -> 補正値" + modifier,
+                adventurer, quest);
 
-        // ダイスロールの結果に応じて成功度を決定
-        // 失敗した場合は体力を消費
+        Dice.DiceRollResult result = dice.calcResult(target);
+
+        String resultMessage = adventurer.getName().getFirstName() + ": [1D100 <= " + target + "] → " +
+                result.getNumber() + " " + result.getType().name();
+        gameLogger.debug(resultMessage, adventurer, quest);
+
+        // ダイスロールの結果に応じてイベントを実行
         switch (result.getType()) {
             case CRITICAL:
-                return 3;
+                return quest.criticalEvent(adventurer, gameLogger);
             case SPECIAL:
-                return 2;
+                return quest.specialEvent(adventurer, gameLogger);
             case SUCCESS:
-                return 1;
+                return quest.successEvent(adventurer, gameLogger);
             case FAILURE:
-                adventurer.getEnergy().consume(1);
-                return 0;
+                return quest.failureEvent(adventurer, gameLogger);
             case FUMBLE:
-                adventurer.getEnergy().consume(2);
-                return -1;
+                return quest.fumbleEvent(adventurer, gameLogger);
             default:
                 return 0;
         }
@@ -113,8 +120,7 @@ public class QuestProcess {
         });
 
         // ギルドに報酬を付与
-
-        gameLogger.important(party.get(0).getName().getFirstName() + "たちが" + quest.getName() + "を完了した！", party.get(0), quest);
+        gameLogger.important(party.get(0).getName().getFirstName() + "たちが" + quest.getName() + "を完了した！", null, quest);
         gameLogger.debug("TODO 名声と経験点の獲得処理", null, quest);
     }
 
@@ -125,6 +131,6 @@ public class QuestProcess {
             person.getReputation().add(quest.getDifficulty() / 10 / party.size() * -1);
             person.getEnergy().consume(2);
         });
-        gameLogger.fatal(party.get(0).getName().getFirstName() + "たちは" + quest.getName() + "に失敗した…", party.get(0), quest);
+        gameLogger.fatal(party.get(0).getName().getFirstName() + "たちは" + quest.getName() + "に失敗した…", null, quest);
     }
 }

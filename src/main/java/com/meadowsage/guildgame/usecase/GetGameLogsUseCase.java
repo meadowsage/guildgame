@@ -9,7 +9,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class GetQuestGameLogsUseCase {
+public class GetGameLogsUseCase {
     private final GameLogRepository gameLogRepository;
 
     public List<GameLog> run(long worldId, int gameDate, Long questId, Boolean noQuestId) {

@@ -2,6 +2,7 @@ package com.meadowsage.guildgame.model.quest;
 
 import com.meadowsage.guildgame.model.Place;
 import com.meadowsage.guildgame.model.person.Adventurer;
+import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Money;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,20 +28,25 @@ public class Quest {
     private int danger;
     @Getter
     private Place place;
+    private QuestContent content;
     @Getter
     private int processedAt;
     @Getter
     private boolean isClosed;
     @Getter
-    private List<QuestOrder> questOrders = new ArrayList<>();
+    private final List<QuestOrder> questOrders = new ArrayList<>();
 
-    Quest(QuestType type, String name, int difficulty, int danger, Place place) {
-        this.name = name;
+    Quest(QuestType type, QuestContent content, int difficulty, int danger, Place place) {
         this.type = type;
         this.difficulty = difficulty;
         this.danger = danger;
         this.place = place;
+        this.content = content;
         this.rewards = calcRewards();
+    }
+
+    public String getName() {
+        return this.name = place.getPlaceName() + "の" + content.getContentName();
     }
 
     private Money calcRewards() {
@@ -107,6 +113,23 @@ public class Quest {
 
     public void close() {
         isClosed = true;
+    }
+
+    public int criticalEvent(Adventurer adventurer, GameLogger gameLogger) {
+        return content.getEvents().criticalEvent(this, adventurer, gameLogger);
+    }
+
+    public int specialEvent(Adventurer adventurer, GameLogger gameLogger) {
+        return content.getEvents().specialEvent(this, adventurer, gameLogger);
+    }
+    public int successEvent(Adventurer adventurer, GameLogger gameLogger) {
+        return content.getEvents().successEvent(this, adventurer, gameLogger);
+    }
+    public int failureEvent(Adventurer adventurer, GameLogger gameLogger) {
+        return content.getEvents().failureEvent(this, adventurer, gameLogger);
+    }
+    public int fumbleEvent(Adventurer adventurer, GameLogger gameLogger) {
+        return content.getEvents().fumbleEvent(this, adventurer, gameLogger);
     }
 
     /**

@@ -30,10 +30,10 @@ public class QuestGenerator {
         return IntStream.range(0, number).mapToObj(value -> {
             Place place = decidePlace();
             QuestType type = place.decideQuestType(dice);
-            String name = place.decideQuestName(type, dice);
+            QuestContent detail = place.decideQuestDetail(type, dice);
             int difficulty = decideDifficulty(type, place);
             int danger = decideDanger(type);
-            return new Quest(type, name, difficulty, danger, place);
+            return new Quest(type, detail, difficulty, danger, place);
         }).collect(Collectors.toList());
     }
 
