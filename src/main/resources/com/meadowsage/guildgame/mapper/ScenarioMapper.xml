@@ -6,7 +6,8 @@
         INSERT INTO scenario_progress(world_id, scenario_id)
         VALUES (#{worldId}, #{scenarioId})
     </insert>
-    <select id="select" resultType="java.lang.Integer">
+
+    <select id="select" resultType="java.lang.String">
         SELECT scenario_id
         FROM scenario_progress
         WHERE world_id = #{worldId}

@@ -4,13 +4,15 @@ import com.meadowsage.guildgame.mapper.GuildMapper;
 import com.meadowsage.guildgame.mapper.OpenedPlaceMapper;
 import com.meadowsage.guildgame.mapper.QuestOrderMapper;
 import com.meadowsage.guildgame.mapper.WorldMapper;
-import com.meadowsage.guildgame.model.world.GameWorld;
+import com.meadowsage.guildgame.model.Place;
 import com.meadowsage.guildgame.model.quest.Quest;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.world.World;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -54,6 +56,11 @@ public class WorldRepository {
         // リソース更新
         world.getAllPersons().forEach(person -> personRepository.save(person, world.getId()));
         world.getQuests().forEach(quest -> questRepository.save(quest, world.getId()));
+
+        // 追加された場所の解放
+        List<Place> opened = openedPlaceMapper.select(world.getId());
+        world.getPlaces().stream().filter(place -> !opened.contains(place))
+                .forEach(place -> openedPlaceMapper.insert(place, world.getId()));
 
         // クエスト発注レコードの作成・更新
         world.getQuests().stream()

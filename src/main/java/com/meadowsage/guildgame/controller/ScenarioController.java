@@ -14,7 +14,7 @@ public class ScenarioController {
 
     @PostMapping("/{scenarioId}")
     @Transactional
-    public void doneScenario(@PathVariable Long worldId, @PathVariable Integer scenarioId) {
+    public void doneScenario(@PathVariable Long worldId, @PathVariable String scenarioId) {
         // TODO 入力チェック
         markAsReadScenarioUseCase.run(worldId, scenarioId);
     }

@@ -20,7 +20,7 @@
         qo.rewards as qo_r_value,
         qo.state as qo_state
         FROM quest q
-        LEFT JOIN quest_order qo ON q.id = qo.quest_id
+        LEFT JOIN quest_order qo ON (q.id = qo.quest_id AND qo.state != 'FAILURE')
         WHERE true
         <if test="questId != null">
             AND q.id = #{questId}
@@ -30,7 +30,7 @@
             AND q.world_id = #{worldId}
         </if>
         <if test="ongoing == true">
-            AND (qo.state = 'ONGOING' OR qo.state IS NULL)
+            AND q.is_closed = false
         </if>
         ORDER BY q.id
     </select>

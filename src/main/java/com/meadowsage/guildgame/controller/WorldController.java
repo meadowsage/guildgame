@@ -31,7 +31,7 @@ public class WorldController {
     @Transactional(readOnly = true)
     public GetWorldResponse getWorld(@PathVariable String saveDataId) {
         GetWorldDataUseCase.GetWorldDataUseCaseResult result = getWorldDataUseCase.run(saveDataId);
-        return new GetWorldResponse(result.getWorld(), result.getScenarios());
+        return new GetWorldResponse(result);
     }
 
     @PutMapping("/{worldId}/morning")

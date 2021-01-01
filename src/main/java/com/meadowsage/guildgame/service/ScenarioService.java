@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class ScenarioService {
     private final ScenarioMapper scenarioMapper;
 
-    public void done(long worldId, int scenarioId) {
+    public void markAsDone(long worldId, String scenarioId) {
         scenarioMapper.insertCompletedRecord(worldId, scenarioId);
     }
 }

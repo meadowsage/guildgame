@@ -15,13 +15,8 @@ public class QuestGenerator {
     int reputation;
     List<Place> places;
 
-    public QuestGenerator(
-            int reputation,
-            List<Place> places,
-            Dice dice
-    ) {
+    public QuestGenerator(int reputation, List<Place> places, Dice dice) {
         this.reputation = reputation;
-        // TODO Worldから取得
         this.places = places;
         this.dice = dice;
     }
@@ -39,13 +34,13 @@ public class QuestGenerator {
 
     private Place decidePlace() {
         // 行ける場所から決定
-        // 場所に応じて難易度の補正が入る
-        return this.places.get(0);
+        // FIXME 場所に応じて難易度の補正が入る
+        return places.get(dice.roll(1, places.size()) - 1);
     }
 
     private int decideDifficulty(QuestType type, Place place) {
-        // 10 + 名声x0.5〜1.5の範囲
-        int base = 10 + (int) (reputation * 0.5 + Math.random() * reputation);
+        // 20 + 名声x0.5〜1.5の範囲
+        int base = 20 + (int) (reputation * 0.5 + Math.random() * reputation);
         // 補正
         base *= type.getDifficultyCoefficient();
         System.out.println(place);

@@ -1,13 +1,14 @@
 package com.meadowsage.guildgame.model.person;
 
-import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestType;
+import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -34,13 +35,33 @@ public class Adventurer extends Person {
 
     @Override
     public void doDaytimeActivity(GameWorld world, GameLogger gameLogger) {
-        if (isTired()) {
-            // 疲労状態の場合、休息を取る
-            gameLogger.info(getName().getFirstName() + "は休息をとった。", this, null);
+        if (!getEnergy().isFull()) {
+            // 体力を消費している場合、休息を取る
+            gameLogger.info(getName().getFirstName() + "は休息をとった。[体力回復]", this, null);
             getEnergy().recoverToMax();
         } else {
             // TODO クエスト中でないキャラクターの行動
-            gameLogger.info(getName().getFirstName() + "は何もしなかった。", this, null);
+            switch (new Dice().roll(1, 6)) {
+                case 1:
+                    gameLogger.warning(getName().getFirstName() + "は何もしなかった。[不満+]", this, null);
+                    break;
+                case 2:
+                    gameLogger.warning(getName().getFirstName() + "は１人で鍛錬をした。[不満+]", this, null);
+                    break;
+                case 3:
+                    gameLogger.warning(getName().getFirstName() + "は宿で瞑想をした。[不満+]", this, null);
+                    break;
+                case 4:
+                    gameLogger.warning(getName().getFirstName() + "は酒場で朝まで騒いだ。[不満+]", this, null);
+                    break;
+                case 5:
+                    gameLogger.warning(getName().getFirstName() + "はどこにいるのだろうか…[不満+]", this, null);
+                    break;
+                case 6:
+                default:
+                    gameLogger.warning(getName().getFirstName() + "は書物を読んで過ごした。[不満+]", this, null);
+                    break;
+            }
         }
     }
 
@@ -49,13 +70,9 @@ public class Adventurer extends Person {
     }
 
     public void doMorningActivity(GameWorld world) {
-        if (isTired()) {
-            // 疲れている場合は休養を取る
-        } else if (!isOrderingQuest()) {
-            // クエストを受注していない場合、クエストを受注する
+        if (!isOrderingQuest() && !isTired()) {
+            // クエストを受注しておらず、体調に問題ない場合、クエストを受注する
             world.getAvailableQuests().stream().findFirst().ifPresent(quest -> quest.order(this));
-        } else {
-            // TODO 受注していない場合の行動
         }
     }
 
@@ -71,12 +88,12 @@ public class Adventurer extends Person {
     }
 
     /**
-     * クエスト種別に対する能力の発揮値を算出
+     * クエスト種別に対する能力の基本発揮値を算出
      *
      * @param questType 対象クエスト種別
      * @return 発揮値
      */
-    public int getPerformance(QuestType questType) {
+    public int getBasePerformance(QuestType questType) {
         return (int) (getBattle().getValue() * questType.getBattleCoefficient() +
                 getKnowledge().getValue() * questType.getKnowledgeCoefficient() +
                 getSupport().getValue() * questType.getSupportCoefficient()) / 3;

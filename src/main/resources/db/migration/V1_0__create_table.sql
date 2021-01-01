@@ -95,7 +95,7 @@ CREATE TABLE game_log
 CREATE TABLE scenario_progress
 (
     world_id    bigint NOT NULL REFERENCES world (id) ON DELETE CASCADE,
-    scenario_id bigint NOT NULL,
+    scenario_id varchar(40) NOT NULL,
     PRIMARY KEY (world_id, scenario_id)
 );
 

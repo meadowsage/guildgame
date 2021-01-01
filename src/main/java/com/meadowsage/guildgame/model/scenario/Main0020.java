@@ -1,12 +1,17 @@
 package com.meadowsage.guildgame.model.scenario;
 
 
+import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.world.GameWorld;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class Main0020 extends ScenarioBase {
+public class Main0020 extends Scenario {
+
+    public Main0020(String id) {
+        super(id);
+    }
 
     @Override
     public String getTitle() {
@@ -20,7 +25,12 @@ public class Main0020 extends ScenarioBase {
     }
 
     @Override
-    public List<ScenarioContent> getContents() {
+    public void afterProcess(GameWorld world, GameLogger gameLogger) {
+        // 何もしない
+    }
+
+    @Override
+    public List<ScenarioScript> getScripts() {
         Speaker me = new Speaker("", "");
         Speaker eris = new Speaker("『秘書』エリス", "face_1.png");
         Speaker teran = new Speaker("『町の世話役』テラン", "face_2.png");

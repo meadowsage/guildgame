@@ -15,7 +15,7 @@ public class EstimatesForQuest {
         this.adventurer = adventurer;
         int currentCost = party.stream().mapToInt(partyMember -> partyMember.calcRewards(quest).getValue()).sum();
         this.nextCost = adventurer.calcRewards(quest).add(currentCost).getValue();
-        this.diffOfPerformanceAndDifficulty = quest.getDifficulty() - adventurer.getPerformance(quest.getType());
+        this.diffOfPerformanceAndDifficulty = quest.getDifficulty() - adventurer.getBasePerformance(quest.getType());
     }
 
     public boolean isAlright() {

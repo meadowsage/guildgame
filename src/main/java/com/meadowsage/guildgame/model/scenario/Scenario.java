@@ -1,33 +1,47 @@
 package com.meadowsage.guildgame.model.scenario;
 
+import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.world.GameWorld;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 
-import java.util.Arrays;
 import java.util.List;
 
-public interface Scenario {
-    List<Scenario> ALL_SCENARIOS = Arrays.asList(
-            new Main0010(),
-            new Main0020(),
-            new Main0030()
-    );
+@AllArgsConstructor
+public abstract class Scenario {
+    @Getter
+    private final String id;
 
-    int getId();
+    public abstract String getTitle();
 
-    String getTitle();
+    public abstract List<ScenarioScript> getScripts();
 
-    boolean canStart(GameWorld world);
+    public abstract boolean canStart(GameWorld world);
 
-    List<ScenarioContent> getContents();
+    public abstract void afterProcess(GameWorld world, GameLogger gameLogger);
 
     @Data
     @AllArgsConstructor(access = AccessLevel.PACKAGE)
-    class ScenarioContent {
+    public static class ScenarioScript {
         String speaker;
         String text;
         String image;
+    }
+
+    @AllArgsConstructor
+    public static class Speaker {
+        private String name;
+        private final String image;
+
+        ScenarioScript speak(String text) {
+            return new ScenarioScript(name, text, image);
+        }
+
+        Speaker changeName(String name) {
+            this.name = name;
+            return this;
+        }
     }
 }

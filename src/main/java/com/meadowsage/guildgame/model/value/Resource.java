@@ -36,4 +36,8 @@ public class Resource {
         energy.value = Math.max(value, 0);
         return energy;
     }
+
+    public boolean isFull() {
+        return value == max;
+    }
 }

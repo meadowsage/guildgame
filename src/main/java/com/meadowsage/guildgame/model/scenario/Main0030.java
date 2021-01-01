@@ -1,12 +1,18 @@
 package com.meadowsage.guildgame.model.scenario;
 
 
+import com.meadowsage.guildgame.model.Place;
+import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.world.GameWorld;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class Main0030 extends ScenarioBase {
+public class Main0030 extends Scenario {
+
+    public Main0030(String id) {
+        super(id);
+    }
 
     @Override
     public String getTitle() {
@@ -15,12 +21,18 @@ public class Main0030 extends ScenarioBase {
 
     @Override
     public boolean canStart(GameWorld world) {
-        // 条件：3日目以降
+        // 条件：3日目以降 TODO 名声？
         return world.getGameDate() >= 3;
     }
 
     @Override
-    public List<ScenarioContent> getContents() {
+    public void afterProcess(GameWorld world, GameLogger gameLogger) {
+        world.getPlaces().add(Place.MUSHROOM_FOREST);
+        gameLogger.important("【茸の森】のクエストが発生するようになりました。");
+    }
+
+    @Override
+    public List<ScenarioScript> getScripts() {
         Speaker me = new Speaker("", "");
         Speaker eris = new Speaker("『秘書』エリス", "face_1.png");
         Speaker teran = new Speaker("『町の世話役』テラン", "face_2.png");

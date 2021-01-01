@@ -6,7 +6,7 @@ import java.util.List;
 
 @Mapper
 public interface ScenarioMapper {
-    void insertCompletedRecord(long worldId, int scenarioId);
+    void insertCompletedRecord(long worldId, String scenarioId);
 
-    List<Integer> select(long worldId);
+    List<String> select(long worldId);
 }

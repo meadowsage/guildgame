@@ -65,7 +65,14 @@ public class QuestProcess {
 
     private int tryQuest(Adventurer adventurer, Dice dice, GameLogger gameLogger) {
         // 発揮値を算出
-        int performance = adventurer.getPerformance(quest.getType());
+        int performance = adventurer.getBasePerformance(quest.getType());
+
+        // 疲労時の補正 TODO 発揮値算出に動かしたほうが良いかも…？もしくはbaseとcomputedを用意するか
+        if(adventurer.isTired()) {
+            gameLogger.warning(adventurer.getName().getFirstName() + "は疲労により力が出ない！", adventurer, quest);
+            performance *= 0.5;
+        }
+
 
         // 目標値：発揮値との差分で補正
         // 目標値に達していない場合はマイナス補正

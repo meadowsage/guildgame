@@ -128,11 +128,7 @@ public class GameWorld extends World {
 
         // 新しいクエストの作成
         int questNum = (int) (1 + Math.random() * 2);
-        quests.addAll(new QuestGenerator(
-                guild.getReputation(),
-                Arrays.stream(Place.values()).collect(Collectors.toList()),
-                new Dice()
-        ).generate(questNum));
+        quests.addAll(new QuestGenerator(guild.getReputation(), places, new Dice()).generate(questNum));
 
         // 日付進める
         gameDate++;

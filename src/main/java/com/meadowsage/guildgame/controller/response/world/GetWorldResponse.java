@@ -4,6 +4,7 @@ import com.meadowsage.guildgame.model.person.ApplicantReviewer;
 import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.scenario.Scenario;
 import com.meadowsage.guildgame.model.world.GameWorld;
+import com.meadowsage.guildgame.usecase.world.GetWorldDataUseCase;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,9 +18,13 @@ public class GetWorldResponse {
     ResponseGuild guild;
     List<ResponseAdventurer> adventurers;
     List<ResponseApplicant> applicants;
-    List<ResponseScenario> scenarios;
+    // FIXME シナリオ取得は分ける
+    ResponseScenario scenario;
 
-    public GetWorldResponse(GameWorld world, List<Scenario> scenarios) {
+    public GetWorldResponse(GetWorldDataUseCase.GetWorldDataUseCaseResult result) {
+        GameWorld world = result.getWorld();
+        Scenario scenario = result.getScenario();
+
         this.world = ResponseWorld.builder()
                 .id(world.getId())
                 .gameDate(world.getGameDate())
@@ -54,17 +59,16 @@ public class GetWorldResponse {
                         .build()
                 ).collect(Collectors.toList());
 
-        this.scenarios = scenarios.stream().map(scenario -> ResponseScenario.builder()
+        this.scenario = (scenario != null) ? ResponseScenario.builder()
                 .id(scenario.getId())
                 .title(scenario.getTitle())
-                .contents(scenario.getContents().stream()
-                        .map(content -> ResponseScenarioContent.builder()
+                .scripts(scenario.getScripts().stream()
+                        .map(content -> ResponseScenarioScript.builder()
                                 .speaker(content.getSpeaker())
                                 .text(content.getText())
                                 .image(content.getImage()).build()
                         ).collect(Collectors.toList())
-                ).build()
-        ).collect(Collectors.toList());
+                ).build() : null;
     }
 
     @Builder
@@ -109,14 +113,14 @@ public class GetWorldResponse {
     @Builder
     @Getter
     private static class ResponseScenario {
-        int id;
+        String id;
         String title;
-        List<ResponseScenarioContent> contents;
+        List<ResponseScenarioScript> scripts;
     }
 
     @Builder
     @Getter
-    private static class ResponseScenarioContent {
+    private static class ResponseScenarioScript {
         String speaker;
         String text;
         String image;

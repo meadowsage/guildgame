@@ -13,17 +13,17 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum Place {
     CITY("町",
-            new int[]{100, 0, 0, 0},
+            new int[]{75, 0, 25, 0},
             new QuestContent[]{QuestContent.CITY_GUARD, QuestContent.CITY_ASSIST_HAUL, QuestContent.CITY_ASSIST_CONSTRUCTION},
             new QuestContent[]{},
-            new QuestContent[]{},
+            new QuestContent[]{QuestContent.CITY_EXTERMINATE_WILD_HOUNDS, QuestContent.CITY_EXTERMINATE_LARGE_RATS},
             new QuestContent[]{}),
     MUSHROOM_FOREST("茸の森",
             new int[]{10, 40, 25, 25},
-            new QuestContent[]{},
-            new QuestContent[]{},
-            new QuestContent[]{},
-            new QuestContent[]{});
+            new QuestContent[]{QuestContent.M_FOREST_ESCORT_LUMBERJACK, QuestContent.M_FOREST_ESCORT_ROAD_MAINTENANCE},
+            new QuestContent[]{QuestContent.M_FOREST_HARVEST_MEDICINE_MUSHROOM},
+            new QuestContent[]{QuestContent.M_FOREST_EXTERMINATE_FOREST_SLIME},
+            new QuestContent[]{QuestContent.M_FOREST_EXPLORE});
 
     private final String placeName;
     private final int[] questTypeTable;
