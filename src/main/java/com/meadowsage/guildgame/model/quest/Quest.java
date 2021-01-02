@@ -19,8 +19,6 @@ public class Quest {
     @Getter
     private QuestType type;
     @Getter
-    private String name = "";
-    @Getter
     private int difficulty;
     @Getter
     private Money rewards;
@@ -46,11 +44,11 @@ public class Quest {
     }
 
     public String getName() {
-        return this.name = place.getPlaceName() + "の" + content.getContentName();
+        return content.getContentName();
     }
 
     private Money calcRewards() {
-        return Money.of((int) (Math.pow(difficulty, 2) * 3 + Math.pow(danger, 2) * 300 + 200));
+        return Money.of((int) (Math.pow(difficulty, 2) * 3 + Math.pow(danger, 2) * 100 + 200));
     }
 
     /**

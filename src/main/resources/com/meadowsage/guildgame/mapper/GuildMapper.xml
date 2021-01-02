@@ -4,14 +4,13 @@
 <mapper namespace="com.meadowsage.guildgame.mapper.GuildMapper">
     <resultMap id="guildMap" type="com.meadowsage.guildgame.model.Guild" autoMapping="true">
         <association property="money" columnPrefix="m_" autoMapping="true"/>
-        <association property="reputation" columnPrefix="r_" autoMapping="true"/>
     </resultMap>
 
     <insert id="save">
         INSERT INTO guild (world_id, money, reputation)
         VALUES (#{worldId},
                 #{guild.money.value},
-                #{guild.reputation.value})
+                #{guild.reputation})
     </insert>
 
     <select id="select" resultMap="guildMap">
@@ -25,7 +24,7 @@
     <update id="update">
         UPDATE guild
         SET money      = #{guild.money.value},
-            reputation = #{guild.reputation.value}
+            reputation = #{guild.reputation}
         WHERE world_id = #{worldId}
     </update>
 </mapper>

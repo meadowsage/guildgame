@@ -26,22 +26,25 @@ CREATE TABLE guild
 
 CREATE TABLE person
 (
-    id          bigserial PRIMARY KEY,
-    world_id    bigint  NOT NULL REFERENCES world (id) ON DELETE CASCADE,
-    first_name  text    NOT NULL,
-    family_name text    NOT NULL,
+    id            bigserial PRIMARY KEY,
+    world_id      bigint  NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    first_name    text    NOT NULL,
+    family_name   text    NOT NULL,
     -- 所持金・名声
-    money       int     NOT NULL,
-    reputation  int     NOT NULL,
+    money         int     NOT NULL,
+    reputation    int     NOT NULL,
     -- 能力値
-    battle      int     NOT NULL,
-    knowledge   int     NOT NULL,
-    support     int     NOT NULL,
+    battle        int     NOT NULL,
+    battle_exp    int     NOT NULL,
+    knowledge     int     NOT NULL,
+    knowledge_exp int     NOT NULL,
+    support       int     NOT NULL,
+    support_exp   int     NOT NULL,
     -- 体力
-    max_energy  int     NOT NULL,
-    energy      int     NOT NULL,
+    max_energy    int     NOT NULL,
+    energy        int     NOT NULL,
     -- その他
-    is_actioned boolean NOT NULL default false
+    is_actioned   boolean NOT NULL default false
 );
 
 CREATE TABLE applicant
@@ -52,15 +55,15 @@ CREATE TABLE applicant
 CREATE TABLE quest
 (
     id           bigserial PRIMARY KEY,
-    world_id     bigint       NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    world_id     bigint      NOT NULL REFERENCES world (id) ON DELETE CASCADE,
     content      varchar(40) NOT NULL,
-    type         varchar(10)  NOT NULL,
-    place        varchar(40)  NOT NULL,
-    difficulty   int          NOT NULL,
-    danger       int          NOT NULL,
-    rewards      int          NOT NULL,
-    processed_at int          NOT NULL, -- ゲーム日付
-    is_closed    boolean      NOT NULL DEFAULT false
+    type         varchar(10) NOT NULL,
+    place        varchar(40) NOT NULL,
+    difficulty   int         NOT NULL,
+    danger       int         NOT NULL,
+    rewards      int         NOT NULL,
+    processed_at int         NOT NULL, -- ゲーム日付
+    is_closed    boolean     NOT NULL DEFAULT false
 );
 
 CREATE TABLE quest_order
@@ -94,7 +97,7 @@ CREATE TABLE game_log
 
 CREATE TABLE scenario_progress
 (
-    world_id    bigint NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    world_id    bigint      NOT NULL REFERENCES world (id) ON DELETE CASCADE,
     scenario_id varchar(40) NOT NULL,
     PRIMARY KEY (world_id, scenario_id)
 );

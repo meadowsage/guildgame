@@ -19,7 +19,7 @@ public class EstimatesForQuest {
     }
 
     public boolean isAlright() {
-        return !isTired() && !isSmallLackOfSkills() && !isNotInterestedIn() && !isCostOverrun();
+        return !isTired() && !isSmallLackOfSkills() && !isLackOfSkills() && !isNotInterestedIn() && !isCostOverrun();
     }
 
     public boolean isTired() {

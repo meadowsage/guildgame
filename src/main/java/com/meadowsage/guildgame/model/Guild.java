@@ -49,6 +49,9 @@ public class Guild {
                                 QuestPayment.process(quest, questOrder, adventurer, this, gameDate, gameLogger))
                         );
             });
+            int gainedReputation = 1 + (quest.getDifficulty() + quest.getDanger() * 20) / 10;
+            reputation += gainedReputation;
+            gameLogger.info(quest.getName() + "の達成により名声" + gainedReputation + "を獲得した。");
             // クエストをクローズ
             quest.close();
         });

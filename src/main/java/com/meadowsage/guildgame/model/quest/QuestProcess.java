@@ -68,7 +68,7 @@ public class QuestProcess {
         int performance = adventurer.getBasePerformance(quest.getType());
 
         // 疲労時の補正 TODO 発揮値算出に動かしたほうが良いかも…？もしくはbaseとcomputedを用意するか
-        if(adventurer.isTired()) {
+        if (adventurer.isTired()) {
             gameLogger.warning(adventurer.getName().getFirstName() + "は疲労により力が出ない！", adventurer, quest);
             performance *= 0.5;
         }
@@ -122,11 +122,15 @@ public class QuestProcess {
         party.forEach(person -> {
             person.getMoney().add(quest.getDifficulty() * 10 / party.size());
             person.getReputation().add(quest.getDifficulty() / 10 / party.size() + 1);
+            person.getBattle().earnExp((int) (quest.getDifficulty() * quest.getType().getBattleCoefficient()), person, quest, gameLogger);
+            person.getKnowledge().earnExp((int) (quest.getDifficulty() * quest.getType().getKnowledgeCoefficient()), person, quest, gameLogger);
+            person.getSupport().earnExp((int) (quest.getDifficulty() * quest.getType().getSupportCoefficient()), person, quest, gameLogger);
             // 体力消費
             person.getEnergy().consume(1);
         });
 
         // ギルドに報酬を付与
+
         gameLogger.important(party.get(0).getName().getFirstName() + "たちが" + quest.getName() + "を完了した！", null, quest);
         gameLogger.debug("TODO 名声と経験点の獲得処理", null, quest);
     }

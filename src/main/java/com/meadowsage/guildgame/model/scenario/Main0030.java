@@ -21,14 +21,14 @@ public class Main0030 extends Scenario {
 
     @Override
     public boolean canStart(GameWorld world) {
-        // 条件：3日目以降 TODO 名声？
-        return world.getGameDate() >= 3;
+        // 条件：3日目以降、名声20以上
+        return world.getGameDate() >= 3 && world.getGuild().getReputation() >= 20;
     }
 
     @Override
     public void afterProcess(GameWorld world, GameLogger gameLogger) {
         world.getPlaces().add(Place.MUSHROOM_FOREST);
-        gameLogger.important("【茸の森】のクエストが発生するようになりました。");
+        gameLogger.important("【茸の森】でクエストが発生するようになりました。");
     }
 
     @Override

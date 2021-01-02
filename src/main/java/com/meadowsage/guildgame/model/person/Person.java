@@ -87,9 +87,9 @@ public abstract class Person {
         if (isAdventurer) {
             return new Adventurer(
                     PersonName.of(firstName, familyName),
-                    Attribute.of(battle),
-                    Attribute.of(knowledge),
-                    Attribute.of(support),
+                    Attribute.of(battle, "戦闘"),
+                    Attribute.of(knowledge, "知識"),
+                    Attribute.of(support, "支援"),
                     Resource.of(energy),
                     Money.of(money),
                     Reputation.of(reputation)
@@ -97,9 +97,9 @@ public abstract class Person {
         } else {
             return new Applicant(
                     PersonName.of(firstName, familyName),
-                    Attribute.of(battle),
-                    Attribute.of(knowledge),
-                    Attribute.of(support),
+                    Attribute.of(battle, "戦闘"),
+                    Attribute.of(knowledge, "知識"),
+                    Attribute.of(support, "支援"),
                     Resource.of(energy),
                     Money.of(money),
                     Reputation.of(reputation));

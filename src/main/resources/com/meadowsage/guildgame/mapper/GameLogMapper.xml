@@ -26,6 +26,9 @@
         <if test="withQuestIdNull == true">
             AND quest_id IS NULL
         </if>
+        <if test="withPersonIdNull == true">
+            AND person_id IS NULL
+        </if>
         ORDER BY created_at
     </select>
 </mapper>

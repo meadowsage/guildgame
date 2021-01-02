@@ -1,6 +1,7 @@
 package com.meadowsage.guildgame.model.scenario;
 
 
+import com.meadowsage.guildgame.model.person.Applicant;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.world.GameWorld;
 
@@ -26,7 +27,8 @@ public class Main0020 extends Scenario {
 
     @Override
     public void afterProcess(GameWorld world, GameLogger gameLogger) {
-        // 何もしない
+        // 申請１件追加
+        world.getApplicants().addAll(Applicant.generate(1));
     }
 
     @Override

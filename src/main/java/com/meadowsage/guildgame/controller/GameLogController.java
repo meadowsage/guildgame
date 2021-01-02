@@ -20,8 +20,9 @@ public class GameLogController {
             @PathVariable Long worldId,
             @RequestParam Integer gameDate,
             @RequestParam(required = false) Boolean noQuestId,
+            @RequestParam(required = false) Boolean noPersonId,
             @RequestParam(required = false) Long questId
     ) {
-        return new GetGameLogsResponse(getGameLogsUseCase.run(worldId, gameDate, questId, noQuestId));
+        return new GetGameLogsResponse(getGameLogsUseCase.run(worldId, gameDate, questId, noQuestId, noPersonId));
     }
 }

@@ -15,7 +15,7 @@ public class Main0010 extends Scenario {
 
     @Override
     public String getTitle() {
-        return "チュートリアル";
+        return "冒険者ギルド（支部）へようこそ";
     }
 
     @Override

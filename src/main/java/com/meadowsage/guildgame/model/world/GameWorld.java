@@ -81,8 +81,9 @@ public class GameWorld extends World {
     }
 
     public void morning() {
-        // キャラクターを全員未行動状態にする
+        // キャラクターの行動済フラグをリセット
         getAllPersons().forEach(Person::setAsNotActioned);
+
         adventurers.forEach(adventurer -> adventurer.doMorningActivity(this));
 
         state = State.MIDDAY;

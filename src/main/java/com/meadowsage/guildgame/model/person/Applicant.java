@@ -46,9 +46,9 @@ public class Applicant extends Person {
     public static List<Applicant> generate(int number) {
         return IntStream.range(0, number).mapToObj(value -> {
             PersonName name = PersonName.generateRandom(new PersonNameGenerator());
-            Attribute battle = Attribute.generateRandom();
-            Attribute knowledge = Attribute.generateRandom();
-            Attribute support = Attribute.generateRandom();
+            Attribute battle = Attribute.generateRandom("戦闘");
+            Attribute knowledge = Attribute.generateRandom("知識");
+            Attribute support = Attribute.generateRandom("支援");
             Money money = Money.of((int) (500 + Math.random() * 500));
             Reputation reputation = Reputation.of((int) (Math.random() * 10));
 
