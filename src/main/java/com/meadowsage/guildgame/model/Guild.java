@@ -1,9 +1,6 @@
 package com.meadowsage.guildgame.model;
 
-import com.meadowsage.guildgame.model.accounting.GuildBalance;
-import com.meadowsage.guildgame.model.accounting.QuestIncome;
-import com.meadowsage.guildgame.model.accounting.QuestPayment;
-import com.meadowsage.guildgame.model.accounting.Treasurer;
+import com.meadowsage.guildgame.model.accounting.*;
 import com.meadowsage.guildgame.model.person.Adventurer;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestOrder;
@@ -49,12 +46,15 @@ public class Guild {
                                 QuestPayment.process(quest, questOrder, adventurer, this, gameDate, gameLogger))
                         );
             });
+            // 名声の取得
             int gainedReputation = 1 + (quest.getDifficulty() + quest.getDanger() * 20) / 10;
             reputation += gainedReputation;
             gameLogger.info(quest.getName() + "の達成により名声" + gainedReputation + "を獲得した。");
             // クエストをクローズ
             quest.close();
         });
+        // TODO 維持費
+        treasurer.addFacilityPayment(FacilityPayment.process("事務所", 500, this, gameDate, gameLogger));
         // 残高を保存
         treasurer.setGuildBalance(new GuildBalance(worldId, money.getValue(), gameDate));
     }

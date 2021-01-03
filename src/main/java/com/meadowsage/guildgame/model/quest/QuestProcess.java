@@ -132,7 +132,6 @@ public class QuestProcess {
         // ギルドに報酬を付与
 
         gameLogger.important(party.get(0).getName().getFirstName() + "たちが" + quest.getName() + "を完了した！", null, quest);
-        gameLogger.debug("TODO 名声と経験点の獲得処理", null, quest);
     }
 
     private void failure(GameLogger gameLogger) {

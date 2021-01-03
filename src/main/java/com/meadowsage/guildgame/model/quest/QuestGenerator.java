@@ -33,17 +33,14 @@ public class QuestGenerator {
     }
 
     private Place decidePlace() {
-        // 行ける場所から決定
-        // FIXME 場所に応じて難易度の補正が入る
         return places.get(dice.roll(1, places.size()) - 1);
     }
 
     private int decideDifficulty(QuestType type, Place place) {
-        // 20 + 名声x0.5〜1.5の範囲
-        int base = 20 + (int) (reputation * 0.5 + Math.random() * reputation);
+        // FIXME 場所に応じて難易度の補正が入る
+        int base = 20 + (place.equals(Place.CITY) ? 0 : 20);
         // 補正
         base *= type.getDifficultyCoefficient();
-        System.out.println(place);
         return base;
     }
 

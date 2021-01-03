@@ -24,6 +24,9 @@ public class Treasurer {
     @Getter
     @Builder.Default
     private final List<QuestPayment> questPayments = new ArrayList<>();
+    @Getter
+    @Builder.Default
+    private final List<FacilityPayment> facilityPayments = new ArrayList<>();
     @Setter
     @Builder.Default
     private GuildBalance guildBalance = null;
@@ -38,5 +41,9 @@ public class Treasurer {
 
     public void addQuestPayment(QuestPayment questPayment) {
         questPayments.add(questPayment);
+    }
+
+    public void addFacilityPayment(FacilityPayment facilityPayment) {
+        facilityPayments.add(facilityPayment);
     }
 }

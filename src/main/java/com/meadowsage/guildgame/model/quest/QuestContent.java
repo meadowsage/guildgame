@@ -12,7 +12,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum QuestContent {
     // 町
-    CITY_WEEDING("草むしり", new QuestDetailEvents() {
+    CITY_WEEDING("町の草むしり", new QuestDetailEvents() {
         // 必ず成功
         @Override
         public int criticalEvent(Quest quest, Adventurer adventurer, GameLogger gameLogger) {
@@ -64,7 +64,7 @@ public enum QuestContent {
             return 1;
         }
     }),
-    CITY_EXTERMINATE_WILD_HOUNDS("野犬駆除", new QuestDetailEvents(new Monster("野犬") {
+    CITY_EXTERMINATE_WILD_HOUNDS("郊外の野犬駆除", new QuestDetailEvents(new Monster("野犬") {
     }) {
     }),
     CITY_EXTERMINATE_LARGE_RATS("ラージラット駆除", new QuestDetailEvents(new Monster("ラージラット") {
