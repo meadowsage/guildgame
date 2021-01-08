@@ -1,20 +1,27 @@
 package com.meadowsage.guildgame.controller;
 
 import com.meadowsage.guildgame.controller.request.UpdateApplicantRequest;
+import com.meadowsage.guildgame.controller.response.GetApplicantsResponse;
 import com.meadowsage.guildgame.usecase.UpdateApplicantUseCase;
+import com.meadowsage.guildgame.usecase.world.GetApplicantsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * ゲーム世界に対する操作
- */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{saveDataId}/world/{worldId}/applicant")
+@RequestMapping("/api/game/{saveDataId}/worlds/{worldId}/applicants")
 public class ApplicantController {
 
+    private final GetApplicantsUseCase getApplicantsUseCase;
     private final UpdateApplicantUseCase updateApplicantUseCase;
+
+    @GetMapping
+    @Transactional(readOnly = true)
+    public GetApplicantsResponse getAdventurers(@PathVariable String saveDataId, @PathVariable long worldId) {
+        System.out.println(saveDataId + " " + worldId);
+        return new GetApplicantsResponse(getApplicantsUseCase.run(worldId).getApplicants());
+    }
 
     @PostMapping("/{applicantId}")
     @Transactional

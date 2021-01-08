@@ -29,6 +29,10 @@ public class WorldRepository {
         return worldMapper.selectBySaveDataId(saveDataId);
     }
 
+    public World getWorld(long worldId) {
+        return worldMapper.select(worldId);
+    }
+
     public GameWorld getGameWorld(String saveDataId) {
         World world = worldMapper.selectBySaveDataId(saveDataId);
         return buildGameWorld(world);

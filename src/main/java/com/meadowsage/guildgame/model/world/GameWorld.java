@@ -30,16 +30,16 @@ public class GameWorld extends World {
     private Guild guild;
     @Getter
     @Builder.Default
-    private List<Adventurer> adventurers = new ArrayList<>();
+    private final List<Adventurer> adventurers = new ArrayList<>();
     @Getter
     @Builder.Default
-    private List<Applicant> applicants = new ArrayList<>();
+    private final List<Applicant> applicants = new ArrayList<>();
     @Getter
     @Builder.Default
-    private List<Quest> quests = new ArrayList<>();
+    private final List<Quest> quests = new ArrayList<>();
     @Getter
     @Builder.Default
-    private List<Place> places = new ArrayList<>();
+    private final List<Place> places = new ArrayList<>();
 
     public List<Quest> getAvailableQuests() {
         return quests.stream().filter(Quest::isNotOrdered).collect(Collectors.toList());
@@ -52,6 +52,7 @@ public class GameWorld extends World {
     public static GameWorld generateAndInit(SaveData saveData, WorldRepository worldRepository, Treasurer treasurer) {
         // 初期リソース生成
         GameWorld world = GameWorld.builder()
+                .state(State.MORNING)
                 .guild(Guild.create())
                 .adventurers(Collections.singletonList((Adventurer) UniquePerson.TELLAN.getInstance()))
                 .quests(Collections.singletonList(UniqueQuest.FIRST.getInstance()))
@@ -77,7 +78,10 @@ public class GameWorld extends World {
     }
 
     public Optional<Quest> getNextQuest(int gameDate) {
-        return this.quests.stream().filter(quest -> !quest.hasProcessed(gameDate)).findAny();
+        // 未実行のクエストの中で、最もIDが小さいものを取得
+        return this.quests.stream()
+                .filter(quest -> !quest.hasProcessed(gameDate))
+                .min(Comparator.comparing(Quest::getId));
     }
 
     public void morning() {
@@ -93,7 +97,7 @@ public class GameWorld extends World {
         state = State.AFTERNOON;
     }
 
-    public Optional<Quest> afternoon(GameLogger gameLogger) {
+    public void afternoon(GameLogger gameLogger) {
         // 未完了のクエストを１個ずつ実行
         Optional<Quest> nextQuest = getNextQuest(gameDate);
         if (nextQuest.isPresent()) {
@@ -110,7 +114,6 @@ public class GameWorld extends World {
                     .forEach(person -> person.doDaytimeActivity(this, gameLogger));
             state = State.NIGHT;
         }
-        return nextQuest;
     }
 
     public void night(GameLogger gameLogger, Treasurer treasurer) {

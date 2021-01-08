@@ -1,4 +1,4 @@
-package com.meadowsage.guildgame.usecase;
+package com.meadowsage.guildgame.usecase.scenario;
 
 import com.meadowsage.guildgame.model.scenario.Scenario;
 import com.meadowsage.guildgame.model.scenario.ScenarioEnum;

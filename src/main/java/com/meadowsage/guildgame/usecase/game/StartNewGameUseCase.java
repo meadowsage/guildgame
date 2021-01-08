@@ -23,14 +23,8 @@ public class StartNewGameUseCase {
     private final TreasurerRepository treasurerRepository;
 
     public SaveData run() {
-        SaveData saveData = createNewSaveData();
+        SaveData saveData = gameRepository.createNewSaveData();
         generateNewWorld(saveData);
-        return saveData;
-    }
-
-    private SaveData createNewSaveData() {
-        SaveData saveData = SaveData.create();
-        gameRepository.createNewSaveData(saveData);
         return saveData;
     }
 

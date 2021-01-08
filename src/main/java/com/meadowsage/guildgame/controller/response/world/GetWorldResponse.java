@@ -1,14 +1,11 @@
 package com.meadowsage.guildgame.controller.response.world;
 
 import com.meadowsage.guildgame.model.person.ApplicantReviewer;
-import com.meadowsage.guildgame.model.person.Person;
-import com.meadowsage.guildgame.model.scenario.Scenario;
 import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.usecase.world.GetWorldDataUseCase;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,14 +13,10 @@ import java.util.stream.Collectors;
 public class GetWorldResponse {
     ResponseWorld world;
     ResponseGuild guild;
-    List<ResponseAdventurer> adventurers;
     List<ResponseApplicant> applicants;
-    // FIXME シナリオ取得は分ける
-    ResponseScenario scenario;
 
     public GetWorldResponse(GetWorldDataUseCase.GetWorldDataUseCaseResult result) {
         GameWorld world = result.getWorld();
-        Scenario scenario = result.getScenario();
 
         this.world = ResponseWorld.builder()
                 .id(world.getId())
@@ -34,22 +27,6 @@ public class GetWorldResponse {
                 .money(world.getGuild().getMoney().getValue())
                 .reputation(world.getGuild().getReputation()).build();
 
-        this.adventurers = world.getAdventurers().stream()
-                .sorted(Comparator.comparing(Person::getId))
-                .map(person -> ResponseAdventurer.builder()
-                        .id(person.getId())
-                        .name(person.getName().getFirstName())
-                        .fullName(person.getName().getFullName())
-                        .money(person.getMoney().getValue())
-                        .reputation(person.getReputation().getValue())
-                        .battle(person.getBattle().getValue())
-                        .knowledge(person.getKnowledge().getValue())
-                        .support(person.getSupport().getValue())
-                        .energy(person.getEnergy().getValue())
-                        .maxEnergy(person.getEnergy().getMax())
-                        .build()
-                ).collect(Collectors.toList());
-
         this.applicants = world.getApplicants().stream()
                 .map(person -> ResponseApplicant.builder()
                         .id(person.getId())
@@ -58,17 +35,6 @@ public class GetWorldResponse {
                         .remarks(ApplicantReviewer.of().review(person))
                         .build()
                 ).collect(Collectors.toList());
-
-        this.scenario = (scenario != null) ? ResponseScenario.builder()
-                .id(scenario.getId())
-                .title(scenario.getTitle())
-                .scripts(scenario.getScripts().stream()
-                        .map(content -> ResponseScenarioScript.builder()
-                                .speaker(content.getSpeaker())
-                                .text(content.getText())
-                                .image(content.getImage()).build()
-                        ).collect(Collectors.toList())
-                ).build() : null;
     }
 
     @Builder
@@ -88,41 +54,10 @@ public class GetWorldResponse {
 
     @Builder
     @Getter
-    private static class ResponseAdventurer {
-        long id;
-        String name;
-        String fullName;
-        long money;
-        long reputation;
-        int battle;
-        int knowledge;
-        int support;
-        int energy;
-        int maxEnergy;
-    }
-
-    @Builder
-    @Getter
     private static class ResponseApplicant {
         long id;
         String name;
         String fullName;
         List<String> remarks;
-    }
-
-    @Builder
-    @Getter
-    private static class ResponseScenario {
-        String id;
-        String title;
-        List<ResponseScenarioScript> scripts;
-    }
-
-    @Builder
-    @Getter
-    private static class ResponseScenarioScript {
-        String speaker;
-        String text;
-        String image;
     }
 }

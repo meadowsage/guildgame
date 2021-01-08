@@ -11,7 +11,9 @@ public class GameRepository {
 
     private final SaveDataMapper saveDataMapper;
 
-    public void createNewSaveData(SaveData saveData) {
+    public SaveData createNewSaveData() {
+        SaveData saveData = SaveData.create();
         saveDataMapper.save(saveData);
+        return saveData;
     }
 }

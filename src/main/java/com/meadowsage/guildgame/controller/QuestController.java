@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{saveDataId}/world/{worldId}/quests")
+@RequestMapping("/api/game/{saveDataId}/worlds/{worldId}/quests")
 public class QuestController {
 
     private final GetOngoingQuestsUseCase getOngoingQuestsUseCase;

@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequiredArgsConstructor
-// FIXME /api/world
-@RequestMapping("/api/{saveDataId}/world/{worldId}")
+@RequestMapping("/api/game/{saveDataId}/worlds/{worldId}")
 public class ReportController {
 
     private final GetDailyReportUseCase getDailyReportUseCase;

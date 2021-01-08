@@ -17,7 +17,7 @@ public class World {
     protected int gameDate = 1;
     @Getter
     @Builder.Default
-    protected State state = State.MIDDAY;
+    protected State state = State.MORNING;
 
     public enum State {
         MORNING, // 朝（キャラクター行動決定）

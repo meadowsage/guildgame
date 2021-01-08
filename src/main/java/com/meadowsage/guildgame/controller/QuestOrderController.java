@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{saveDataId}/world/{worldId}/questOrders")
+@RequestMapping("/api/game/{saveDataId}/worlds/{worldId}/questOrders")
 public class QuestOrderController {
 
     private final CancelQuestOrderUseCase cancelQuestOrderUseCase;

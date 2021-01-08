@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/{saveDataId}/world/{worldId}/logs")
+@RequestMapping("/api/game/{saveDataId}/worlds/{worldId}/logs")
 public class GameLogController {
 
     private final GetGameLogsUseCase getGameLogsUseCase;

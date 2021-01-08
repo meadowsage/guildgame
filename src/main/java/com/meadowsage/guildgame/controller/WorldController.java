@@ -1,6 +1,6 @@
 package com.meadowsage.guildgame.controller;
 
-import com.meadowsage.guildgame.controller.response.world.DoAfternoonProcessResponse;
+import com.meadowsage.guildgame.controller.response.world.GetAfternoonProcessStatusResponse;
 import com.meadowsage.guildgame.controller.response.world.GetRandomCommentResponse;
 import com.meadowsage.guildgame.controller.response.world.GetWorldResponse;
 import com.meadowsage.guildgame.usecase.world.*;
@@ -13,16 +13,17 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequiredArgsConstructor
-// FIXME /api/world
-@RequestMapping("/api/{saveDataId}/world")
+@RequestMapping("/api/game/{saveDataId}/worlds")
 @Transactional
 public class WorldController {
 
+    private final GetWorldDataUseCase getWorldDataUseCase;
     private final DoMorningProcessUseCase doMorningProcessUseCase;
+    private final DoMiddayProcessUseCase doMiddayProcessUseCase;
     private final DoAfternoonProcessUseCase doAfternoonProcessUseCase;
+    private final GetAfternoonProcessResultUseCase getAfternoonProcessResultUseCase;
     private final DoNightProcessUseCase doNightProcessUseCase;
     private final DoMidnightProcessUseCase doMidnightProcessUseCase;
-    private final GetWorldDataUseCase getWorldDataUseCase;
     private final GetRandomCommentUseCase getRandomCommentUseCase;
 
     // FIXME セーブデータIDはクエリパラメータで受け取る
@@ -40,11 +41,30 @@ public class WorldController {
         doMorningProcessUseCase.run(worldId);
     }
 
-    @PutMapping("/{worldId}/afternoon")
-    @ResponseBody
+    @PutMapping("/{worldId}/midday")
     @Transactional
-    public DoAfternoonProcessResponse doAfternoonProcess(@PathVariable long worldId) {
-        return new DoAfternoonProcessResponse(doAfternoonProcessUseCase.run(worldId));
+    public void doMiddayProcess(@PathVariable long worldId) {
+        doMiddayProcessUseCase.run(worldId);
+    }
+
+    @GetMapping("/{worldId}/afternoon")
+    @ResponseBody
+    @Transactional(readOnly = true)
+    public GetAfternoonProcessStatusResponse getAfternoonProcessStatus(@PathVariable long worldId) {
+        GetAfternoonProcessResultUseCase.GetAfternoonProcessResultUseCaseResult result =
+                getAfternoonProcessResultUseCase.run(worldId);
+
+        return new GetAfternoonProcessStatusResponse(
+                result.getLastProcessedQuest(),
+                result.getParty(),
+                result.getGameLogs(),
+                result.isDone());
+    }
+
+    @PutMapping("/{worldId}/afternoon")
+    @Transactional
+    public void doAfternoonProcess(@PathVariable long worldId) {
+        doAfternoonProcessUseCase.run(worldId);
     }
 
     @PutMapping("/{worldId}/night")
