@@ -43,8 +43,39 @@ CREATE TABLE person
     -- 体力
     max_energy    int     NOT NULL,
     energy        int     NOT NULL,
+    -- 立ち絵
+    image_body_id int     NOT NULL,
     -- その他
     is_actioned   boolean NOT NULL default false
+);
+
+CREATE TABLE person_skill
+(
+    person_id bigint REFERENCES person (id) ON DELETE CASCADE,
+    skill     varchar(20) NOT NULL,
+    level     smallint    NOT NULL,
+    exp       int         NOT NULL,
+    UNIQUE (person_id, skill)
+);
+
+CREATE TABLE personality
+(
+    person_id bigint REFERENCES person (id) ON DELETE CASCADE,
+    type      varchar(20) NOT NULL,
+    UNIQUE (person_id, type)
+);
+
+CREATE TABLE party
+(
+    id       bigserial PRIMARY KEY,
+    world_id bigint      NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    name     varchar(40) NOT NULL
+);
+
+CREATE TABLE party_member
+(
+    party_id  bigint REFERENCES party (id) ON DELETE CASCADE,
+    person_id bigint REFERENCES person (id) ON DELETE CASCADE
 );
 
 CREATE TABLE applicant

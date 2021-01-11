@@ -1,4 +1,4 @@
-package com.meadowsage.guildgame.usecase.world;
+package com.meadowsage.guildgame.usecase;
 
 import com.meadowsage.guildgame.model.person.Adventurer;
 import com.meadowsage.guildgame.repository.PersonRepository;

@@ -50,6 +50,7 @@ public class GetAfternoonProcessStatusResponse {
         int support;
         int energy;
         int maxEnergy;
+        String imageBodyFileName;
 
         public ResponseAdventurer(Adventurer adventurer) {
             this.id = adventurer.getId();
@@ -60,6 +61,7 @@ public class GetAfternoonProcessStatusResponse {
             this.support = adventurer.getSupport().getValue();
             this.energy = adventurer.getEnergy().getValue();
             this.maxEnergy = adventurer.getEnergy().getMax();
+            this.imageBodyFileName = adventurer.getImageBodyFileName();
         }
     }
 

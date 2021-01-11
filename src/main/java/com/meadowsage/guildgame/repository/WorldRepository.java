@@ -1,10 +1,8 @@
 package com.meadowsage.guildgame.repository;
 
-import com.meadowsage.guildgame.mapper.GuildMapper;
-import com.meadowsage.guildgame.mapper.OpenedPlaceMapper;
-import com.meadowsage.guildgame.mapper.QuestOrderMapper;
-import com.meadowsage.guildgame.mapper.WorldMapper;
+import com.meadowsage.guildgame.mapper.*;
 import com.meadowsage.guildgame.model.Place;
+import com.meadowsage.guildgame.model.person.Party;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.world.World;
@@ -21,6 +19,7 @@ public class WorldRepository {
     private final WorldMapper worldMapper;
     private final GuildMapper guildMapper;
     private final PersonRepository personRepository;
+    private final PartyRepository partyRepository;
     private final QuestRepository questRepository;
     private final QuestOrderMapper questOrderMapper;
     private final OpenedPlaceMapper openedPlaceMapper;
@@ -36,7 +35,6 @@ public class WorldRepository {
     public GameWorld getGameWorld(String saveDataId) {
         World world = worldMapper.selectBySaveDataId(saveDataId);
         return buildGameWorld(world);
-
     }
 
     public GameWorld getGameWorld(long worldId) {
@@ -48,6 +46,10 @@ public class WorldRepository {
         worldMapper.save(world, saveDataId);
         guildMapper.save(world.getGuild(), world.getId());
         world.getAllPersons().forEach(person -> personRepository.save(person, world.getId()));
+        // IDが払い出されたメンバで初期パーティを作成
+        Party initialParty = Party.createNew("街の世話役", world.getAdventurers());
+        world.getParties().add(initialParty);
+        partyRepository.save(initialParty, world.getId());
         world.getQuests().forEach(quest -> questRepository.save(quest, world.getId()));
         world.getPlaces().forEach(place -> openedPlaceMapper.insert(place, world.getId()));
     }
@@ -84,6 +86,7 @@ public class WorldRepository {
                 .state(world.getState())
                 .guild(guildMapper.select(world.getId()))
                 .adventurers(personRepository.getAdventurers(world.getId()))
+                .parties(partyRepository.getAll(world.getId()))
                 .applicants(personRepository.getApplicants(world.getId()))
                 .quests(questRepository.getQuests(world.getId()))
                 .places(openedPlaceMapper.select(world.getId()))

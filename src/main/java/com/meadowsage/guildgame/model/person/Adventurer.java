@@ -4,29 +4,16 @@ import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestType;
 import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
-import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
-import com.meadowsage.guildgame.model.value.Reputation;
-import com.meadowsage.guildgame.model.value.Resource;
 import com.meadowsage.guildgame.model.world.GameWorld;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Adventurer extends Person {
     private Long orderingQuestId;
-
-    protected Adventurer(
-            PersonName name,
-            Attribute battle,
-            Attribute knowledge,
-            Attribute support,
-            Resource energy,
-            Money money,
-            Reputation reputation
-    ) {
-        super(name, battle, knowledge, support, energy, money, reputation);
-    }
 
     @Override
     public boolean isAdventurer() {

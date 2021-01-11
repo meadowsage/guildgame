@@ -7,13 +7,17 @@ import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
 import com.meadowsage.guildgame.model.world.GameWorld;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Person {
     @Getter
+    @Builder.Default
     private long id = -1;
     @Getter
     private PersonName name;
@@ -31,25 +35,12 @@ public abstract class Person {
     private Resource energy;
     @Getter
     private boolean isActioned;
-
-    protected Person(
-            PersonName name,
-            Attribute battle,
-            Attribute knowledge,
-            Attribute support,
-            Resource energy,
-            Money money,
-            Reputation reputation
-    ) {
-        this.name = name;
-        this.battle = battle;
-        this.knowledge = knowledge;
-        this.support = support;
-        this.energy = energy;
-        this.money = money;
-        this.reputation = reputation;
-        this.isActioned = false;
-    }
+    @Getter
+    private List<Personality> personalities = new ArrayList<>();
+    @Getter
+    private List<PersonSkill> skills = new ArrayList<>();
+    @Getter
+    private Integer imageBodyId;
 
     public boolean isNew() {
         return id == -1;
@@ -82,27 +73,37 @@ public abstract class Person {
             int energy,
             int money,
             int reputation,
+            List<Personality> personalities,
+            List<PersonSkill> skills,
+            int imageBodyId,
             boolean isAdventurer
     ) {
         if (isAdventurer) {
-            return new Adventurer(
-                    PersonName.of(firstName, familyName),
-                    Attribute.of(battle, "戦闘"),
-                    Attribute.of(knowledge, "知識"),
-                    Attribute.of(support, "支援"),
-                    Resource.of(energy),
-                    Money.of(money),
-                    Reputation.of(reputation)
-            );
+            return Adventurer.builder()
+                    .name(PersonName.of(firstName, familyName))
+                    .battle(Attribute.of(battle, "戦闘"))
+                    .knowledge(Attribute.of(knowledge, "知識"))
+                    .support(Attribute.of(support, "支援"))
+                    .energy(Resource.of(energy))
+                    .money(Money.of(money))
+                    .reputation(Reputation.of(reputation))
+                    .personalities(personalities)
+                    .skills(skills)
+                    .imageBodyId(imageBodyId)
+                    .build();
         } else {
-            return new Applicant(
-                    PersonName.of(firstName, familyName),
-                    Attribute.of(battle, "戦闘"),
-                    Attribute.of(knowledge, "知識"),
-                    Attribute.of(support, "支援"),
-                    Resource.of(energy),
-                    Money.of(money),
-                    Reputation.of(reputation));
+            return Applicant.builder()
+                    .name(PersonName.of(firstName, familyName))
+                    .battle(Attribute.of(battle, "戦闘"))
+                    .knowledge(Attribute.of(knowledge, "知識"))
+                    .support(Attribute.of(support, "支援"))
+                    .energy(Resource.of(energy))
+                    .money(Money.of(money))
+                    .reputation(Reputation.of(reputation))
+                    .personalities(personalities)
+                    .skills(skills)
+                    .imageBodyId(imageBodyId)
+                    .build();
         }
     }
 
@@ -122,4 +123,8 @@ public abstract class Person {
         int result = new Dice().roll(1, comments.length);
         return comments[result - 1];
     }
+
+    public String getImageBodyFileName() {
+        return "face_" + imageBodyId + ".png";
+    };
 }

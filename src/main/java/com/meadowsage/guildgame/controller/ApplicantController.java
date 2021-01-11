@@ -3,7 +3,7 @@ package com.meadowsage.guildgame.controller;
 import com.meadowsage.guildgame.controller.request.UpdateApplicantRequest;
 import com.meadowsage.guildgame.controller.response.GetApplicantsResponse;
 import com.meadowsage.guildgame.usecase.UpdateApplicantUseCase;
-import com.meadowsage.guildgame.usecase.world.GetApplicantsUseCase;
+import com.meadowsage.guildgame.usecase.GetApplicantsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;

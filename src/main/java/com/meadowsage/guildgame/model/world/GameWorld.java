@@ -4,10 +4,7 @@ import com.meadowsage.guildgame.model.Guild;
 import com.meadowsage.guildgame.model.Place;
 import com.meadowsage.guildgame.model.accounting.GuildBalance;
 import com.meadowsage.guildgame.model.accounting.Treasurer;
-import com.meadowsage.guildgame.model.person.Adventurer;
-import com.meadowsage.guildgame.model.person.Applicant;
-import com.meadowsage.guildgame.model.person.Person;
-import com.meadowsage.guildgame.model.person.UniquePerson;
+import com.meadowsage.guildgame.model.person.*;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestGenerator;
 import com.meadowsage.guildgame.model.quest.QuestProcess;
@@ -40,6 +37,10 @@ public class GameWorld extends World {
     @Getter
     @Builder.Default
     private final List<Place> places = new ArrayList<>();
+    @Getter
+    @Builder.Default
+    private final List<Party> parties = new ArrayList<>();
+
 
     public List<Quest> getAvailableQuests() {
         return quests.stream().filter(Quest::isNotOrdered).collect(Collectors.toList());
@@ -51,10 +52,11 @@ public class GameWorld extends World {
 
     public static GameWorld generateAndInit(SaveData saveData, WorldRepository worldRepository, Treasurer treasurer) {
         // 初期リソース生成
+        Adventurer teran = (Adventurer) UniquePerson.TELLAN.getInstance();
         GameWorld world = GameWorld.builder()
                 .state(State.MORNING)
                 .guild(Guild.create())
-                .adventurers(Collections.singletonList((Adventurer) UniquePerson.TELLAN.getInstance()))
+                .adventurers(Collections.singletonList(teran))
                 .quests(Collections.singletonList(UniqueQuest.FIRST.getInstance()))
                 .places(Collections.singletonList(Place.CITY))
                 .build();
@@ -126,9 +128,10 @@ public class GameWorld extends World {
     }
 
     public void midnight() {
+        Dice dice = new Dice();
         // 新しい応募者の作成
-        int applicantNum = (int) (1 + Math.random() * 2);
-        applicants.addAll(Applicant.generate(applicantNum));
+        int applicantNum = dice.roll(1, 3);
+        applicants.addAll(Applicant.generate(applicantNum, dice));
 
         // 新しいクエストの作成
         int questNum = (int) (1 + Math.random() * 2);

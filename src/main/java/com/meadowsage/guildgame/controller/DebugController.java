@@ -1,6 +1,7 @@
 package com.meadowsage.guildgame.controller;
 
 import com.meadowsage.guildgame.model.person.Applicant;
+import com.meadowsage.guildgame.model.system.Dice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,6 @@ public class DebugController {
     @GetMapping("/persons")
     @ResponseBody
     public List<Applicant> generatePerson() {
-        return Applicant.generate(10);
+        return Applicant.generate(10, new Dice());
     }
 }

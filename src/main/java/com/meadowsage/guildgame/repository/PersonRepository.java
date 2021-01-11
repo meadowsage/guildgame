@@ -23,7 +23,7 @@ public class PersonRepository {
     public Optional<Adventurer> getAdventurer(long personId) {
         List<Adventurer> adventurers = personMapper.selectAdventurers(
                 null, Collections.singletonList(personId), null);
-        if(adventurers.isEmpty()) return Optional.empty();
+        if (adventurers.isEmpty()) return Optional.empty();
         else return Optional.of(adventurers.get(0));
     }
 
@@ -32,7 +32,7 @@ public class PersonRepository {
     }
 
     public List<Adventurer> getAdventurers(long worldId, List<Long> ids) {
-        if(ids.isEmpty()) return new ArrayList<>();
+        if (ids.isEmpty()) return new ArrayList<>();
         return personMapper.selectAdventurers(worldId, ids, null);
     }
 
@@ -55,7 +55,13 @@ public class PersonRepository {
     public void save(Person person, long worldId) {
         if (person.isNew()) {
             personMapper.insert(person, worldId);
+            personMapper.insertPersonalities(person);
+            personMapper.insertSkills(person);
             if (person instanceof Applicant) applicantMapper.insert(person);
-        } else personMapper.update(person);
+        } else {
+            personMapper.update(person);
+            personMapper.insertPersonalities(person);
+            person.getSkills().forEach(personSkill -> personMapper.updateSkill(person.getId(), personSkill));
+        }
     }
 }

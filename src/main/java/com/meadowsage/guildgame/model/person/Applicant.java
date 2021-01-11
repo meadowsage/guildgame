@@ -1,32 +1,24 @@
 package com.meadowsage.guildgame.model.person;
 
-import com.meadowsage.guildgame.model.world.GameWorld;
+import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
+import com.meadowsage.guildgame.model.world.GameWorld;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Applicant extends Person {
-
-    protected Applicant(
-            PersonName name,
-            Attribute battle,
-            Attribute knowledge,
-            Attribute support,
-            Resource energy,
-            Money money,
-            Reputation reputation
-    ) {
-        super(name, battle, knowledge, support, energy, money, reputation);
-    }
 
     @Override
     public boolean isAdventurer() {
@@ -43,7 +35,7 @@ public class Applicant extends Person {
         // 何もしない
     }
 
-    public static List<Applicant> generate(int number) {
+    public static List<Applicant> generate(int number, Dice dice) {
         return IntStream.range(0, number).mapToObj(value -> {
             PersonName name = PersonName.generateRandom(new PersonNameGenerator());
             Attribute battle = Attribute.generateRandom("戦闘");
@@ -58,7 +50,39 @@ public class Applicant extends Person {
             else if (battle.getValue() <= 30) energyValue = Math.max(1, energyValue - 1);
             Resource energy = Resource.of(energyValue);
 
-            return new Applicant(name, battle, knowledge, support, energy, money, reputation);
+            // 性格：ランダムに1〜2個選ぶ
+            List<Personality> personalities = IntStream.rangeClosed(1, dice.roll(1, 2))
+                    .mapToObj(i -> Personality.getRandom(dice))
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            // スキル：ランダムに1〜3個選ぶ
+            List<PersonSkill> personSkills = new ArrayList<>();
+            for (int i = 0; i < dice.roll(1, 3); i++) {
+                PersonSkill nextSkill = PersonSkill.generateRandom(dice);
+
+                if (personSkills.stream().anyMatch(personSkill ->
+                        personSkill.getSkill().equals(nextSkill.getSkill()))
+                ) continue;
+
+                personSkills.add(nextSkill);
+            }
+
+            // 立ち絵
+            int imageBodyId = dice.roll(1, 3, 1);
+
+            return (Applicant) Applicant.builder()
+                    .name(name)
+                    .battle(battle)
+                    .knowledge(knowledge)
+                    .support(support)
+                    .energy(energy)
+                    .money(money)
+                    .reputation(reputation)
+                    .personalities(personalities)
+                    .skills(personSkills)
+                    .imageBodyId(imageBodyId)
+                    .build();
         }).collect(Collectors.toList());
     }
 }

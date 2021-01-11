@@ -2,6 +2,8 @@ package com.meadowsage.guildgame.controller.response;
 
 import com.meadowsage.guildgame.model.person.Adventurer;
 import com.meadowsage.guildgame.model.person.Person;
+import com.meadowsage.guildgame.model.person.PersonSkill;
+import com.meadowsage.guildgame.model.person.Personality;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -27,6 +29,13 @@ public class GetAdventurersResponse {
                         .support(person.getSupport().getValue())
                         .energy(person.getEnergy().getValue())
                         .maxEnergy(person.getEnergy().getMax())
+                        .personalities(person.getPersonalities().stream()
+                                .map(Personality::getLabel)
+                                .collect(Collectors.toList()))
+                        .skills(person.getSkills().stream()
+                                .map(ResponseSkill::new)
+                                .collect(Collectors.toList()))
+                        .imageBodyFileName(person.getImageBodyFileName())
                         .build()
                 ).collect(Collectors.toList());
     }
@@ -44,5 +53,19 @@ public class GetAdventurersResponse {
         int support;
         int energy;
         int maxEnergy;
+        List<String> personalities;
+        List<ResponseSkill> skills;
+        String imageBodyFileName;
+    }
+
+    @Getter
+    private static class ResponseSkill {
+        String name;
+        int level;
+
+        public ResponseSkill(PersonSkill skill) {
+            this.name = skill.getSkill().getLabel();
+            this.level = skill.getLevel();
+        }
     }
 }

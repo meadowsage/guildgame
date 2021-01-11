@@ -4,6 +4,7 @@
 <mapper namespace="com.meadowsage.guildgame.mapper.PersonMapper">
 
     <resultMap id="adventurerMap" type="com.meadowsage.guildgame.model.person.Adventurer" autoMapping="true">
+        <id property="id" column="id"/>
         <association property="name" columnPrefix="n_" autoMapping="true"/>
         <association property="money" columnPrefix="m_" autoMapping="true"/>
         <association property="reputation" columnPrefix="r_" autoMapping="true"/>
@@ -11,9 +12,15 @@
         <association property="knowledge" columnPrefix="k_" autoMapping="true"/>
         <association property="support" columnPrefix="s_" autoMapping="true"/>
         <association property="energy" columnPrefix="e_" autoMapping="true"/>
+        <collection property="personalities" ofType="com.meadowsage.guildgame.model.person.Personality">
+            <result column="personality"/>
+        </collection>
+        <collection property="skills" columnPrefix="ps_" autoMapping="true"
+                    ofType="com.meadowsage.guildgame.model.person.PersonSkill"/>
     </resultMap>
 
     <resultMap id="applicantMap" type="com.meadowsage.guildgame.model.person.Applicant" autoMapping="true">
+        <id property="id" column="id"/>
         <association property="name" columnPrefix="n_" autoMapping="true"/>
         <association property="money" columnPrefix="m_" autoMapping="true"/>
         <association property="reputation" columnPrefix="r_" autoMapping="true"/>
@@ -21,29 +28,43 @@
         <association property="knowledge" columnPrefix="k_" autoMapping="true"/>
         <association property="support" columnPrefix="s_" autoMapping="true"/>
         <association property="energy" columnPrefix="e_" autoMapping="true"/>
+        <collection property="personalities" ofType="com.meadowsage.guildgame.model.person.Personality">
+            <result column="personality"/>
+        </collection>
+        <collection property="skills" columnPrefix="ps_" autoMapping="true"
+                    ofType="com.meadowsage.guildgame.model.person.PersonSkill"/>
     </resultMap>
 
     <select id="selectAdventurers" resultMap="adventurerMap">
-        SELECT p.*,
-        first_name AS n_first_name,
-        family_name AS n_family_name,
-        money AS m_value,
-        reputation AS r_value,
+        SELECT
+        p.id,
+        p.is_actioned,
+        p.image_body_id,
+        p.first_name AS n_first_name,
+        p.family_name AS n_family_name,
+        p.money AS m_value,
+        p.reputation AS r_value,
         '戦闘' AS b_name,
-        battle AS b_value,
-        battle_exp AS b_exp,
+        p.battle AS b_value,
+        p.battle_exp AS b_exp,
         '知識' AS k_name,
-        knowledge AS k_value,
-        knowledge_exp AS k_exp,
+        p.knowledge AS k_value,
+        p.knowledge_exp AS k_exp,
         '支援' AS s_name,
-        support AS s_value,
-        support_exp AS s_exp,
-        max_energy AS e_max,
-        energy AS e_value,
-        qo.id AS ordering_quest_id
+        p.support AS s_value,
+        p.support_exp AS s_exp,
+        p.max_energy AS e_max,
+        p.energy AS e_value,
+        qo.id AS ordering_quest_id,
+        p2.type AS personality,
+        ps.skill as ps_skill,
+        ps.level as ps_level,
+        ps.exp as ps_exp
         FROM person p
         LEFT JOIN applicant a on p.id = a.person_id
         LEFT JOIN quest_order qo on p.id = qo.person_id AND qo.state = 'ONGOING'
+        LEFT JOIN personality p2 on p.id = p2.person_id
+        LEFT JOIN person_skill ps on p.id = ps.person_id
         WHERE a.person_id IS NULL
         <if test="worldId != null">
             AND world_id = #{worldId}
@@ -63,18 +84,25 @@
     </select>
 
     <select id="selectApplicants" resultMap="applicantMap">
-        SELECT p.*,
-               first_name  as n_first_name,
-               family_name as n_family_name,
-               money       as m_value,
-               reputation  as r_value,
-               battle      as b_value,
-               knowledge   as k_value,
-               support     as s_value,
-               max_energy  as e_max,
-               energy      as e_value
+        SELECT p.id,
+               p.image_body_id,
+               p.first_name  as n_first_name,
+               p.family_name as n_family_name,
+               p.money       as m_value,
+               p.reputation  as r_value,
+               p.battle      as b_value,
+               p.knowledge   as k_value,
+               p.support     as s_value,
+               p.max_energy  as e_max,
+               p.energy      as e_value,
+               p2.type       as personality,
+               ps.skill      as ps_skill,
+               ps.level      as ps_level,
+               ps.exp        as ps_exp
         FROM person p
                  LEFT JOIN applicant a on p.id = a.person_id
+                 LEFT JOIN personality p2 on p.id = p2.person_id
+                 LEFT JOIN person_skill ps on p.id = ps.person_id
         WHERE world_id = #{worldId}
           AND a.person_id IS NOT NULL
     </select>
@@ -93,6 +121,7 @@
                             support_exp,
                             max_energy,
                             energy,
+                            image_body_id,
                             is_actioned)
         VALUES (#{worldId},
                 #{person.name.firstName},
@@ -107,7 +136,26 @@
                 #{person.support.exp},
                 #{person.energy.max},
                 #{person.energy.value},
+                #{person.imageBodyId},
                 #{person.isActioned})
+    </insert>
+
+    <insert id="insertPersonalities">
+        INSERT INTO personality(person_id, type)
+        VALUES
+        <foreach item="type" collection="personalities" separator=",">
+            (#{id}, #{type})
+        </foreach>
+        ON CONFLICT(person_id, type) DO NOTHING;
+    </insert>
+
+    <insert id="insertSkills">
+        INSERT INTO person_skill (person_id, skill, level, exp)
+        VALUES
+        <foreach item="personSkill" collection="skills" separator=",">
+            (#{id}, #{personSkill.skill.name}, #{personSkill.level}, #{personSkill.exp})
+        </foreach>
+        ON CONFLICT(person_id, skill) DO NOTHING;
     </insert>
 
     <update id="update">
@@ -117,6 +165,14 @@
             energy      = #{energy.value},
             is_actioned = #{isActioned}
         WHERE p.id = #{id}
+    </update>
+
+    <update id="updateSkill">
+        UPDATE person_skill
+        SET level = #{personSkill.level},
+            exp   = #{personSkill.exp}
+        WHERE person_id = #{personId}
+          AND skill = #{personSkill.skill.name}
     </update>
 
     <delete id="delete">
