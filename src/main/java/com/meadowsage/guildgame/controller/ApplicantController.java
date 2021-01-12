@@ -2,8 +2,8 @@ package com.meadowsage.guildgame.controller;
 
 import com.meadowsage.guildgame.controller.request.UpdateApplicantRequest;
 import com.meadowsage.guildgame.controller.response.GetApplicantsResponse;
-import com.meadowsage.guildgame.usecase.UpdateApplicantUseCase;
-import com.meadowsage.guildgame.usecase.GetApplicantsUseCase;
+import com.meadowsage.guildgame.usecase.person.UpdateApplicantUseCase;
+import com.meadowsage.guildgame.usecase.person.GetApplicantsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;

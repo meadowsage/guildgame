@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateApplicantRequest {
-    private long applicantId;
     private boolean isApproval;
 
     @JsonProperty("isApproval")

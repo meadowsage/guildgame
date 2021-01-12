@@ -9,12 +9,18 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Party {
+    private static final int MAX_LIMIT_OF_MEMBERS = 4;
+
     @Getter
     long id;
     @Getter
     String name;
     @Getter
     List<Adventurer> partyMembers = new ArrayList<>();
+
+    public boolean canAddMember() {
+        return partyMembers.size() < MAX_LIMIT_OF_MEMBERS;
+    }
 
     public boolean isNew() {
         return id == -1;

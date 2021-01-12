@@ -1,95 +1,155 @@
 package com.meadowsage.guildgame.model.person;
 
-import com.meadowsage.guildgame.model.system.Dice;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum Personality {
-    GENTLE("紳士的"),
-    ROUGH("荒くれ者"),
-    KIND("親切"),
-    COLD("冷たい"),
-    POSITIVE("前向き"),
-    NEGATIVE("ネガティブ"),
-    FRIENDLY("フレンドリー"),
-    SHY("内気"),
-    QUIET("物静か"),
-    CHATTY("おしゃべり"),
-    POLITE("礼儀正しい"),
-    BRAVE("勇敢"),
-    COWARDLY("臆病"),
-    AMBITIOUS("野心家"),
-    CURIOUS("好奇心旺盛"),
-    CRUEL("冷酷"),
-    CAREFUL("慎重"),
-    CARELESS("ドジ"),
-    FAIR("公正"),
-    SELFISH("ワガママ"),
-    STUDIOUS("勤勉"),
-    LAZY("怠惰");
+    BRIGHT("明るい", f -> f.extroversion > 75, Collections.emptyList()),
+    SHY("内気", f -> f.extroversion < 25, Collections.emptyList()),
+    CONFIDENT("自信家", f -> f.confidence > 75, Collections.emptyList()),
+    MODEST("謙虚", f -> f.confidence < 25, Collections.emptyList()),
+    SINCERE("誠実", f -> f.morality > 75, Collections.emptyList()),
+    LIAR("嘘つき", f -> f.morality < 25, Collections.emptyList()),
+    GENTLE("紳士的", f -> f.politeness > 75, Collections.emptyList()),
+    ROUGH("荒くれ者", f -> f.politeness < 25, Collections.emptyList()),
+    KIND("親切", f -> f.thoughtfulness > 75, Collections.emptyList()),
+    COLD("冷たい", f -> f.thoughtfulness < 25, Collections.emptyList()),
+    WARY("慎重", f -> f.suspicious > 75, Collections.emptyList()),
+    DOCILE("素直", f -> f.suspicious < 25, Collections.emptyList()),
+    // 明るい+
+    LEADERSHIP("リーダーシップ", f -> f.extroversion > 70 && f.confidence > 70,
+            Arrays.asList(BRIGHT, CONFIDENT)),
+    PLEASANT("爽やか", f -> f.extroversion > 70 && f.politeness > 70,
+            Arrays.asList(BRIGHT, GENTLE)),
+    POWERFUL("豪快", f -> f.extroversion > 70 && f.politeness < 30,
+            Arrays.asList(BRIGHT, ROUGH)),
+    FRIENDLY("フレンドリー", f -> f.extroversion > 70 && f.thoughtfulness > 70,
+            Arrays.asList(BRIGHT, KIND)),
+    SIMPLE("単純", f -> f.extroversion > 70 && f.suspicious < 30,
+            Arrays.asList(BRIGHT, DOCILE)),
+    // 暗い+
+    SERVILE("卑屈", f -> f.extroversion < 30 && f.confidence < 30,
+            Arrays.asList(SHY, MODEST)),
+    DILIGENT("真面目", f -> f.extroversion < 30 && f.morality > 70,
+            Arrays.asList(SHY, SINCERE)),
+    MEAN("卑怯", f -> f.extroversion < 30 && f.morality < 30,
+            Arrays.asList(SHY, LIAR)),
+    ELEGANT("優雅", f -> f.extroversion < 30 && f.politeness > 70,
+            Arrays.asList(SHY, GENTLE)),
+    LONER("一匹狼", f -> f.extroversion < 30 && f.thoughtfulness < 30,
+            Arrays.asList(SHY, COLD)),
+    NERVOUS("神経質", f -> f.extroversion < 30 && f.suspicious > 70,
+            Arrays.asList(SHY, WARY)),
+    // 自信家+
+    SASSY("生意気", f -> f.confidence > 70 && f.politeness < 30,
+            Arrays.asList(CONFIDENT, ROUGH)),
+    SELFISH("自己中心的", f -> f.confidence > 70 && f.thoughtfulness < 30,
+            Arrays.asList(CONFIDENT, COLD)),
+    // 卑屈+
+    JEALOUS("嫉妬深い", f -> f.confidence < 30 && f.thoughtfulness < 30,
+            Arrays.asList(MODEST, COLD)),
+    // 嘘つき+
+    CRUEL("冷酷", f -> f.morality < 30 && f.thoughtfulness < 30,
+            Arrays.asList(LIAR, COLD)),
+    SLY("狡猾", f -> f.morality < 30 && f.suspicious > 70,
+            Arrays.asList(LIAR, WARY)),
+    // 該当なし
+    CALM("温厚", f -> false, Collections.emptyList());
 
     @Getter
     String label;
 
-    public static Personality getRandom(Dice dice) {
-        return Personality.values()[dice.roll(1, Personality.values().length) - 1];
+    Function<PersonalityFactors, Boolean> requirements;
+
+    List<Personality> superiorTo;
+
+    public static List<Personality> generateRandom() {
+        Random random = new Random();
+        PersonalityFactors personalityFactors = new PersonalityFactors(random);
+
+        List<Personality> results = new ArrayList<>();
+
+        for (Personality personality : Personality.values()) {
+            if (personality.requirements.apply(personalityFactors)) {
+                results = results.stream().filter(result ->
+                        !personality.superiorTo.contains(result)).collect(Collectors.toList());
+                results.add(personality);
+            }
+        }
+
+        if (results.size() == 0) results.add(Personality.CALM);
+
+        return results;
     }
 
-//    /**
-//     * 外向性 (<-> 内向性 introversion)
-//     * ＜先天的＞高いほど集団行動や新しいことを好み、低いほど単独行動や一つのことへの集中を好む
-//     */
-//    private var extroversion: Int = 0,
-//    /**
-//     * 直感（<-> 感覚 sensing）
-//     * ＜先天的＞高いほど常識にとらわれない独創的な考えを好み、低いほど歴史や常識に基づく現実的な考えを好む
-//     */
-//    private var intuition: Int = 0,
-//    /**
-//     * 思考 (<-> 感情 feeling)
-//     * ＜先天的＞高いほど理屈による判断を好み、低いほど感情による判断を好む
-//     */
-//    private var thinking: Int = 0,
-//    /**
-//     * 判断的 (<-> 知覚的 perceiving)
-//     * ＜先天的＞高いほど規律や計画に従った行動を好み、低いほど柔軟で自由な考え方を好む
-//     */
-//    private var judging: Int = 0,
-//    /**
-//     * 自信
-//     * ＜後天的＞高いほど判断に迷いがなく頑固で、低いほど優柔不断で従属しやすい
-//     */
-//    private var confidence: Int = 0,
-//    /**
-//     * モラル
-//     * ＜後天的＞高いほど非道徳的な行為に抵抗を感じ、低いほどためらいなく悪事を働く
-//     */
-//    private var morality: Int = 0,
-//    /**
-//     * 礼節
-//     * ＜後天的＞高いほど礼節を重んじ、低いほど礼儀作法を気にしない
-//     */
-//    private var politeness: Int = 0,
-//    /**
-//     * 思いやり
-//     * ＜後天的＞高いほど他者を考慮した行動を好み、低いほど自己中心的
-//     */
-//    private var thoughtfulness: Int = 0,
-//    /**
-//     * 猜疑心
-//     * ＜後天的＞高いほど他者を疑い、低いほど素直
-//     */
-//    private var suspicious: Int = 0
+    @Getter
+    private static class PersonalityFactors {
+        /*
+         * 外向性 (<-> 内向性 introversion)
+         * ＜先天的＞高いほど集団行動や新しいことを好み、低いほど単独行動や一つのことへの集中を好む
+         */
+        int extroversion;
+        /*
+         * 直感（<-> 感覚 sensing）
+         * ＜先天的＞高いほど常識にとらわれない独創的な考えを好み、低いほど歴史や常識に基づく現実的な考えを好む
+         */
+//        int intuition;
+        /*
+         * 思考 (<-> 感情 feeling)
+         * ＜先天的＞高いほど理屈による判断を好み、低いほど感情による判断を好む
+         */
+//        int thinking;
+        /*
+         * 判断的 (<-> 知覚的 perceiving)
+         * ＜先天的＞高いほど規律や計画に従った行動を好み、低いほど柔軟で自由な考え方を好む
+         */
+//        int judging;
+        /**
+         * 自信
+         * ＜後天的＞高いほど判断に迷いがなく頑固で、低いほど優柔不断で従属しやすい
+         */
+        int confidence;
+        /*
+         * モラル
+         * ＜後天的＞高いほど非道徳的な行為に抵抗を感じ、低いほどためらいなく悪事を働く
+         */
+        int morality;
+        /*
+         * 礼節
+         * ＜後天的＞高いほど礼節を重んじ、低いほど礼儀作法を気にしない
+         */
+        int politeness;
+        /**
+         * 思いやり
+         * ＜後天的＞高いほど他者を考慮した行動を好み、低いほど自己中心的
+         */
+        int thoughtfulness;
+        /**
+         * 猜疑心
+         * ＜後天的＞高いほど他者を疑い、低いほど素直
+         */
+        int suspicious;
 
-//    add(setPersonality(extroversion, "陽気", "明るい", "内気", "一匹狼"))
-//    add(setPersonality(intuition, "変人", "独創的", "現実的", "保守的"))
-//    add(setPersonality(thinking, "理屈屋", "論理的", "協調的", "感情的"))
-//    add(setPersonality(judging, "堅物", "真面目", "柔軟", "奔放"))
-//    add(setPersonality(confidence, "自信家", "頼もしい", "優柔不断", "卑屈"))
-//    add(setPersonality(morality, "清廉", "善人", "悪人", "非道"))
-//    add(setPersonality(politeness, "優雅", "礼儀正しい", "荒っぽい", "無礼"))
-//    add(setPersonality(thoughtfulness, "慈悲深い", "優しい", "冷たい", "自己中心的"))
-//    add(setPersonality(suspicious, "他者不信", "疑い深い", "素直", "妄信的"))
+        public PersonalityFactors(Random random) {
+            this.extroversion = getRandomGaussian(random);
+//            this.intuition = getRandomGaussian(random);
+//            this.thinking = getRandomGaussian(random);
+//            this.judging = getRandomGaussian(random);
+            this.confidence = getRandomGaussian(random);
+            this.morality = getRandomGaussian(random);
+            this.politeness = getRandomGaussian(random);
+            this.thoughtfulness = getRandomGaussian(random);
+            this.suspicious = getRandomGaussian(random);
+        }
+
+        private static int getRandomGaussian(Random random) {
+            return (int) (random.nextGaussian() * 20 + 50);
+        }
+    }
 }

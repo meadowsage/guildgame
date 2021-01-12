@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AddQuestOrderRequest {
-    private long questId;
+public class AddPartyMemberRequest {
     private long personId;
 }

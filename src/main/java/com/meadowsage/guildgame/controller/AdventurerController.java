@@ -1,7 +1,7 @@
 package com.meadowsage.guildgame.controller;
 
 import com.meadowsage.guildgame.controller.response.GetAdventurersResponse;
-import com.meadowsage.guildgame.usecase.GetAdventurersUseCase;
+import com.meadowsage.guildgame.usecase.person.GetAdventurersUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;

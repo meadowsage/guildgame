@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -12,7 +13,7 @@ public enum UniquePerson {
     TELLAN("テラン", "ウォレス",
             32, 34, 58, 1,
             2000, 30,
-            Arrays.asList(Personality.KIND, Personality.LAZY),
+            Collections.singletonList(Personality.FRIENDLY),
             Arrays.asList(
                     PersonSkill.of(Skill.CAMP, 4),
                     PersonSkill.of(Skill.COACHING, 4),

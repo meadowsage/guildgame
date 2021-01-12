@@ -25,7 +25,7 @@ public class GetRandomCommentUseCase {
             return new GetRandomCommentUseCaseResult(
                     adventurer.getName().getFirstName(),
                     adventurer.getRandomComment(),
-                    "face_" + (int) (2 + Math.random() * 3) + ".png"
+                    adventurer.getImageBodyFileName()
             );
         }
     }

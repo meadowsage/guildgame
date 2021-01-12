@@ -50,11 +50,8 @@ public class Applicant extends Person {
             else if (battle.getValue() <= 30) energyValue = Math.max(1, energyValue - 1);
             Resource energy = Resource.of(energyValue);
 
-            // 性格：ランダムに1〜2個選ぶ
-            List<Personality> personalities = IntStream.rangeClosed(1, dice.roll(1, 2))
-                    .mapToObj(i -> Personality.getRandom(dice))
-                    .distinct()
-                    .collect(Collectors.toList());
+            // 性格
+            List<Personality> personalities = Personality.generateRandom();
 
             // スキル：ランダムに1〜3個選ぶ
             List<PersonSkill> personSkills = new ArrayList<>();

@@ -9,9 +9,15 @@ import java.util.List;
 public interface PartyMapper {
     void insert(Party party, long worldId);
 
-    void insertPartyMembers(Party party);
+    void insertPartyMembers(long partyId, List<Long> personIds);
 
-    List<Party> select(long worldId);
+    Party select(long worldId);
+
+    List<Party> selectAll(long worldId);
 
     List<Long> selectPartyMemberIds(long id);
+
+    void delete(long partyId);
+
+    void deletePartyMember(long partyId, long personId);
 }

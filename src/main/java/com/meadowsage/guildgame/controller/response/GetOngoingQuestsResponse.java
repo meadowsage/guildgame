@@ -73,6 +73,7 @@ public class GetOngoingQuestsResponse {
                             ResponseSkill.builder().name("回復魔法").color("grey").level(1).build()
                     ))
                     .rewards(target.calcRewards(quest).getValue())
+                    .imageBodyFileName(target.getImageBodyFileName())
                     .build() : null;
         }
     }
@@ -89,6 +90,7 @@ public class GetOngoingQuestsResponse {
         int energy;
         List<ResponseSkill> skills;
         long rewards;
+        String imageBodyFileName;
     }
 
     @Getter

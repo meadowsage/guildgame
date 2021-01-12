@@ -18,6 +18,7 @@ public class GetApplicantsResponse {
                         .id(person.getId())
                         .name(person.getName().getFirstName())
                         .fullName(person.getName().getFullName())
+                        .imageBodyFileName(person.getImageBodyFileName())
                         .remarks(ApplicantReviewer.of().review(person))
                         .build()
                 ).collect(Collectors.toList());
@@ -29,6 +30,7 @@ public class GetApplicantsResponse {
         long id;
         String name;
         String fullName;
+        String imageBodyFileName;
         List<String> remarks;
     }
 }

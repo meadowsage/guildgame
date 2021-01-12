@@ -18,6 +18,7 @@ public class GetQuestOrderablesResponse {
     int energy;
     int maxEnergy;
     long rewards;
+    String imageBodyFileName;
     boolean isAlright;
     boolean isTired;
     boolean isSmallLackOfSkills;
@@ -36,6 +37,7 @@ public class GetQuestOrderablesResponse {
         this.energy = adventurer.getEnergy().getValue();
         this.maxEnergy = adventurer.getEnergy().getMax();
         this.rewards = rewards;
+        this.imageBodyFileName = adventurer.getImageBodyFileName();
         this.isAlright = estimatesForQuest.isAlright();
         this.isTired = estimatesForQuest.isTired();
         this.isSmallLackOfSkills = estimatesForQuest.isSmallLackOfSkills();

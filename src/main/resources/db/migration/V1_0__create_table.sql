@@ -75,7 +75,8 @@ CREATE TABLE party
 CREATE TABLE party_member
 (
     party_id  bigint REFERENCES party (id) ON DELETE CASCADE,
-    person_id bigint REFERENCES person (id) ON DELETE CASCADE
+    person_id bigint REFERENCES person (id) ON DELETE CASCADE,
+    UNIQUE (person_id)
 );
 
 CREATE TABLE applicant
