@@ -2,7 +2,6 @@ package com.meadowsage.guildgame.model.person;
 
 import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
-import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
@@ -38,9 +37,9 @@ public class Applicant extends Person {
     public static List<Applicant> generate(int number, Dice dice) {
         return IntStream.range(0, number).mapToObj(value -> {
             PersonName name = PersonName.generateRandom(new PersonNameGenerator());
-            Attribute battle = Attribute.generateRandom("戦闘");
-            Attribute knowledge = Attribute.generateRandom("知識");
-            Attribute support = Attribute.generateRandom("支援");
+            Attribute battle = Attribute.generateRandom(Attribute.Type.BATTLE);
+            Attribute knowledge = Attribute.generateRandom(Attribute.Type.KNOWLEDGE);
+            Attribute support = Attribute.generateRandom(Attribute.Type.SUPPORT);
             Money money = Money.of((int) (500 + Math.random() * 500));
             Reputation reputation = Reputation.of((int) (Math.random() * 10));
 
@@ -66,7 +65,7 @@ public class Applicant extends Person {
             }
 
             // 立ち絵
-            int imageBodyId = dice.roll(1, 3, 1);
+            int imageBodyId = dice.roll(1, 4, 1);
 
             return (Applicant) Applicant.builder()
                     .name(name)

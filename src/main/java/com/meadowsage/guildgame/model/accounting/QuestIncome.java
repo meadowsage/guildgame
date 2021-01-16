@@ -16,12 +16,12 @@ public class QuestIncome {
 
     public static QuestIncome process(Quest quest, Guild guild, int gameDate, GameLogger gameLogger) {
         QuestIncome questIncome = new QuestIncome(
-                quest.getRewards().getValue(),
+                quest.getReward().getValue(),
                 quest.getId(),
                 gameDate);
 
-        guild.earnMoney(quest.getRewards());
-        gameLogger.detail(quest.getName() + "の報酬として" + quest.getRewards().getValue() + "Gを獲得した。");
+        guild.earnMoney(quest.getReward());
+        gameLogger.detail(quest.getName() + "の報酬として" + quest.getReward().getValue() + "Gを獲得した。");
 
         return questIncome;
     }

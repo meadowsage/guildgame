@@ -1,10 +1,12 @@
 package com.meadowsage.guildgame.controller;
 
 import com.meadowsage.guildgame.controller.request.AddPartyMemberRequest;
+import com.meadowsage.guildgame.controller.response.GetFreePartiesResponse;
 import com.meadowsage.guildgame.controller.response.GetPartiesResponse;
-import com.meadowsage.guildgame.usecase.person.AddPartyMemberUseCase;
-import com.meadowsage.guildgame.usecase.person.GetPartiesUseCase;
-import com.meadowsage.guildgame.usecase.person.RemovePartyMemberUseCase;
+import com.meadowsage.guildgame.usecase.party.AddPartyMemberUseCase;
+import com.meadowsage.guildgame.usecase.party.GetFreePartiesUseCase;
+import com.meadowsage.guildgame.usecase.party.GetPartiesUseCase;
+import com.meadowsage.guildgame.usecase.party.RemovePartyMemberUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,7 @@ public class PartyController {
     private final GetPartiesUseCase getPartiesUseCase;
     private final AddPartyMemberUseCase addPartyMemberUseCase;
     private final RemovePartyMemberUseCase removePartyMemberUseCase;
+    private final GetFreePartiesUseCase getFreePartiesUseCase;
 
     @GetMapping
     @Transactional(readOnly = true)
@@ -25,7 +28,7 @@ public class PartyController {
         return new GetPartiesResponse(getPartiesUseCase.run(worldId));
     }
 
-    @PostMapping("/{partyId}/partyMembers")
+    @PostMapping("/{partyId}/members")
     @Transactional
     public void addPartyMember(
             @PathVariable String saveDataId,
@@ -37,7 +40,7 @@ public class PartyController {
         addPartyMemberUseCase.run(partyId, addPartyMemberRequest.getPersonId());
     }
 
-    @DeleteMapping("/{partyId}/partyMembers/{personId}")
+    @DeleteMapping("/{partyId}/members/{personId}")
     @Transactional
     public void removePartyMember(
             @PathVariable String saveDataId,
@@ -47,5 +50,19 @@ public class PartyController {
     ) {
         System.out.println(saveDataId + " " + worldId);
         removePartyMemberUseCase.run(partyId, personId);
+    }
+
+    @GetMapping("/free")
+    @ResponseBody
+    @Transactional
+    public GetFreePartiesResponse getFreeParties(
+            @PathVariable String saveDataId,
+            @PathVariable long worldId,
+            @RequestParam long questId
+    ) {
+        // TODO 入力チェック
+        System.out.println(saveDataId + " " + worldId);
+        GetFreePartiesUseCase.GetFreePartiesUseCaseResult result = getFreePartiesUseCase.run(worldId, questId);
+        return new GetFreePartiesResponse(result.getParties(), result.getQuest());
     }
 }

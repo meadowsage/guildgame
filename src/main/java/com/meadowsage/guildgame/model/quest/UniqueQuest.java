@@ -1,6 +1,5 @@
 package com.meadowsage.guildgame.model.quest;
 
-import com.meadowsage.guildgame.model.Place;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
@@ -8,15 +7,11 @@ import static com.meadowsage.guildgame.model.quest.QuestContent.CITY_WEEDING;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum UniqueQuest {
-    FIRST(QuestType.TASK, CITY_WEEDING, 10, 0, Place.CITY);
+    FIRST_QUEST(CITY_WEEDING);
 
-    QuestType type;
-    QuestContent questContent;
-    int difficulty;
-    int danger;
-    Place place;
+    QuestContent content;
 
     public Quest getInstance() {
-        return new Quest(type, questContent, difficulty, danger, place);
+        return new Quest(content);
     }
 }

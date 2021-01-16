@@ -55,14 +55,12 @@
         p.support_exp AS s_exp,
         p.max_energy AS e_max,
         p.energy AS e_value,
-        qo.id AS ordering_quest_id,
         p2.type AS personality,
         ps.skill as ps_skill,
         ps.level as ps_level,
         ps.exp as ps_exp
         FROM person p
         LEFT JOIN applicant a on p.id = a.person_id
-        LEFT JOIN quest_order qo on p.id = qo.person_id AND qo.state = 'ONGOING'
         LEFT JOIN personality p2 on p.id = p2.person_id
         LEFT JOIN person_skill ps on p.id = ps.person_id
         WHERE a.person_id IS NULL
@@ -74,12 +72,6 @@
             <foreach item="id" collection="ids" open="(" separator="," close=")">
                 #{id}
             </foreach>
-        </if>
-        <if test="notOrdering != null &amp;&amp; notOrdering == true">
-            AND qo.id IS NULL
-        </if>
-        <if test="notOrdering != null &amp;&amp; notOrdering == false">
-            AND qo.id IS NOT NULL
         </if>
     </select>
 

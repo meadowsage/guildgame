@@ -1,7 +1,6 @@
 package com.meadowsage.guildgame.model.person;
 
 import com.meadowsage.guildgame.model.quest.Quest;
-import com.meadowsage.guildgame.model.quest.QuestType;
 import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Money;
@@ -10,10 +9,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Optional;
+
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Adventurer extends Person {
-    private Long orderingQuestId;
 
     @Override
     public boolean isAdventurer() {
@@ -52,15 +52,7 @@ public class Adventurer extends Person {
         }
     }
 
-    public boolean isOrderingQuest() {
-        return orderingQuestId != null;
-    }
-
     public void doMorningActivity(GameWorld world) {
-        if (!isOrderingQuest() && !isTired()) {
-            // クエストを受注しておらず、体調に問題ない場合、クエストを受注する
-            world.getAvailableQuests().stream().findFirst().ifPresent(quest -> quest.order(this));
-        }
     }
 
     /**
@@ -69,21 +61,9 @@ public class Adventurer extends Person {
      * @param quest 対象クエスト
      * @return 金額
      */
-    public Money calcRewards(Quest quest) {
+    public int calcReward(Quest quest) {
         double base = 100 + getReputation().getValue() * 2;
-        return Money.of(100 + (int) Math.round(base * (quest.getDifficulty() * 0.1) + (quest.getDanger() * 100)));
-    }
-
-    /**
-     * クエスト種別に対する能力の基本発揮値を算出
-     *
-     * @param questType 対象クエスト種別
-     * @return 発揮値
-     */
-    public int getBasePerformance(QuestType questType) {
-        return (int) (getBattle().getValue() * questType.getBattleCoefficient() +
-                getKnowledge().getValue() * questType.getKnowledgeCoefficient() +
-                getSupport().getValue() * questType.getSupportCoefficient()) / 3;
+        return 100 + (int) Math.round(base * (quest.getDanger() * 100));
     }
 
     public void earnMoney(Money money) {
@@ -92,5 +72,22 @@ public class Adventurer extends Person {
 
     public void payMoney(Money money) {
         getMoney().subtract(money);
+    }
+
+    public Attribute getAttribute(Attribute.Type type) {
+        switch (type) {
+            case BATTLE:
+                return getBattle();
+            case KNOWLEDGE:
+                return getKnowledge();
+            case SUPPORT:
+                return getSupport();
+            default:
+                throw new IllegalStateException();
+        }
+    }
+
+    public Optional<PersonSkill> getSkill(Skill skill) {
+        return getSkills().stream().filter(_skill -> _skill.getSkill().equals(skill)).findAny();
     }
 }

@@ -1,7 +1,7 @@
 package com.meadowsage.guildgame.controller.response;
 
+import com.meadowsage.guildgame.controller.response.model.ResponseAdventurer;
 import com.meadowsage.guildgame.model.person.Party;
-import com.meadowsage.guildgame.model.person.Personality;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,25 +16,10 @@ public class GetPartiesResponse {
         this.parties = parties.stream().map(party -> ResponseParty.builder()
                 .id(party.getId())
                 .name(party.getName())
-                .partyMembers(party.getPartyMembers().stream().map(partyMember ->
-                        ResponseAdventurer.builder()
-                                .id(partyMember.getId())
-                                .name(partyMember.getName().getFirstName())
-                                .fullName(partyMember.getName().getFullName())
-                                .money(partyMember.getMoney().getValue())
-                                .reputation(partyMember.getReputation().getValue())
-                                .battle(partyMember.getBattle().getValue())
-                                .knowledge(partyMember.getKnowledge().getValue())
-                                .support(partyMember.getSupport().getValue())
-                                .energy(partyMember.getEnergy().getValue())
-                                .maxEnergy(partyMember.getEnergy().getMax())
-                                .personalities(partyMember.getPersonalities().stream()
-                                        .map(Personality::getLabel)
-                                        .collect(Collectors.toList()))
-                                .imageBodyFileName(partyMember.getImageBodyFileName())
-                                .build()
-                ).collect(Collectors.toList()))
-                .build()
+                .members(party.getMembers().stream()
+                        .map(ResponseAdventurer::new)
+                        .collect(Collectors.toList())
+                ).build()
         ).collect(Collectors.toList());
     }
 
@@ -43,23 +28,6 @@ public class GetPartiesResponse {
     private static class ResponseParty {
         long id;
         String name;
-        List<ResponseAdventurer> partyMembers;
-    }
-
-    @Builder
-    @Getter
-    private static class ResponseAdventurer {
-        long id;
-        String name;
-        String fullName;
-        long money;
-        long reputation;
-        int battle;
-        int knowledge;
-        int support;
-        int energy;
-        int maxEnergy;
-        List<String> personalities;
-        String imageBodyFileName;
+        List<ResponseAdventurer> members;
     }
 }

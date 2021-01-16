@@ -1,16 +1,17 @@
 package com.meadowsage.guildgame.usecase.world;
 
-import com.meadowsage.guildgame.model.person.Adventurer;
+import com.meadowsage.guildgame.model.person.Party;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestOrder;
 import com.meadowsage.guildgame.model.system.GameLog;
 import com.meadowsage.guildgame.model.world.World;
 import com.meadowsage.guildgame.repository.GameLogRepository;
-import com.meadowsage.guildgame.repository.PersonRepository;
+import com.meadowsage.guildgame.repository.PartyRepository;
 import com.meadowsage.guildgame.repository.QuestRepository;
 import com.meadowsage.guildgame.repository.WorldRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 public class GetAfternoonProcessResultUseCase {
     private final WorldRepository worldRepository;
     private final QuestRepository questRepository;
-    private final PersonRepository personRepository;
+    private final PartyRepository partyRepository;
     private final GameLogRepository gameLogRepository;
 
     public GetAfternoonProcessResultUseCaseResult run(long worldId) {
@@ -34,43 +35,51 @@ public class GetAfternoonProcessResultUseCase {
         // 現在のWorldStateがAFTERNOONでない場合、すべて処理済と判断して「その他行動」のログを返す
         if (!world.getState().equals(World.State.AFTERNOON)) {
             List<GameLog> gameLogs = gameLogRepository.getGameLogsWithQuestIdNull(worldId, gameDate);
-            return new GetAfternoonProcessResultUseCaseResult(null, new ArrayList<>(), gameLogs, true);
+            return GetAfternoonProcessResultUseCaseResult.otherActions(gameLogs);
         }
 
-        List<Quest> quests = questRepository.getQuests(worldId);
-        List<Quest> processedQuests = quests.stream()
-                .filter(quest -> quest.hasProcessed(gameDate))
+        List<QuestOrder> questOrders = questRepository.getQuestOrders(worldId);
+        List<QuestOrder> processedQuestOrders = questOrders.stream()
+                .filter(questOrder -> questOrder.hasProcessed(gameDate))
                 .collect(Collectors.toList());
 
         // まだクエストが１件も実行されていない場合、空のレスポンスを返す
-        if (processedQuests.size() == 0) return new GetAfternoonProcessResultUseCaseResult();
+        if (processedQuestOrders.size() == 0) return GetAfternoonProcessResultUseCaseResult.empty();
 
-        // 実行済みのクエストがある場合、クエスト詳細、パーティ情報、ログを返す
-        Quest lastProcessedQuest = processedQuests.stream()
-                .max(Comparator.comparing(Quest::getId))
+        // 最後に実行されたクエスト発注を取得
+        QuestOrder lastProcessedQuestOrder = processedQuestOrders.stream()
+                .max(Comparator.comparing(QuestOrder::getQuestId))
                 .orElseThrow(IllegalStateException::new);
-        List<Adventurer> party = personRepository.getAdventurers(
-                worldId,
-                lastProcessedQuest.getQuestOrders().stream()
-                        .map(QuestOrder::getPersonId)
-                        .collect(Collectors.toList()));
+
+        // クエスト情報、パーティ情報、ログを取得
+        Quest lastProcessedQuest = questRepository.get(lastProcessedQuestOrder.getQuestId())
+                .orElseThrow(IllegalStateException::new);
+        Party party = partyRepository.get(lastProcessedQuestOrder.getPartyId())
+                .orElseThrow(IllegalStateException::new);
         List<GameLog> gameLogs = gameLogRepository.getQuestGameLogs(worldId, gameDate, lastProcessedQuest.getId());
+
         return new GetAfternoonProcessResultUseCaseResult(lastProcessedQuest, party, gameLogs, false);
     }
 
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class GetAfternoonProcessResultUseCaseResult {
         @Nullable
         Quest lastProcessedQuest;
-        List<Adventurer> party;
-        List<GameLog> gameLogs;
-        boolean isDone;
+        @Nullable
+        Party party;
+        List<GameLog> gameLogs = new ArrayList<>();
+        boolean isDone = false;
 
-        public GetAfternoonProcessResultUseCaseResult() {
-            this.party = new ArrayList<>();
-            this.gameLogs = new ArrayList<>();
-            this.isDone = false;
+        public static GetAfternoonProcessResultUseCaseResult empty() {
+            return new GetAfternoonProcessResultUseCaseResult(
+                    null, null, new ArrayList<>(), false);
+        }
+
+        public static GetAfternoonProcessResultUseCaseResult otherActions(List<GameLog> otherActionGameLogs) {
+            return new GetAfternoonProcessResultUseCaseResult(
+                    null, null, otherActionGameLogs, true);
         }
     }
 }

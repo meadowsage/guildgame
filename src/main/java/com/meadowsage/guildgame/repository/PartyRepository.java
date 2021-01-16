@@ -20,11 +20,7 @@ public class PartyRepository {
 
     public List<Party> getAll(long worldId) {
         List<Party> parties = partyMapper.selectAll(worldId);
-        parties.forEach(party -> {
-            List<Long> partyMemberIds = partyMapper.selectPartyMemberIds(party.getId());
-            List<Adventurer> partyMembers = personRepository.getAdventurers(worldId, partyMemberIds);
-            party.getPartyMembers().addAll(partyMembers);
-        });
+        parties.forEach(this::withPartyMembers);
         return parties;
     }
 
@@ -41,7 +37,7 @@ public class PartyRepository {
             partyMapper.insert(party, worldId);
             partyMapper.insertPartyMembers(
                     party.getId(),
-                    party.getPartyMembers().stream().map(Adventurer::getId).collect(Collectors.toList())
+                    party.getMembers().stream().map(Adventurer::getId).collect(Collectors.toList())
             );
         }
     }
@@ -51,6 +47,18 @@ public class PartyRepository {
     }
 
     public Optional<Party> get(long partyId) {
-        return Optional.ofNullable(partyMapper.select(partyId));
+        return Optional.ofNullable(withPartyMembers(partyMapper.select(partyId)));
+    }
+
+    public List<Party> getFreeParties(long worldId) {
+        return partyMapper.selectFree(worldId).stream().map(this::withPartyMembers).collect(Collectors.toList());
+    }
+
+    private Party withPartyMembers(Party party) {
+        if (party == null) return null;
+        List<Long> partyMemberIds = partyMapper.selectPartyMemberIds(party.getId());
+        List<Adventurer> partyMembers = personRepository.getAdventurers(partyMemberIds);
+        party.getMembers().addAll(partyMembers);
+        return party;
     }
 }

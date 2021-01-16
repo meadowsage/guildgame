@@ -31,9 +31,9 @@ public class PersonRepository {
         return personMapper.selectAdventurers(worldId, null, null);
     }
 
-    public List<Adventurer> getAdventurers(long worldId, List<Long> ids) {
+    public List<Adventurer> getAdventurers(List<Long> ids) {
         if (ids.isEmpty()) return new ArrayList<>();
-        return personMapper.selectAdventurers(worldId, ids, null);
+        return personMapper.selectAdventurers(null, ids, null);
     }
 
     public List<Adventurer> getOrderables(long worldId) {

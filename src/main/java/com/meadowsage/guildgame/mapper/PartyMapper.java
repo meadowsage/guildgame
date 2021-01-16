@@ -15,6 +15,8 @@ public interface PartyMapper {
 
     List<Party> selectAll(long worldId);
 
+    List<Party> selectFree(long worldId);
+
     List<Long> selectPartyMemberIds(long id);
 
     void delete(long partyId);

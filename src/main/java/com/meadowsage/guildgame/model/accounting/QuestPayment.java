@@ -25,17 +25,18 @@ public class QuestPayment {
             int gameDate,
             GameLogger gameLogger
     ) {
-        QuestPayment questIncome = new QuestPayment(
-                questOrder.getRewards().getValue(),
-                questOrder.getQuestId(),
-                adventurer.getId(),
-                gameDate);
-
-        guild.payMoney(questOrder.getRewards());
-        adventurer.earnMoney(questOrder.getRewards());
-        gameLogger.detail(adventurer.getName().getFirstName() + "にクエスト報酬として"
-                + questOrder.getRewards().getValue() + "Gを支払った。");
-
-        return questIncome;
+//        QuestPayment questIncome = new QuestPayment(
+//                questOrder.getReward().getValue(),
+//                questOrder.getQuestId(),
+//                adventurer.getId(),
+//                gameDate);
+//
+//        guild.payMoney(questOrder.getReward());
+//        adventurer.earnMoney(questOrder.getReward());
+//        gameLogger.detail(adventurer.getName().getFirstName() + "にクエスト報酬として"
+//                + questOrder.getReward().getValue() + "Gを支払った。");
+//
+//        return questIncome;
+        return null;
     }
 }

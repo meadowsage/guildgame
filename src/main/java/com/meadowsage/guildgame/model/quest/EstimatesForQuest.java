@@ -13,9 +13,9 @@ public class EstimatesForQuest {
     public EstimatesForQuest(Quest quest, Adventurer adventurer, List<Adventurer> party) {
         this.quest = quest;
         this.adventurer = adventurer;
-        int currentCost = party.stream().mapToInt(partyMember -> partyMember.calcRewards(quest).getValue()).sum();
-        this.nextCost = adventurer.calcRewards(quest).add(currentCost).getValue();
-        this.diffOfPerformanceAndDifficulty = quest.getDifficulty() - adventurer.getBasePerformance(quest.getType());
+        int currentCost = party.stream().mapToInt(partyMember -> partyMember.calcReward(quest)).sum();
+        this.nextCost = adventurer.calcReward(quest) + currentCost;
+        this.diffOfPerformanceAndDifficulty = 0;
     }
 
     public boolean isAlright() {
@@ -40,6 +40,6 @@ public class EstimatesForQuest {
     }
 
     public boolean isCostOverrun() {
-        return nextCost > quest.getRewards().getValue();
+        return nextCost > quest.getReward().getValue();
     }
 }

@@ -4,22 +4,17 @@ import com.meadowsage.guildgame.model.accounting.Treasurer;
 import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.system.SaveData;
-import com.meadowsage.guildgame.repository.GameLogRepository;
-import com.meadowsage.guildgame.repository.GameRepository;
-import com.meadowsage.guildgame.repository.TreasurerRepository;
-import com.meadowsage.guildgame.repository.WorldRepository;
+import com.meadowsage.guildgame.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-/**
- * 時間を進める処理
- */
 @Service
 @AllArgsConstructor
 public class StartNewGameUseCase {
     private final WorldRepository worldRepository;
     private final GameRepository gameRepository;
     private final GameLogRepository gameLogRepository;
+    private final QuestRepository questRepository;
     private final TreasurerRepository treasurerRepository;
 
     public SaveData run() {
@@ -31,7 +26,7 @@ public class StartNewGameUseCase {
     private void generateNewWorld(SaveData saveData) {
         // 生成・初期化
         Treasurer treasurer = Treasurer.builder().build();
-        GameWorld world = GameWorld.generateAndInit(saveData, worldRepository, treasurer);
+        GameWorld world = GameWorld.generateAndInit(saveData, worldRepository, questRepository, treasurer);
 
         // 初期表示用のログ生成
         GameLogger gameLogger = new GameLogger(world.getId(), world.getGameDate() - 1);

@@ -32,9 +32,9 @@ public class Dice {
     /**
      * 1d100の結果に応じた結果を返す
      */
-    public DiceRollResult calcResult(int target) {
+    public DiceRollResult calcResult(int target, int modifier) {
         System.out.println("[目標値 " + target + "]");
-        int result = roll(1, 100, 0);
+        int result = roll(1, 100, modifier);
 
         // 1,100は自動成功・自動失敗
         if (result == 1) return new DiceRollResult(result, ResultType.CRITICAL);

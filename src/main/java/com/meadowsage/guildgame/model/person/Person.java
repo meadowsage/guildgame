@@ -2,7 +2,6 @@ package com.meadowsage.guildgame.model.person;
 
 import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
-import com.meadowsage.guildgame.model.value.Attribute;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
@@ -81,9 +80,9 @@ public abstract class Person {
         if (isAdventurer) {
             return Adventurer.builder()
                     .name(PersonName.of(firstName, familyName))
-                    .battle(Attribute.of(battle, "戦闘"))
-                    .knowledge(Attribute.of(knowledge, "知識"))
-                    .support(Attribute.of(support, "支援"))
+                    .battle(Attribute.of(battle, Attribute.Type.BATTLE))
+                    .knowledge(Attribute.of(knowledge, Attribute.Type.KNOWLEDGE))
+                    .support(Attribute.of(support, Attribute.Type.SUPPORT))
                     .energy(Resource.of(energy))
                     .money(Money.of(money))
                     .reputation(Reputation.of(reputation))
@@ -94,9 +93,9 @@ public abstract class Person {
         } else {
             return Applicant.builder()
                     .name(PersonName.of(firstName, familyName))
-                    .battle(Attribute.of(battle, "戦闘"))
-                    .knowledge(Attribute.of(knowledge, "知識"))
-                    .support(Attribute.of(support, "支援"))
+                    .battle(Attribute.of(battle, Attribute.Type.BATTLE))
+                    .knowledge(Attribute.of(knowledge, Attribute.Type.KNOWLEDGE))
+                    .support(Attribute.of(support, Attribute.Type.SUPPORT))
                     .energy(Resource.of(energy))
                     .money(Money.of(money))
                     .reputation(Reputation.of(reputation))

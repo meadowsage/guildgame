@@ -21,6 +21,7 @@ public class DoAfternoonProcessUseCase {
         if (!world.getState().equals(World.State.AFTERNOON)) return;
 
         world.afternoon(gameLogger);
+
         worldRepository.save(world);
         gameLogRepository.save(gameLogger);
     }

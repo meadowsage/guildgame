@@ -3,61 +3,29 @@
 
 <mapper namespace="com.meadowsage.guildgame.mapper.QuestMapper">
 
-    <resultMap id="questMap" type="com.meadowsage.guildgame.model.quest.Quest" autoMapping="true">
-        <id column="id" property="id"/>
-        <association property="rewards" columnPrefix="r_" autoMapping="true"/>
-        <collection property="questOrders" resultMap="com.meadowsage.guildgame.mapper.QuestOrderMapper.questOrderMap"
-                    columnPrefix="qo_" autoMapping="true">
-        </collection>
-    </resultMap>
-
-    <select id="select" resultMap="questMap">
-        SELECT q.*,
-        q.rewards as r_value,
-        qo.id as qo_id,
-        qo.quest_id as qo_quest_id,
-        qo.person_id as qo_person_id,
-        qo.rewards as qo_r_value,
-        qo.state as qo_state
+    <select id="select" resultType="com.meadowsage.guildgame.model.quest.Quest">
+        SELECT q.*
         FROM quest q
-        LEFT JOIN quest_order qo ON (q.id = qo.quest_id AND qo.state != 'FAILURE')
-        WHERE true
-        <if test="questId != null">
-            AND q.id = #{questId}
-        </if>
-        <if test="worldId != null">
-            AND q.is_closed = false
-            AND q.world_id = #{worldId}
-        </if>
-        <if test="ongoing == true">
-            AND q.is_closed = false
-        </if>
+        <where>
+            <if test="questId != null">
+                AND q.id = #{questId}
+            </if>
+            <if test="worldId != null">
+                AND q.world_id = #{worldId}
+                -- 一括取得時は完了済のクエストを除外
+                AND NOT EXISTS (
+                SELECT id
+                FROM quest_order qo
+                INNER JOIN quest_order_result qor ON qo.id = qor.quest_order_id AND qor.succeeded = TRUE
+                WHERE qo.quest_id = q.id
+                )
+            </if>
+        </where>
         ORDER BY q.id
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="quest.id">
-        INSERT INTO quest (world_id,
-                           type,
-                           content,
-                           place,
-                           difficulty,
-                           danger,
-                           processed_at,
-                           rewards)
-        VALUES (#{worldId},
-                #{quest.type},
-                #{quest.content},
-                #{quest.place},
-                #{quest.difficulty},
-                #{quest.danger},
-                #{quest.processedAt},
-                #{quest.rewards.value})
+        INSERT INTO quest (world_id, content)
+        VALUES (#{worldId}, #{quest.content})
     </insert>
-
-    <update id="update">
-        UPDATE quest
-        SET processed_at = #{processedAt},
-            is_closed    = #{isClosed}
-        WHERE id = #{id}
-    </update>
 </mapper>

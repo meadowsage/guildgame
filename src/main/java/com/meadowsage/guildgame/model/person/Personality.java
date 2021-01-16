@@ -10,21 +10,23 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum Personality {
-    BRIGHT("明るい", f -> f.extroversion > 75, Collections.emptyList()),
-    SHY("内気", f -> f.extroversion < 25, Collections.emptyList()),
-    CONFIDENT("自信家", f -> f.confidence > 75, Collections.emptyList()),
-    MODEST("謙虚", f -> f.confidence < 25, Collections.emptyList()),
-    SINCERE("誠実", f -> f.morality > 75, Collections.emptyList()),
-    LIAR("嘘つき", f -> f.morality < 25, Collections.emptyList()),
-    GENTLE("紳士的", f -> f.politeness > 75, Collections.emptyList()),
-    ROUGH("荒くれ者", f -> f.politeness < 25, Collections.emptyList()),
-    KIND("親切", f -> f.thoughtfulness > 75, Collections.emptyList()),
-    COLD("冷たい", f -> f.thoughtfulness < 25, Collections.emptyList()),
-    WARY("慎重", f -> f.suspicious > 75, Collections.emptyList()),
-    DOCILE("素直", f -> f.suspicious < 25, Collections.emptyList()),
+    BRIGHT("明るい", f -> f.extroversion > 70, Collections.emptyList()),
+    SHY("内気", f -> f.extroversion < 30, Collections.emptyList()),
+    CONFIDENT("自信家", f -> f.confidence > 70, Collections.emptyList()),
+    MODEST("謙虚", f -> f.confidence < 30, Collections.emptyList()),
+    SINCERE("誠実", f -> f.morality > 70, Collections.emptyList()),
+    LIAR("嘘つき", f -> f.morality < 30, Collections.emptyList()),
+    GENTLE("紳士的", f -> f.politeness > 70, Collections.emptyList()),
+    ROUGH("荒くれ者", f -> f.politeness < 30, Collections.emptyList()),
+    KIND("親切", f -> f.thoughtfulness > 70, Collections.emptyList()),
+    COLD("冷たい", f -> f.thoughtfulness < 30, Collections.emptyList()),
+    WARY("慎重", f -> f.suspicious > 70, Collections.emptyList()),
+    DOCILE("素直", f -> f.suspicious < 30, Collections.emptyList()),
     // 明るい+
-    LEADERSHIP("リーダーシップ", f -> f.extroversion > 70 && f.confidence > 70,
+    LEADERSHIP("リーダー気質", f -> f.extroversion > 70 && f.confidence > 70,
             Arrays.asList(BRIGHT, CONFIDENT)),
+    PASSIONATE("熱血", f -> f.extroversion > 70 && f.morality > 70,
+            Arrays.asList(BRIGHT, SINCERE)),
     PLEASANT("爽やか", f -> f.extroversion > 70 && f.politeness > 70,
             Arrays.asList(BRIGHT, GENTLE)),
     POWERFUL("豪快", f -> f.extroversion > 70 && f.politeness < 30,
@@ -33,7 +35,7 @@ public enum Personality {
             Arrays.asList(BRIGHT, KIND)),
     SIMPLE("単純", f -> f.extroversion > 70 && f.suspicious < 30,
             Arrays.asList(BRIGHT, DOCILE)),
-    // 暗い+
+    // 内気+
     SERVILE("卑屈", f -> f.extroversion < 30 && f.confidence < 30,
             Arrays.asList(SHY, MODEST)),
     DILIGENT("真面目", f -> f.extroversion < 30 && f.morality > 70,
@@ -83,6 +85,12 @@ public enum Personality {
             }
         }
 
+        // 最大２つ
+        if (results.size() > 2) {
+            results = results.subList(results.size() - 2, results.size());
+        }
+
+        // ０個の場合は「温厚」
         if (results.size() == 0) results.add(Personality.CALM);
 
         return results;

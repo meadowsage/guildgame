@@ -1,12 +1,10 @@
 package com.meadowsage.guildgame.model.quest;
 
 import com.meadowsage.guildgame.model.person.Adventurer;
+import com.meadowsage.guildgame.model.person.Party;
 import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * クエストの処理
@@ -16,33 +14,37 @@ public class QuestProcess {
     private static final int TARGET_BASE = 75;
     private static final int TARGET_MAX = 90;
     private static final int TARGET_MIN = 5;
+    // 補正値 必須不足、推奨充足、疲労時
+    private static final int MODIFIER_REQUIREMENTS_UNSATISFIED = -25;
+    private static final int MODIFIER_RECOMMENDS_SATISFIED = 10;
+    private static final int MODIFIER_IS_TIRED = -25;
 
     Quest quest;
-    List<Adventurer> party;
+    QuestOrder questOrder;
+    Party party;
     int gameDate;
 
-    public QuestProcess(Quest quest, List<Adventurer> party, int gameDate) {
+    public QuestProcess(Quest quest, QuestOrder questOrder, Party party, int gameDate) {
         this.quest = quest;
+        this.questOrder = questOrder;
         this.party = party;
         this.gameDate = gameDate;
     }
 
     public void run(Dice dice, GameLogger gameLogger) {
-        gameLogger.detail(party.stream()
-                        .map(adventurer -> adventurer.getName().getFirstName())
-                        .collect(Collectors.joining("、")) + "が" + quest.getName() + "を開始した。",
-                null, quest);
+        gameLogger.detail(party.getName() + "が" + quest.getName() + "を開始した。", null, quest);
 
+        // 目標値
+        // 必須条件が１つ足りないごとに目標値-25%
+        int target = TARGET_BASE - quest.numberOfUnsatisfiedRequirements(party) * MODIFIER_REQUIREMENTS_UNSATISFIED;
+        target = Math.max(target, TARGET_MIN);
+        target = Math.min(target, TARGET_MAX);
 
         // パーティ全員が成否判定を行い、成功度を合算
-        // TODO 発揮値順
         int successPoint = 0;
-
-        for (Adventurer adventurer : party) {
-            successPoint += tryQuest(adventurer, dice, gameLogger);
+        for (Adventurer member : party.getMembers()) {
+            successPoint += tryQuest(member, dice, gameLogger, target);
         }
-
-        // TODO ランダムイベント
 
         // 完了判定
         boolean isCompleted = checkIfCompleted(successPoint);
@@ -52,45 +54,33 @@ public class QuestProcess {
             success(gameLogger);
         } else {
             // TODO リタイア判定
-            // 体力がゼロになったメンバーはリタイア
-
-            // 失敗判定
-            // パーティメンバーが残っていないか、期日を超過した場合は失敗
-            failure(gameLogger);
+            // とりあえず、全員の体力が尽きたら失敗
+            if (party.getMembers().stream().allMatch(Person::isTired)) {
+                failure(gameLogger);
+            } else {
+                gameLogger.info("[継続] " + party.getName() + "は野営して過ごした。", null, quest);
+                questOrder.saveProgress(gameDate, successPoint);
+            }
         }
 
-        // 行動済フラグをONにする
-        party.forEach(Person::setAsActioned);
+        // パーティメンバの行動済フラグをONにする
+        party.getMembers().forEach(Person::setAsActioned);
     }
 
-    private int tryQuest(Adventurer adventurer, Dice dice, GameLogger gameLogger) {
-        // 発揮値を算出
-        int performance = adventurer.getBasePerformance(quest.getType());
+    private int tryQuest(Adventurer adventurer, Dice dice, GameLogger gameLogger, int target) {
+        // 補正値
+        int modifier = (adventurer.isTired() ? MODIFIER_IS_TIRED : 0)
+                + (quest.numberOfSatisfiedRecommends(adventurer) * MODIFIER_RECOMMENDS_SATISFIED);
 
-        // 疲労時の補正 TODO 発揮値算出に動かしたほうが良いかも…？もしくはbaseとcomputedを用意するか
-        if (adventurer.isTired()) {
-            gameLogger.warning(adventurer.getName().getFirstName() + "は疲労により力が出ない！", adventurer, quest);
-            performance *= 0.5;
-        }
+        Dice.DiceRollResult result = dice.calcResult(target, modifier);
 
+        String resultMessage = adventurer.getName().getFirstName()
+                + ": [1D100"
+                + (modifier > 0 ? "+" + modifier : "")
+                + (modifier < 0 ? modifier : "")
+                + " <= " + target + "] → "
+                + result.getNumber() + " " + result.getType().name();
 
-        // 目標値：発揮値との差分で補正
-        // 目標値に達していない場合はマイナス補正
-        int modifier = (performance - quest.getDifficulty());
-        if (modifier < 0) modifier -= 15;
-        int target = TARGET_BASE + modifier;
-        if (target > TARGET_MAX) target = TARGET_MAX;
-        else if (target < TARGET_MIN) target = TARGET_MIN;
-
-        gameLogger.debug(
-                adventurer.getName().getFirstName() + ": 発揮値" + performance
-                        + " / 難易度" + quest.getDifficulty() + " -> 補正値" + modifier,
-                adventurer, quest);
-
-        Dice.DiceRollResult result = dice.calcResult(target);
-
-        String resultMessage = adventurer.getName().getFirstName() + ": [1D100 <= " + target + "] → " +
-                result.getNumber() + " " + result.getType().name();
         gameLogger.debug(resultMessage, adventurer, quest);
 
         // ダイスロールの結果に応じてイベントを実行
@@ -111,36 +101,37 @@ public class QuestProcess {
     }
 
     private boolean checkIfCompleted(int successPoint) {
-        return successPoint > 0;
+        return successPoint + questOrder.getTotalSuccessPoint() >= quest.getAmount();
     }
 
     private void success(GameLogger gameLogger) {
         // クエストを完了状態に変更
-        quest.markAsSucceeded(gameDate);
+        questOrder.markAsSuccess(gameDate);
 
         // 報酬・経験点・名声を付与
-        party.forEach(person -> {
-            person.getMoney().add(quest.getDifficulty() * 10 / party.size());
-            person.getReputation().add(quest.getDifficulty() / 10 / party.size() + 1);
-            person.getBattle().earnExp((int) (quest.getDifficulty() * quest.getType().getBattleCoefficient()), person, quest, gameLogger);
-            person.getKnowledge().earnExp((int) (quest.getDifficulty() * quest.getType().getKnowledgeCoefficient()), person, quest, gameLogger);
-            person.getSupport().earnExp((int) (quest.getDifficulty() * quest.getType().getSupportCoefficient()), person, quest, gameLogger);
+        party.getMembers().forEach(person -> {
+            person.getMoney().add(quest.getReward().getValue() / party.getMembers().size());
+            person.getReputation().add(quest.calcReputation() / party.getMembers().size());
+            // TODO 経験点の検討
             // 体力消費
             person.getEnergy().consume(1);
         });
 
-        // ギルドに報酬を付与
-
-        gameLogger.important(party.get(0).getName().getFirstName() + "たちが" + quest.getName() + "を完了した！", null, quest);
+        gameLogger.important("[成功] " + party.getName() + "が" + quest.getName() + "を完了した！", null, quest);
     }
 
     private void failure(GameLogger gameLogger) {
-        quest.markAsFailed();
-        party.forEach(person -> {
-            person.getMoney().add(quest.getDifficulty() * 10 / party.size() * -1);
-            person.getReputation().add(quest.getDifficulty() / 10 / party.size() * -1);
-            person.getEnergy().consume(2);
+        gameLogger.fatal("[失敗] パーティ全員の体力が尽きたため帰還します。", null, quest);
+
+        // 報酬・経験点・名声を付与
+        party.getMembers().forEach(person -> {
+            person.getMoney().add(quest.getReward().getValue() / party.getMembers().size());
+            person.getReputation().add(quest.calcReputation() / party.getMembers().size());
+            // TODO 経験点の検討
+            // 体力消費
+            person.getEnergy().consume(1);
         });
-        gameLogger.fatal(party.get(0).getName().getFirstName() + "たちは" + quest.getName() + "に失敗した…", null, quest);
+
+        questOrder.markAsFailure(gameDate);
     }
 }

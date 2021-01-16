@@ -23,8 +23,8 @@ public enum Skill {
     FIGHTING("格闘", true),
     ARCHERY("弓術", true),
     // 魔法スキル
-    BASIC_MAGIC("基礎魔法", true),
-    FIRE_MAGIC("攻撃魔法", true),
+    ATTACK_MAGIC("攻撃魔法", true),
+    SUPPORT_MAGIC("支援魔法", true),
     HEALING_MAGIC("回復魔法", true);
 
     String label;

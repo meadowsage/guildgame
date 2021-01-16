@@ -1,116 +1,55 @@
 package com.meadowsage.guildgame.model.quest;
 
-import com.meadowsage.guildgame.model.Place;
 import com.meadowsage.guildgame.model.person.Adventurer;
+import com.meadowsage.guildgame.model.person.Party;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Money;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Quest {
     @Getter
     private long id = -1;
-    @Getter
-    private QuestType type;
-    @Getter
-    private int difficulty;
-    @Getter
-    private Money rewards;
-    @Getter
-    private int danger;
-    @Getter
-    private Place place;
     private QuestContent content;
-    @Getter
-    private int processedAt;
-    @Getter
-    private boolean isClosed;
-    @Getter
-    private final List<QuestOrder> questOrders = new ArrayList<>();
 
-    Quest(QuestType type, QuestContent content, int difficulty, int danger, Place place) {
-        this.type = type;
-        this.difficulty = difficulty;
-        this.danger = danger;
-        this.place = place;
+    public Quest(QuestContent content) {
         this.content = content;
-        this.rewards = calcRewards();
     }
 
     public String getName() {
         return content.getContentName();
     }
 
-    private Money calcRewards() {
-        return Money.of((int) (Math.pow(difficulty, 2) * 3 + Math.pow(danger, 2) * 100 + 200));
+    public Money getReward() {
+        return Money.of(content.getReward());
     }
 
-    /**
-     * 現在の収入見込みを算出する
-     *
-     * @param adventurers 冒険者リスト（パーティメンバを含む）
-     * @return 報酬 - 冒険者コスト合計
-     */
-    public int calcIncome(List<Adventurer> adventurers) {
-        int totalCosts = extractPartyMembers(adventurers).stream()
-                .mapToInt(partyMember -> partyMember.calcRewards(this).getValue()).sum();
-        return getRewards().getValue() - totalCosts;
+    public int getDanger() {
+        return content.getDanger();
     }
 
-    /**
-     * 未受注かどうか
-     */
-    public boolean isNotOrdered() {
-        return questOrders.size() == 0;
+    public int getAmount() {
+        return content.getAmount();
     }
 
-    /**
-     * 新規作成されたインスタンスかどうか
-     */
+    public List<QuestContent.Requirement> getRequirements() {
+        return content.getRequirements();
+    }
+
+    public List<QuestContent.Requirement> getRecommends() {
+        return content.getRecommends();
+    }
+
+    public int calcReputation() {
+        return getReward().getValue() / 100;
+    }
+
     public boolean isNew() {
         return id == -1;
-    }
-
-    /**
-     * クエストが実行済かどうか
-     *
-     * @param currentGameDate 今日のゲーム日付
-     * @return 実行済ならtrue
-     */
-    public boolean hasProcessed(int currentGameDate) {
-        return processedAt >= currentGameDate || questOrders.stream().noneMatch(QuestOrder::isActive);
-    }
-
-    /**
-     * クエストが成功したかどうか
-     *
-     * @return 成功していればtrue
-     */
-    public boolean isSucceeded() {
-        return questOrders.stream().anyMatch(QuestOrder::isSucceeded);
-    }
-
-    public void order(Adventurer adventurer) {
-        questOrders.add(new QuestOrder(this, adventurer));
-    }
-
-    public void markAsSucceeded(int gameDate) {
-        this.processedAt = gameDate;
-        questOrders.forEach(QuestOrder::markAsSucceeded);
-    }
-
-    public void markAsFailed() {
-        questOrders.forEach(QuestOrder::markAsFailed);
-    }
-
-    public void close() {
-        isClosed = true;
     }
 
     public int criticalEvent(Adventurer adventurer, GameLogger gameLogger) {
@@ -120,29 +59,69 @@ public class Quest {
     public int specialEvent(Adventurer adventurer, GameLogger gameLogger) {
         return content.getEvents().specialEvent(this, adventurer, gameLogger);
     }
+
     public int successEvent(Adventurer adventurer, GameLogger gameLogger) {
         return content.getEvents().successEvent(this, adventurer, gameLogger);
     }
+
     public int failureEvent(Adventurer adventurer, GameLogger gameLogger) {
         return content.getEvents().failureEvent(this, adventurer, gameLogger);
     }
+
     public int fumbleEvent(Adventurer adventurer, GameLogger gameLogger) {
         return content.getEvents().fumbleEvent(this, adventurer, gameLogger);
     }
 
     /**
-     * 冒険者リストからパーティメンバを抽出する
+     * 満たされていない必須条件の数
      *
-     * @param adventurers 冒険者リスト（パーティメンバを含む）
-     * @return このクエストを受注している冒険者のリスト
+     * @param party パーティ
      */
-    private List<Adventurer> extractPartyMembers(List<Adventurer> adventurers) {
-        if (isNotOrdered()) return new ArrayList<>();
+    public int numberOfUnsatisfiedRequirements(Party party) {
+        return (int) content.getRequirements().stream()
+                .filter(requirement -> !requirement.isSatisfied(party))
+                .count();
+    }
 
-        List<Long> memberIds = this.questOrders.stream().map(QuestOrder::getPersonId).collect(Collectors.toList());
+    /**
+     * 満たされている推奨条件の数
+     *
+     * @param party パーティ
+     */
+    public int numberOfSatisfiedRecommends(Party party) {
+        return (int) content.getRecommends().stream()
+                .filter(recommend -> recommend.isSatisfied(party))
+                .count();
+    }
 
-        return adventurers.stream().filter(adventurer ->
-                memberIds.contains(adventurer.getId())
-        ).collect(Collectors.toList());
+    /**
+     * 満たされている推奨条件の数
+     *
+     * @param adventurer 冒険者
+     */
+    public int numberOfSatisfiedRecommends(Adventurer adventurer) {
+        return (int) content.getRecommends().stream()
+                .filter(recommend -> recommend.isSatisfied(adventurer))
+                .count();
+    }
+
+    /**
+     * 必須条件を満たしているか
+     *
+     * @param party パーティ
+     * @return 全て満たしていればtrue
+     */
+    public boolean isSatisfyRequirements(Party party) {
+        return numberOfUnsatisfiedRequirements(party) == 0;
+    }
+
+    /**
+     * 推奨条件を満たしているか
+     *
+     * @param party パーティ
+     * @return **１つでも満たしていれば** true
+     */
+    public boolean isSatisfyRecommends(Party party) {
+        return numberOfSatisfiedRecommends(party) > 0;
     }
 }

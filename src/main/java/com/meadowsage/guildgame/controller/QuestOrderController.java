@@ -28,7 +28,7 @@ public class QuestOrderController {
         // TODO 入力チェック セーブデータとクエスト、冒険者の突き合わせ
         // TODO 重複チェック
         System.out.println(saveDataId + worldId);
-        addQuestOrderUseCase.run(request.getQuestId(), request.getPersonId());
+        addQuestOrderUseCase.run(request.getQuestId(), request.getPartyId());
     }
 
     @DeleteMapping("/{questOrderId}")

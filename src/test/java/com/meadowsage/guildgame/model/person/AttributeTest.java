@@ -1,6 +1,5 @@
 package com.meadowsage.guildgame.model.person;
 
-import com.meadowsage.guildgame.model.value.Attribute;
 import org.junit.jupiter.api.Test;
 
 import java.text.NumberFormat;

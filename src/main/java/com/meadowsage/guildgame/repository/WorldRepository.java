@@ -1,15 +1,16 @@
 package com.meadowsage.guildgame.repository;
 
-import com.meadowsage.guildgame.mapper.*;
+import com.meadowsage.guildgame.mapper.GuildMapper;
+import com.meadowsage.guildgame.mapper.OpenedPlaceMapper;
+import com.meadowsage.guildgame.mapper.QuestOrderMapper;
+import com.meadowsage.guildgame.mapper.WorldMapper;
 import com.meadowsage.guildgame.model.Place;
 import com.meadowsage.guildgame.model.person.Party;
-import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.world.World;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -67,16 +68,6 @@ public class WorldRepository {
         List<Place> opened = openedPlaceMapper.select(world.getId());
         world.getPlaces().stream().filter(place -> !opened.contains(place))
                 .forEach(place -> openedPlaceMapper.insert(place, world.getId()));
-
-        // クエスト発注レコードの作成・更新
-        world.getQuests().stream()
-                .map(Quest::getQuestOrders)
-                .flatMap(Collection::stream)
-                .forEach(questOrder -> {
-                    System.out.println(questOrder);
-                    if (questOrder.isNew()) questOrderMapper.insert(questOrder);
-                    else questOrderMapper.update(questOrder.getId(), questOrder.getState());
-                });
     }
 
     private GameWorld buildGameWorld(World world) {

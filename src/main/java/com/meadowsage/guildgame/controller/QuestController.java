@@ -1,15 +1,11 @@
 package com.meadowsage.guildgame.controller;
 
-import com.meadowsage.guildgame.controller.response.GetQuestOrderablesResponse;
-import com.meadowsage.guildgame.controller.response.GetOngoingQuestsResponse;
-import com.meadowsage.guildgame.usecase.quest.GetOngoingQuestsUseCase;
-import com.meadowsage.guildgame.usecase.quest.GetQuestOrderablesUseCase;
+import com.meadowsage.guildgame.controller.response.GetQuestsResponse;
+import com.meadowsage.guildgame.usecase.party.GetFreePartiesUseCase;
+import com.meadowsage.guildgame.usecase.quest.GetQuestsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * ゲーム世界に対する操作
@@ -19,43 +15,21 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/game/{saveDataId}/worlds/{worldId}/quests")
 public class QuestController {
 
-    private final GetOngoingQuestsUseCase getOngoingQuestsUseCase;
-    private final GetQuestOrderablesUseCase getQuestOrderablesUseCase;
+    private final GetQuestsUseCase getQuestsUseCase;
+    private final GetFreePartiesUseCase getFreePartiesUseCase;
 
-    @GetMapping("/ongoing")
+    @GetMapping
     @ResponseBody
     @Transactional
-    public GetOngoingQuestsResponse getOngoingQuests(
+    public GetQuestsResponse getQuests(
             @PathVariable String saveDataId,
             @PathVariable long worldId
     ) {
         // TODO 入力チェック
         System.out.println(saveDataId + " " + worldId);
 
-        GetOngoingQuestsUseCase.GetQuestsUseCaseResult result = getOngoingQuestsUseCase.run(worldId);
+        GetQuestsUseCase.GetQuestsUseCaseResult result = getQuestsUseCase.run(worldId);
 
-        return new GetOngoingQuestsResponse(result.getQuests(), result.getAdventurers());
-    }
-
-    @GetMapping("/{questId}/orderables")
-    @ResponseBody
-    @Transactional
-    public List<GetQuestOrderablesResponse> getQuestOrderables(
-            @PathVariable String saveDataId,
-            @PathVariable long worldId,
-            @PathVariable long questId
-    ) {
-        // TODO 入力チェック
-        System.out.println(saveDataId + " " + worldId);
-
-        GetQuestOrderablesUseCase.GetQuestOrderablesUseCaseResult result
-                = getQuestOrderablesUseCase.run(worldId, questId);
-
-        return result.getQuestOrderables().stream()
-                .map(questOrderable -> new GetQuestOrderablesResponse(
-                        questOrderable.getAdventurer(),
-                        questOrderable.getEstimatesForQuest(),
-                        questOrderable.getRewards()
-                )).collect(Collectors.toList());
+        return new GetQuestsResponse(result.getQuests(), result.getQuestOrders(), result.getParties());
     }
 }

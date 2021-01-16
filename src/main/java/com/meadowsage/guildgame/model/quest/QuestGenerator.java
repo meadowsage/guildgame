@@ -24,29 +24,12 @@ public class QuestGenerator {
     public List<Quest> generate(int number) {
         return IntStream.range(0, number).mapToObj(value -> {
             Place place = decidePlace();
-            QuestType type = place.decideQuestType(dice);
-            QuestContent detail = place.decideQuestDetail(type, dice);
-            int difficulty = decideDifficulty(type, place);
-            int danger = decideDanger(type);
-            return new Quest(type, detail, difficulty, danger, place);
+            QuestContent content = place.decideQuestContent( dice);
+            return new Quest(content);
         }).collect(Collectors.toList());
     }
 
     private Place decidePlace() {
         return places.get(dice.roll(1, places.size()) - 1);
-    }
-
-    private int decideDifficulty(QuestType type, Place place) {
-        // FIXME 場所に応じて難易度の補正が入る
-        int base = 20 + (place.equals(Place.CITY) ? 0 : 20);
-        // 補正
-        base *= type.getDifficultyCoefficient();
-        return base;
-    }
-
-    private int decideDanger(QuestType type) {
-        // FIXME 場所のベース難易度、討伐対象に応じて値を変える
-        if (type.equals(QuestType.TASK) || type.equals(QuestType.HARVEST)) return 0;
-        else return 1;
     }
 }
