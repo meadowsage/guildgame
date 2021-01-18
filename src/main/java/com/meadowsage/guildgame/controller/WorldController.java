@@ -3,7 +3,6 @@ package com.meadowsage.guildgame.controller;
 import com.meadowsage.guildgame.controller.response.world.GetAfternoonProcessStatusResponse;
 import com.meadowsage.guildgame.controller.response.world.GetRandomCommentResponse;
 import com.meadowsage.guildgame.controller.response.world.GetWorldResponse;
-import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.usecase.world.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +31,8 @@ public class WorldController {
     @ResponseBody
     @Transactional(readOnly = true)
     public GetWorldResponse getWorld(@PathVariable String saveDataId) {
-        GameWorld world = getWorldDataUseCase.run(saveDataId);
-        return new GetWorldResponse(world);
+        GetWorldDataUseCase.GetWorldDateUseCaseResult result = getWorldDataUseCase.run(saveDataId);
+        return new GetWorldResponse(result.getWorld(), result.getGuild());
     }
 
     @PutMapping("/{worldId}/morning")

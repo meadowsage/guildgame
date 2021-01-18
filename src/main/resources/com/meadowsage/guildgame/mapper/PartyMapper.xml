@@ -3,15 +3,15 @@
 
 <mapper namespace="com.meadowsage.guildgame.mapper.PartyMapper">
     <insert id="insert" useGeneratedKeys="true" keyProperty="party.id">
-        INSERT INTO party (world_id, name)
-        VALUES (#{worldId}, #{party.name})
+        INSERT INTO party (world_id, name, leader_id)
+        VALUES (#{worldId}, #{party.name}, #{party.leaderId})
     </insert>
 
     <insert id="insertPartyMembers">
         INSERT INTO party_member (party_id, person_id)
         VALUES
-        <foreach item="personId" collection="personIds" open="(" separator="," close=")">
-            #{partyId}, #{personId}
+        <foreach item="personId" collection="personIds" separator=",">
+            (#{partyId}, #{personId})
         </foreach>
     </insert>
 
@@ -19,11 +19,11 @@
         SELECT *
         FROM party p
         <where>
-            <if test="partyId != null">
-                p.id = #{partyId}
-            </if>
             <if test="worldId != null">
-                AND p.world_id = #{worldId}
+                p.world_id = #{worldId}
+            </if>
+            <if test="partyId != null">
+                AND p.id = #{partyId}
             </if>
             <if test="isFree == true">
                 -- 未完了の受注をしていない＝フリー
@@ -41,33 +41,17 @@
         </where>
     </select>
 
-    <select id="selectAll" resultType="com.meadowsage.guildgame.model.person.Party">
-        SELECT *
-        FROM party p
-        WHERE p.world_id = #{worldId}
-    </select>
-
-    <select id="selectFree" resultType="com.meadowsage.guildgame.model.person.Party">
-        SELECT *
-        FROM party p
-             -- 未完了の受注をしていない＝フリー
-        WHERE NOT EXISTS(
-                SELECT *
-                FROM quest_order qo
-                WHERE qo.party_id = p.id
-                  AND NOT EXISTS(
-                        SELECT *
-                        FROM quest_order_result qor
-                        WHERE qor.quest_order_id = qo.id
-                    )
-            )
-    </select>
-
     <select id="selectPartyMemberIds" resultType="java.lang.Long">
         SELECT person_id
         FROM party_member pm
         WHERE party_id = #{partyId}
     </select>
+
+    <update id="updatePartyName">
+        UPDATE party
+        SET name = #{partyName}
+        WHERE id = #{partyId}
+    </update>
 
     <delete id="delete">
         DELETE

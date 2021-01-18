@@ -11,13 +11,11 @@ public interface PartyMapper {
 
     void insertPartyMembers(long partyId, List<Long> personIds);
 
-    Party select(long worldId);
-
-    List<Party> selectAll(long worldId);
-
-    List<Party> selectFree(long worldId);
+    List<Party> select(Long worldId, Long partyId, Boolean isFree);
 
     List<Long> selectPartyMemberIds(long id);
+
+    void updatePartyName(long partyId, String partyName);
 
     void delete(long partyId);
 

@@ -16,7 +16,7 @@ public class AttributeTest {
 
         int[] results = new int[n];
         for (int i = 0; i < n; i++) {
-            results[i] = Attribute.generateRandom("").getValue();
+            results[i] = Attribute.generateRandom(Attribute.Type.BATTLE).getValue();
         }
 
         NumberFormat nf = NumberFormat.getNumberInstance();
@@ -46,14 +46,6 @@ public class AttributeTest {
 
         System.out.println("最大: " + Arrays.stream(results).max().getAsInt());
         System.out.println("平均: " + (int) Arrays.stream(results).average().getAsDouble());
-    }
-
-    @Test
-    void test2() {
-        int n = 100;
-        for (int i = 0; i < n; i++) {
-            System.out.println(Attribute.generateRandom("") + " " + Attribute.generateRandom("") + " " + Attribute.generateRandom(""));
-        }
     }
 
 }

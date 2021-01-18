@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,20 +17,11 @@ public class QuestOrder {
     private long questId;
     @Getter
     private long partyId;
-    private List<QuestOrderProgress> questOrderProgresses;
-    @Getter
+    private List<QuestOrderProgress> questOrderProgresses = new ArrayList<>();
     @Nullable
     private QuestOrderProgress newProgress;
     @Nullable
     private QuestOrderResult questOrderResult;
-
-    public List<QuestOrderProgress> getQuestOrderProgresses() {
-        return Collections.unmodifiableList(questOrderProgresses);
-    }
-
-    public Optional<QuestOrderResult> getQuestOrderResult() {
-        return Optional.ofNullable(questOrderResult);
-    }
 
     public QuestOrder(long questId, long partyId) {
         this.id = -1;
@@ -71,12 +62,19 @@ public class QuestOrder {
     }
 
     public boolean isSucceeded() {
-        return false;
-//        return this.state.equals(State.SUCCESS);
+        return questOrderResult != null && questOrderResult.isSucceeded();
     }
 
     public int getTotalSuccessPoint() {
         return questOrderProgresses.stream().mapToInt(QuestOrderProgress::getProgress).sum();
+    }
+
+    public Optional<QuestOrderProgress> getNewProgress() {
+        return Optional.ofNullable(newProgress);
+    }
+
+    public Optional<QuestOrderResult> getResult() {
+        return Optional.ofNullable(questOrderResult);
     }
 
     public enum State {

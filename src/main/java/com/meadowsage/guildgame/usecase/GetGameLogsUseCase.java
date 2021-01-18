@@ -15,7 +15,7 @@ public class GetGameLogsUseCase {
     public List<GameLog> run(long worldId, int gameDate, Long questId, Boolean noQuestId, Boolean noPersonId) {
         if (noQuestId != null && noQuestId) {
             // クエストIDがNULL（その他行動）のログのみ取得
-            return gameLogRepository.getGameLogsWithQuestIdNull(worldId, gameDate);
+            return gameLogRepository.getOtherActionGameLogs(worldId, gameDate);
         } else if (noPersonId != null && noPersonId) {
             return gameLogRepository.getGameLogsWithPersonIdNull(worldId, gameDate);
         } else if (questId != null) {

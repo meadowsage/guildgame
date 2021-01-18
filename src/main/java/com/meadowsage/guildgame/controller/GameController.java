@@ -4,13 +4,11 @@ import com.meadowsage.guildgame.controller.response.StartNewGameResponse;
 import com.meadowsage.guildgame.model.system.SaveData;
 import com.meadowsage.guildgame.usecase.game.DeleteSaveDataUseCase;
 import com.meadowsage.guildgame.usecase.game.StartNewGameUseCase;
+import com.meadowsage.guildgame.usecase.party.GetRandomPartyNameUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * システム周りの操作
- */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/game")

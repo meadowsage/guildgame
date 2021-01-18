@@ -7,8 +7,7 @@
         <id column="id" property="id"/>
         <association property="questOrderResult" columnPrefix="qor_" autoMapping="true"/>
         <collection property="questOrderProgresses" columnPrefix="qop_" autoMapping="true"
-                    ofType="com.meadowsage.guildgame.model.quest.QuestOrderProgress">
-        </collection>
+                    ofType="com.meadowsage.guildgame.model.quest.QuestOrderProgress"/>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
@@ -16,17 +15,33 @@
         VALUES (#{questId}, #{partyId})
     </insert>
 
-    <select id="selectAll" resultType="com.meadowsage.guildgame.model.quest.QuestOrder">
+    <insert id="insertProgress">
+        INSERT INTO quest_order_progress (quest_order_id, game_date, progress)
+        VALUES (#{questOrderId}, #{progress.gameDate}, #{progress.progress})
+    </insert>
+
+    <insert id="insertResult">
+        INSERT INTO quest_order_result (quest_order_id, game_date, succeeded)
+        VALUES (#{questOrderId}, #{result.gameDate}, #{result.succeeded})
+    </insert>
+
+    <select id="select" resultType="com.meadowsage.guildgame.model.quest.QuestOrder">
         SELECT qo.*,
-               qop.game_date as qop_game_date,
-               qop.progress  as qop_progress,
-               qor.game_date as qor_game_date,
-               qor.succeeded as qor_succeeded
+        qop.game_date as qop_game_date,
+        qop.progress as qop_progress,
+        qor.game_date as qor_game_date,
+        qor.succeeded as qor_succeeded
         FROM quest_order qo
-                 LEFT JOIN quest_order_progress qop on qo.id = qop.quest_order_id
-                 LEFT JOIN quest_order_result qor on qo.id = qor.quest_order_id
-        WHERE quest_id = #{questId}
-          AND qor.succeeded != TRUE -- 完了済の受注は除外
+        INNER JOIN quest q on q.id = qo.quest_id
+        LEFT JOIN quest_order_progress qop on qo.id = qop.quest_order_id
+        LEFT JOIN quest_order_result qor on qo.id = qor.quest_order_id
+        WHERE q.world_id = #{worldId}
+        <if test="gameDate != null">
+            AND qop.game_date = #{gameDate}
+        </if>
+        <if test="isActive == true">
+            AND qor.succeeded IS NULL
+        </if>
     </select>
 
     <update id="update">

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -34,19 +33,17 @@ public class GetAfternoonProcessResultUseCase {
 
         // 現在のWorldStateがAFTERNOONでない場合、すべて処理済と判断して「その他行動」のログを返す
         if (!world.getState().equals(World.State.AFTERNOON)) {
-            List<GameLog> gameLogs = gameLogRepository.getGameLogsWithQuestIdNull(worldId, gameDate);
+            List<GameLog> gameLogs = gameLogRepository.getOtherActionGameLogs(worldId, gameDate);
             return GetAfternoonProcessResultUseCaseResult.otherActions(gameLogs);
         }
 
-        List<QuestOrder> questOrders = questRepository.getQuestOrders(worldId);
-        List<QuestOrder> processedQuestOrders = questOrders.stream()
-                .filter(questOrder -> questOrder.hasProcessed(gameDate))
-                .collect(Collectors.toList());
+        // 現在の日付に実行されたクエスト受注を取得
+        List<QuestOrder> processedQuestOrders = questRepository.getProcessedOrders(worldId, gameDate);
 
         // まだクエストが１件も実行されていない場合、空のレスポンスを返す
         if (processedQuestOrders.size() == 0) return GetAfternoonProcessResultUseCaseResult.empty();
 
-        // 最後に実行されたクエスト発注を取得
+        // 最後に実行されたクエスト受注を取得
         QuestOrder lastProcessedQuestOrder = processedQuestOrders.stream()
                 .max(Comparator.comparing(QuestOrder::getQuestId))
                 .orElseThrow(IllegalStateException::new);

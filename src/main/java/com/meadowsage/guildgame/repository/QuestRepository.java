@@ -23,7 +23,7 @@ public class QuestRepository {
 
     public Optional<Quest> get(long questId) {
         List<Quest> result = questMapper.select(null, questId);
-        if(result.isEmpty()) return Optional.empty();
+        if (result.isEmpty()) return Optional.empty();
         else return Optional.of(result.get(0));
     }
 
@@ -31,8 +31,20 @@ public class QuestRepository {
         if (quest.isNew()) questMapper.insert(quest, worldId);
     }
 
-    public List<QuestOrder> getQuestOrders(long worldId) {
-        return questOrderMapper.selectAll(worldId);
+    public void saveQuestOrder(QuestOrder questOrder) {
+        if (questOrder.isNew()) questOrderMapper.insert(questOrder);
+        questOrder.getNewProgress().ifPresent(questOrderProgress ->
+                questOrderMapper.insertProgress(questOrderProgress, questOrder.getId()));
+        questOrder.getResult().ifPresent(questOrderResult ->
+                questOrderMapper.insertResult(questOrderResult, questOrder.getId()));
+    }
+
+    public List<QuestOrder> getActiveQuestOrders(long worldId) {
+        return questOrderMapper.select(worldId, null, true);
+    }
+
+    public List<QuestOrder> getProcessedOrders(long worldId, int gameDate) {
+        return questOrderMapper.select(worldId, gameDate, false);
     }
 
     public void addQuestOrder(long questId, long partyId) {

@@ -18,10 +18,20 @@ public class PartyRepository {
     private final PersonRepository personRepository;
     private final PartyMapper partyMapper;
 
+    public Optional<Party> get(long partyId) {
+        List<Party> parties = partyMapper.select(null, partyId, null);
+        if (parties.isEmpty()) return Optional.empty();
+        else return Optional.ofNullable(withPartyMembers(parties.get(0)));
+    }
+
     public List<Party> getAll(long worldId) {
-        List<Party> parties = partyMapper.selectAll(worldId);
+        List<Party> parties = partyMapper.select(worldId, null, null);
         parties.forEach(this::withPartyMembers);
         return parties;
+    }
+
+    public List<Party> getFreeParties(long worldId) {
+        return partyMapper.select(worldId, null, true).stream().map(this::withPartyMembers).collect(Collectors.toList());
     }
 
     public void addMember(long partyId, long personId) {
@@ -42,16 +52,12 @@ public class PartyRepository {
         }
     }
 
+    public void updatePartyName(long partyId, String partyName) {
+        partyMapper.updatePartyName(partyId, partyName);
+    }
+
     public void delete(long partyId) {
         partyMapper.delete(partyId);
-    }
-
-    public Optional<Party> get(long partyId) {
-        return Optional.ofNullable(withPartyMembers(partyMapper.select(partyId)));
-    }
-
-    public List<Party> getFreeParties(long worldId) {
-        return partyMapper.selectFree(worldId).stream().map(this::withPartyMembers).collect(Collectors.toList());
     }
 
     private Party withPartyMembers(Party party) {

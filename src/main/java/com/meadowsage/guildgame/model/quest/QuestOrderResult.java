@@ -4,10 +4,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class QuestOrderResult {
+    @Getter
     private int gameDate;
+    @Getter
     private boolean succeeded;
 
     public static QuestOrderResult success(int gameDate) {

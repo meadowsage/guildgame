@@ -46,6 +46,10 @@ public class QuestProcess {
             successPoint += tryQuest(member, dice, gameLogger, target);
         }
 
+        // 成功度＝進行度として保存
+        if (successPoint < 0) successPoint = 0;
+        questOrder.saveProgress(gameDate, successPoint);
+
         // 完了判定
         boolean isCompleted = checkIfCompleted(successPoint);
 
@@ -58,8 +62,7 @@ public class QuestProcess {
             if (party.getMembers().stream().allMatch(Person::isTired)) {
                 failure(gameLogger);
             } else {
-                gameLogger.info("[継続] " + party.getName() + "は野営して過ごした。", null, quest);
-                questOrder.saveProgress(gameDate, successPoint);
+                // TODO 継続：なにか気の利いたログ
             }
         }
 
@@ -69,16 +72,16 @@ public class QuestProcess {
 
     private int tryQuest(Adventurer adventurer, Dice dice, GameLogger gameLogger, int target) {
         // 補正値
-        int modifier = (adventurer.isTired() ? MODIFIER_IS_TIRED : 0)
+        int modifiedTarget = target + (adventurer.isTired() ? MODIFIER_IS_TIRED : 0)
                 + (quest.numberOfSatisfiedRecommends(adventurer) * MODIFIER_RECOMMENDS_SATISFIED);
+        if (adventurer.isTired()) {
+            gameLogger.warning(adventurer.getName().getFirstName() + "は疲労により力が出ない！", adventurer, quest);
+        }
 
-        Dice.DiceRollResult result = dice.calcResult(target, modifier);
+        Dice.DiceRollResult result = dice.calcResult(modifiedTarget);
 
         String resultMessage = adventurer.getName().getFirstName()
-                + ": [1D100"
-                + (modifier > 0 ? "+" + modifier : "")
-                + (modifier < 0 ? modifier : "")
-                + " <= " + target + "] → "
+                + ": [1D100 <= " + modifiedTarget + "] → "
                 + result.getNumber() + " " + result.getType().name();
 
         gameLogger.debug(resultMessage, adventurer, quest);
@@ -108,25 +111,23 @@ public class QuestProcess {
         // クエストを完了状態に変更
         questOrder.markAsSuccess(gameDate);
 
-        // 報酬・経験点・名声を付与
+        // 経験点・名声を付与
         party.getMembers().forEach(person -> {
-            person.getMoney().add(quest.getReward().getValue() / party.getMembers().size());
             person.getReputation().add(quest.calcReputation() / party.getMembers().size());
             // TODO 経験点の検討
             // 体力消費
             person.getEnergy().consume(1);
         });
 
-        gameLogger.important("[成功] " + party.getName() + "が" + quest.getName() + "を完了した！", null, quest);
+        gameLogger.important("" + party.getName() + "が" + quest.getName() + "を完了した！", null, quest);
     }
 
     private void failure(GameLogger gameLogger) {
-        gameLogger.fatal("[失敗] パーティ全員の体力が尽きたため帰還します。", null, quest);
+        gameLogger.fatal("パーティ全員の体力が尽きたため、" + quest.getName() +"を中断した。", null, quest);
 
-        // 報酬・経験点・名声を付与
+        // 名声を失う
         party.getMembers().forEach(person -> {
-            person.getMoney().add(quest.getReward().getValue() / party.getMembers().size());
-            person.getReputation().add(quest.calcReputation() / party.getMembers().size());
+            person.getReputation().add((quest.calcReputation() / party.getMembers().size()) / -2);
             // TODO 経験点の検討
             // 体力消費
             person.getEnergy().consume(1);

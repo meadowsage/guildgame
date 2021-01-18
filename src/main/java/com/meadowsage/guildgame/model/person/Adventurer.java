@@ -30,23 +30,23 @@ public class Adventurer extends Person {
             // TODO クエスト中でないキャラクターの行動
             switch (new Dice().roll(1, 6)) {
                 case 1:
-                    gameLogger.warning(getName().getFirstName() + "は何もしなかった。[不満+]", this, null);
+                    gameLogger.info(getName().getFirstName() + "は何もしなかった。", this, null);
                     break;
                 case 2:
-                    gameLogger.warning(getName().getFirstName() + "は１人で鍛錬をした。[不満+]", this, null);
+                    gameLogger.info(getName().getFirstName() + "は１人で鍛錬をした。", this, null);
                     break;
                 case 3:
-                    gameLogger.warning(getName().getFirstName() + "は宿で瞑想をした。[不満+]", this, null);
+                    gameLogger.info(getName().getFirstName() + "は宿で瞑想をした。", this, null);
                     break;
                 case 4:
-                    gameLogger.warning(getName().getFirstName() + "は酒場で朝まで騒いだ。[不満+]", this, null);
+                    gameLogger.info(getName().getFirstName() + "は酒場で朝まで騒いだ。", this, null);
                     break;
                 case 5:
-                    gameLogger.warning(getName().getFirstName() + "はどこにいるのだろうか…[不満+]", this, null);
+                    gameLogger.info(getName().getFirstName() + "はどこにいるのだろうか…", this, null);
                     break;
                 case 6:
                 default:
-                    gameLogger.warning(getName().getFirstName() + "は書物を読んで過ごした。[不満+]", this, null);
+                    gameLogger.info(getName().getFirstName() + "は書物を読んで過ごした。", this, null);
                     break;
             }
         }

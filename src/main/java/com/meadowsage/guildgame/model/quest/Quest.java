@@ -122,6 +122,6 @@ public class Quest {
      * @return **１つでも満たしていれば** true
      */
     public boolean isSatisfyRecommends(Party party) {
-        return numberOfSatisfiedRecommends(party) > 0;
+        return getRecommends().size() == 0 || numberOfSatisfiedRecommends(party) > 0;
     }
 }

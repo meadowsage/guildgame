@@ -20,6 +20,7 @@ public class DoAfternoonProcessUseCase {
 
         if (!world.getState().equals(World.State.AFTERNOON)) return;
 
+        // TODO worldから切り出す
         world.afternoon(gameLogger);
 
         worldRepository.save(world);

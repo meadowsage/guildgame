@@ -10,11 +10,13 @@ import java.util.stream.Collectors;
 public class ResponseParty {
     long id;
     String name;
+    long leaderId;
     List<ResponseAdventurer> members;
 
     public ResponseParty(Party party) {
         this.id = party.getId();
         this.name = party.getName();
+        this.leaderId = party.getLeaderId();
         this.members = party.getMembers().stream().map(ResponseAdventurer::new).collect(Collectors.toList());
     }
 }

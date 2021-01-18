@@ -1,7 +1,7 @@
 package com.meadowsage.guildgame.controller.response.world;
 
-import com.meadowsage.guildgame.model.world.GameWorld;
-import lombok.Builder;
+import com.meadowsage.guildgame.model.Guild;
+import com.meadowsage.guildgame.model.world.World;
 import lombok.Getter;
 
 @Getter
@@ -9,29 +9,33 @@ public class GetWorldResponse {
     ResponseWorld world;
     ResponseGuild guild;
 
-    public GetWorldResponse(GameWorld world) {
-        this.world = ResponseWorld.builder()
-                .id(world.getId())
-                .gameDate(world.getGameDate())
-                .state(world.getState().name()).build();
+    public GetWorldResponse(World world, Guild guild) {
+        this.world = new ResponseWorld(world);
 
-        this.guild = ResponseGuild.builder()
-                .money(world.getGuild().getMoney().getValue())
-                .reputation(world.getGuild().getReputation()).build();
+        this.guild = new ResponseGuild(guild);
     }
 
-    @Builder
     @Getter
     private static class ResponseWorld {
         long id;
         int gameDate;
         String state;
+
+        public ResponseWorld (World world) {
+            this.id = world.getId();
+            this.gameDate = world.getGameDate();
+            this.state = world.getState().name();
+        }
     }
 
-    @Builder
     @Getter
     private static class ResponseGuild {
         long money;
         int reputation;
+
+        public ResponseGuild(Guild guild) {
+            this.money = guild.getMoney().getValue();
+            this.reputation = guild.getReputation();
+        }
     }
 }

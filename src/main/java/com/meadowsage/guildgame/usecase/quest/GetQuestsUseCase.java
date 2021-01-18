@@ -22,7 +22,7 @@ public class GetQuestsUseCase {
 
     public GetQuestsUseCaseResult run(long worldId) {
         List<Quest> quests = questRepository.getQuests(worldId);
-        List<QuestOrder> questOrders = questRepository.getQuestOrders(worldId);
+        List<QuestOrder> questOrders = questRepository.getActiveQuestOrders(worldId);
         List<Party> parties = questOrders.stream().map(QuestOrder::getPartyId)
                 .map(partyRepository::get)
                 .map(Optional::get)

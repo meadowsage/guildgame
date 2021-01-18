@@ -17,6 +17,8 @@ public class Party {
     String name;
     @Getter
     List<Adventurer> members = new ArrayList<>();
+    @Getter
+    Long leaderId;
 
     public boolean canAddMember() {
         return members.size() < MAX_LIMIT_OF_MEMBERS;
@@ -31,6 +33,7 @@ public class Party {
         party.id = -1;
         party.name = name;
         party.members = partyMembers;
+        party.leaderId = partyMembers.get(0).getId();
         return party;
     }
 

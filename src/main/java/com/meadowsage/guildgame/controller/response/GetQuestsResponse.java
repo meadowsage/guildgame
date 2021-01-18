@@ -17,8 +17,14 @@ public class GetQuestsResponse {
 
     public GetQuestsResponse(List<Quest> quests, List<QuestOrder> questOrders, List<Party> parties) {
         this.quests = quests.stream().map(quest -> {
-            QuestOrder questOrder = questOrders.stream().filter(qo -> qo.getQuestId() == quest.getId()).findFirst().orElse(null);
-            Party party = questOrder != null ? parties.stream().filter(p -> p.getId() == questOrder.getPartyId()).findFirst().orElse(null) : null;
+            QuestOrder questOrder = questOrders.stream()
+                    .filter(qo -> qo.getQuestId() == quest.getId())
+                    .findFirst()
+                    .orElse(null);
+            Party party = questOrder != null ? parties.stream()
+                    .filter(p -> p.getId() == questOrder.getPartyId())
+                    .findFirst()
+                    .orElse(null) : null;
             return new ResponseQuest(quest, questOrder, party);
         }).collect(Collectors.toList());
     }

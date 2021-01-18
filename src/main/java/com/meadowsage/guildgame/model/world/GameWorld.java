@@ -13,7 +13,6 @@ import com.meadowsage.guildgame.repository.QuestRepository;
 import com.meadowsage.guildgame.repository.WorldRepository;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.*;
@@ -23,8 +22,7 @@ import java.util.stream.Stream;
 @SuperBuilder
 public class GameWorld extends World {
     @Getter
-    @Setter
-    private Guild guild;
+    private final Guild guild;
     @Getter
     @Builder.Default
     private final List<Adventurer> adventurers = new ArrayList<>();
@@ -43,7 +41,6 @@ public class GameWorld extends World {
     @Getter
     @Builder.Default
     private final List<Party> parties = new ArrayList<>();
-
 
     public List<Person> getAllPersons() {
         return Stream.of(adventurers, applicants).flatMap(Collection::stream).collect(Collectors.toList());
@@ -125,7 +122,7 @@ public class GameWorld extends World {
         // TODO 冒険者の成長
 
         // TODO ギルドの更新
-//        guild.questAccounting(id, quests, questOrders, adventurers, gameDate, gameLogger, treasurer);
+        guild.questAccounting(id, quests, questOrders, parties, gameDate, gameLogger, treasurer);
 
         state = State.MIDNIGHT;
     }

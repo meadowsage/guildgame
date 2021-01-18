@@ -41,9 +41,10 @@ CREATE TABLE personality
 
 CREATE TABLE party
 (
-    id       bigserial PRIMARY KEY,
-    world_id bigint      NOT NULL REFERENCES world (id) ON DELETE CASCADE,
-    name     varchar(40) NOT NULL
+    id        bigserial PRIMARY KEY,
+    world_id  bigint      NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    leader_id bigint      NOT NULL REFERENCES person (id) ON DELETE CASCADE,
+    name      varchar(40) NOT NULL
 );
 
 CREATE TABLE party_member

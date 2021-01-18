@@ -39,8 +39,8 @@ public class Treasurer {
         questIncomes.add(questIncome);
     }
 
-    public void addQuestPayment(QuestPayment questPayment) {
-        questPayments.add(questPayment);
+    public void addQuestPayments(List<QuestPayment> questPayments) {
+        this.questPayments.addAll(questPayments);
     }
 
     public void addFacilityPayment(FacilityPayment facilityPayment) {

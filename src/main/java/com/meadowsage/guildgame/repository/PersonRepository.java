@@ -36,10 +36,6 @@ public class PersonRepository {
         return personMapper.selectAdventurers(null, ids, null);
     }
 
-    public List<Adventurer> getOrderables(long worldId) {
-        return personMapper.selectAdventurers(worldId, null, true);
-    }
-
     public List<Applicant> getApplicants(long worldId) {
         return personMapper.selectApplicants(worldId);
     }
@@ -60,7 +56,6 @@ public class PersonRepository {
             if (person instanceof Applicant) applicantMapper.insert(person);
         } else {
             personMapper.update(person);
-            personMapper.insertPersonalities(person);
             person.getSkills().forEach(personSkill -> personMapper.updateSkill(person.getId(), personSkill));
         }
     }
