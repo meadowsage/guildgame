@@ -5,9 +5,15 @@
 
     <resultMap id="questOrderMap" type="com.meadowsage.guildgame.model.quest.QuestOrder" autoMapping="true">
         <id column="id" property="id"/>
-        <association property="questOrderResult" columnPrefix="qor_" autoMapping="true"/>
-        <collection property="questOrderProgresses" columnPrefix="qop_" autoMapping="true"
-                    ofType="com.meadowsage.guildgame.model.quest.QuestOrderProgress"/>
+        <!-- notNullColumnを指定しないと、Null時にidが設定されてしまう… -->
+        <association property="questOrderResult" autoMapping="true" columnPrefix="qor_"
+                     javaType="com.meadowsage.guildgame.model.quest.QuestOrderResult">
+            <id column="game_date" property="gameDate"/>
+        </association>
+        <collection property="questOrderProgresses" autoMapping="true" columnPrefix="qop_"
+                    ofType="com.meadowsage.guildgame.model.quest.QuestOrderProgress">
+            <id column="game_date" property="gameDate"/>
+        </collection>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
@@ -21,27 +27,34 @@
     </insert>
 
     <insert id="insertResult">
-        INSERT INTO quest_order_result (quest_order_id, game_date, succeeded)
-        VALUES (#{questOrderId}, #{result.gameDate}, #{result.succeeded})
+        INSERT INTO quest_order_result (quest_order_id, game_date, is_succeeded)
+        VALUES (#{questOrderId}, #{result.gameDate}, #{result.isSucceeded})
     </insert>
 
-    <select id="select" resultType="com.meadowsage.guildgame.model.quest.QuestOrder">
+    <select id="select" resultMap="questOrderMap">
         SELECT qo.*,
         qop.game_date as qop_game_date,
         qop.progress as qop_progress,
         qor.game_date as qor_game_date,
-        qor.succeeded as qor_succeeded
+        qor.is_succeeded as qor_is_succeeded
         FROM quest_order qo
         INNER JOIN quest q on q.id = qo.quest_id
         LEFT JOIN quest_order_progress qop on qo.id = qop.quest_order_id
         LEFT JOIN quest_order_result qor on qo.id = qor.quest_order_id
         WHERE q.world_id = #{worldId}
-        <if test="gameDate != null">
-            AND qop.game_date = #{gameDate}
-        </if>
         <if test="isActive == true">
-            AND qor.succeeded IS NULL
+            AND qor.is_succeeded IS NULL
         </if>
+        <if test="processedAt != null">
+            AND qop.game_date = #{processedAt}
+        </if>
+        <if test="notProcessedAt != null">
+            AND (qop.game_date IS NULL OR qop.game_date != #{notProcessedAt})
+        </if>
+        <if test="completedAt != null">
+            AND qor.game_date = #{completedAt}
+        </if>
+        ORDER BY qo.quest_id;
     </select>
 
     <update id="update">

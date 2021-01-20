@@ -6,7 +6,7 @@
         <association property="money" columnPrefix="m_" autoMapping="true"/>
     </resultMap>
 
-    <insert id="save">
+    <insert id="insert">
         INSERT INTO guild (world_id, money, reputation)
         VALUES (#{worldId},
                 #{guild.money.value},

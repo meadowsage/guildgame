@@ -7,6 +7,7 @@ import com.meadowsage.guildgame.model.quest.QuestOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,12 +40,35 @@ public class QuestRepository {
                 questOrderMapper.insertResult(questOrderResult, questOrder.getId()));
     }
 
+    /**
+     * 継続中の受注一覧を取得
+     */
     public List<QuestOrder> getActiveQuestOrders(long worldId) {
-        return questOrderMapper.select(worldId, null, true);
+        return questOrderMapper.select(worldId, true, null, null, null);
     }
 
-    public List<QuestOrder> getProcessedOrders(long worldId, int gameDate) {
-        return questOrderMapper.select(worldId, gameDate, false);
+    /**
+     * 実行可能なクエストのうち、クエストIDが最も小さいものを１件取得
+     */
+    public Optional<QuestOrder> getNextQuestOrder(long worldId, int gameDate) {
+        return questOrderMapper.select(worldId, true, null, gameDate, null)
+                .stream().findFirst();
+    }
+
+    /**
+     * 最後に実行されたクエストを取得
+     * クエストID順に実行されていることを前提に、IDが最も大きいものを返す
+     */
+    public Optional<QuestOrder> getLastProcessedQuestOrder(long worldId, int gameDate) {
+        return questOrderMapper.select(worldId, null, gameDate, null, null)
+                .stream().max(Comparator.comparing(QuestOrder::getQuestId));
+    }
+
+    /**
+     * 指定した日付に完了したクエストを取得
+     */
+    public List<QuestOrder> getCompletedQuestOrders(long worldId, int gameDate) {
+        return questOrderMapper.select(worldId, null, null, null,  gameDate);
     }
 
     public void addQuestOrder(long questId, long partyId) {

@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface GuildMapper {
-    void save(Guild guild, long worldId);
+    void insert(Guild guild, long worldId);
 
     Guild select(long worldId);
 

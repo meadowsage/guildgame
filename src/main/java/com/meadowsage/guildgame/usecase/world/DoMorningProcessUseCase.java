@@ -1,24 +1,32 @@
 package com.meadowsage.guildgame.usecase.world;
 
-import com.meadowsage.guildgame.model.world.GameWorld;
+import com.meadowsage.guildgame.model.person.Adventurer;
+import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.world.World;
+import com.meadowsage.guildgame.repository.PersonRepository;
 import com.meadowsage.guildgame.repository.WorldRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class DoMorningProcessUseCase {
     private final WorldRepository worldRepository;
+    private final PersonRepository personRepository;
 
-    public GameWorld run(long worldId) {
-        GameWorld world = worldRepository.getGameWorld(worldId);
+    public void run(long worldId) {
+        World world = worldRepository.getWorld(worldId);
 
         if (world.getState().equals(World.State.MORNING)) {
-            world.morning();
-            worldRepository.save(world);
-        }
+            // キャラクターの行動済フラグをリセット
+            List<Adventurer> adventurers = personRepository.getAdventurers(worldId);
+            adventurers.forEach(Person::setAsNotActioned);
 
-        return world;
+            world.changeState(World.State.MIDDAY);
+            worldRepository.save(world);
+            personRepository.save(adventurers, worldId);
+        }
     }
 }

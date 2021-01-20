@@ -32,13 +32,12 @@ public class Dice {
     /**
      * 1d100の結果に応じた結果を返す
      */
-    public DiceRollResult calcResult(int target) {
-        System.out.println("[目標値 " + target + "]");
-        int result = roll(1, 100);
+    public DiceRollResult calcResult(int target, int modifier) {
+        int result = roll(1, 100) + modifier;
 
         // 1,100は自動成功・自動失敗
-        if (result == 1) return new DiceRollResult(result, ResultType.CRITICAL);
-        else if (result == 100) return new DiceRollResult(result, ResultType.FUMBLE);
+        if (result <= 1) return new DiceRollResult(result, ResultType.CRITICAL);
+        else if (result >= 100) return new DiceRollResult(result, ResultType.FUMBLE);
 
         if (result <= target && result <= 5) return new DiceRollResult(result, ResultType.CRITICAL);
         else if (result <= (target / 5)) return new DiceRollResult(result, ResultType.SPECIAL);

@@ -1,6 +1,7 @@
 package com.meadowsage.guildgame.usecase.game;
 
-import com.meadowsage.guildgame.model.accounting.Treasurer;
+import com.meadowsage.guildgame.model.accounting.AccountingLogger;
+import com.meadowsage.guildgame.model.accounting.GuildBalance;
 import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.system.SaveData;
@@ -15,7 +16,7 @@ public class StartNewGameUseCase {
     private final GameRepository gameRepository;
     private final GameLogRepository gameLogRepository;
     private final QuestRepository questRepository;
-    private final TreasurerRepository treasurerRepository;
+    private final AccountingRepository accountingRepository;
 
     public SaveData run() {
         SaveData saveData = gameRepository.createNewSaveData();
@@ -25,8 +26,8 @@ public class StartNewGameUseCase {
 
     private void generateNewWorld(SaveData saveData) {
         // 生成・初期化
-        Treasurer treasurer = Treasurer.builder().build();
-        GameWorld world = GameWorld.generateAndInit(saveData, worldRepository, questRepository, treasurer);
+        GameWorld world = GameWorld.generateAndInit(saveData, worldRepository, questRepository);
+        AccountingLogger accountingLogger = new AccountingLogger(world.getId(), world.getGameDate());
 
         // 初期表示用のログ生成
         GameLogger gameLogger = new GameLogger(world.getId(), world.getGameDate() - 1);
@@ -36,8 +37,15 @@ public class StartNewGameUseCase {
         gameLogger.info("右下の「NEXT」ボタンを押して、日付を進めてみましょう。");
         gameLogRepository.save(gameLogger);
 
+        // 残高を保存
+        GuildBalance.record(
+                world.getId(),
+                world.getGuild().getMoney().getValue(),
+                world.getGameDate() - 1,
+                accountingLogger);
+
         // 保存
         worldRepository.save(world);
-        treasurerRepository.save(treasurer);
+        accountingRepository.save(accountingLogger);
     }
 }

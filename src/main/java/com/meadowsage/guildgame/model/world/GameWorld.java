@@ -2,12 +2,12 @@ package com.meadowsage.guildgame.model.world;
 
 import com.meadowsage.guildgame.model.Guild;
 import com.meadowsage.guildgame.model.Place;
-import com.meadowsage.guildgame.model.accounting.GuildBalance;
-import com.meadowsage.guildgame.model.accounting.Treasurer;
 import com.meadowsage.guildgame.model.person.*;
-import com.meadowsage.guildgame.model.quest.*;
+import com.meadowsage.guildgame.model.quest.Quest;
+import com.meadowsage.guildgame.model.quest.QuestGenerator;
+import com.meadowsage.guildgame.model.quest.QuestOrder;
+import com.meadowsage.guildgame.model.quest.UniqueQuest;
 import com.meadowsage.guildgame.model.system.Dice;
-import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.system.SaveData;
 import com.meadowsage.guildgame.repository.QuestRepository;
 import com.meadowsage.guildgame.repository.WorldRepository;
@@ -49,12 +49,12 @@ public class GameWorld extends World {
     public static GameWorld generateAndInit(
             SaveData saveData,
             WorldRepository worldRepository,
-            QuestRepository questRepository,
-            Treasurer treasurer
+            QuestRepository questRepository
     ) {
         // 初期リソース生成
         Adventurer teran = (Adventurer) UniquePerson.TELLAN.getInstance();
         GameWorld world = GameWorld.builder()
+                .gameDate(1)
                 .state(State.MORNING)
                 .guild(Guild.create())
                 .adventurers(Collections.singletonList(teran))
@@ -68,63 +68,11 @@ public class GameWorld extends World {
         // クエスト受注を作成
         questRepository.addQuestOrder(world.getQuests().get(0).getId(), world.getParties().get(0).getId());
 
-        // 残高を保存
-        treasurer.setGuildBalance(
-                new GuildBalance(world.getId(), world.getGuild().getMoney().getValue(), world.gameDate - 1));
-
         return world;
-    }
-
-    public Optional<Adventurer> findAdventurer(long personId) {
-        return adventurers.stream()
-                .filter(adventurer -> adventurer.getId() == personId).findAny();
-    }
-
-    public Optional<QuestOrder> getNextQuestOrder(int gameDate) {
-        // 今日まだ実行されていないクエスト受注を抽出し、最もIDが小さいものを取得
-        return this.questOrders.stream()
-                .filter(questOrder -> !questOrder.hasProcessed(gameDate))
-                .min(Comparator.comparing(QuestOrder::getQuestId));
-    }
-
-    public void morning() {
-        // キャラクターの行動済フラグをリセット
-        getAllPersons().forEach(Person::setAsNotActioned);
-
-        adventurers.forEach(adventurer -> adventurer.doMorningActivity(this));
-
-        state = State.MIDDAY;
     }
 
     public void midday() {
         state = State.AFTERNOON;
-    }
-
-    public void afternoon(GameLogger gameLogger) {
-        // 未完了のクエストを１個だけ実行
-        Optional<QuestOrder> nextQuestOrder = getNextQuestOrder(gameDate);
-        if (nextQuestOrder.isPresent()) {
-            Quest quest = quests.stream().filter(_quest -> _quest.getId() == nextQuestOrder.get().getQuestId())
-                    .findAny().orElseThrow(IllegalStateException::new);
-            Party party = parties.stream().filter(_party -> _party.getId() == nextQuestOrder.get().getPartyId())
-                    .findAny().orElseThrow(IllegalStateException::new);
-            new QuestProcess(quest, nextQuestOrder.get(), party, gameDate).run(new Dice(), gameLogger);
-        } else {
-            // クエスト処理が全て完了していれば、未行動のキャラクターの行動
-            adventurers.stream()
-                    .filter(adventurer -> !adventurer.isActioned())
-                    .forEach(person -> person.doDaytimeActivity(this, gameLogger));
-            state = State.NIGHT;
-        }
-    }
-
-    public void night(GameLogger gameLogger, Treasurer treasurer) {
-        // TODO 冒険者の成長
-
-        // TODO ギルドの更新
-        guild.questAccounting(id, quests, questOrders, parties, gameDate, gameLogger, treasurer);
-
-        state = State.MIDNIGHT;
     }
 
     public void midnight() {

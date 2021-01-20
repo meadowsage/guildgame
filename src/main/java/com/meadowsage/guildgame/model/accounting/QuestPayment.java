@@ -5,6 +5,7 @@ import com.meadowsage.guildgame.model.person.Party;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.quest.QuestOrder;
 import com.meadowsage.guildgame.model.system.GameLogger;
+import com.meadowsage.guildgame.model.value.Money;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,23 +21,23 @@ public class QuestPayment {
     private final long personId;
     private final int gameDate;
 
-    public static List<QuestPayment> process(
+    public static void process(
             Quest quest,
             QuestOrder questOrder,
             Party party,
             Guild guild,
             int gameDate,
-            GameLogger gameLogger
+            GameLogger gameLogger,
+            AccountingLogger accountingLogger
     ) {
-        gameLogger.detail(party.getName() + "にクエスト報酬として" + quest.getReward().getValue() + "Gを支払った。");
-
-        return party.getMembers().stream().map(adventurer -> {
-            // パーティメンバ数で分割
-            int payment = quest.getReward().getValue() / party.getMembers().size();
-            QuestPayment questIncome = new QuestPayment(payment, questOrder.getQuestId(), adventurer.getId(), gameDate);
-            guild.payMoney(quest.getReward());
-            adventurer.earnMoney(quest.getReward());
+        List<QuestPayment> payments = party.getMembers().stream().map(adventurer -> {
+            Money payment = Money.of(adventurer.calcReward(quest));
+            QuestPayment questIncome = new QuestPayment(payment.getValue(), questOrder.getQuestId(), adventurer.getId(), gameDate);
+            guild.payMoney(payment);
+            adventurer.earnMoney(payment);
             return questIncome;
         }).collect(Collectors.toList());
+
+        accountingLogger.recordQuestPayments(payments);
     }
 }

@@ -84,20 +84,20 @@ public enum QuestContent {
                 }
             }),
     CITY_EXTERMINATE_WILD_HOUNDS("郊外の野犬駆除", 800, 0, 1,
-            requirements(Requirement.of(Attribute.Type.BATTLE, 30)),
+            requirements(Requirement.of(Attribute.Type.BATTLE, 25)),
             requirements(),
             new QuestDetailEvents(new Monster("野犬") {
             }) {
             }),
     CITY_EXTERMINATE_LARGE_RATS("ラージラット駆除", 800, 0, 1,
-            requirements(Requirement.of(Attribute.Type.BATTLE, 30)),
+            requirements(Requirement.of(Attribute.Type.BATTLE, 25)),
             requirements(),
             new QuestDetailEvents(new Monster("ラージラット") {
             }) {
             }),
     // 茸の森
     M_FOREST_ESCORT_LUMBERJACK("木こりの護衛", 1000, 0, 2,
-            requirements(Requirement.of(Attribute.Type.SUPPORT, 30), Requirement.of(Attribute.Type.BATTLE, 30)),
+            requirements(Requirement.of(Attribute.Type.SUPPORT, 35), Requirement.of(Attribute.Type.BATTLE, 30)),
             requirements(),
             new QuestDetailEvents() {
             }),
@@ -106,14 +106,14 @@ public enum QuestContent {
             requirements(),
             new QuestDetailEvents() {
             }),
-    M_FOREST_EXTERMINATE_FOREST_SLIME("フォレストスライム駆除", 1, 1200, 2,
+    M_FOREST_EXTERMINATE_FOREST_SLIME("フォレストスライム駆除", 1000, 1, 2,
             requirements(Requirement.of(Attribute.Type.BATTLE, 35)),
             requirements(),
             new QuestDetailEvents(new Monster("フォレストスライム") {
             }) {
             }),
     M_FOREST_HARVEST_MEDICINE_MUSHROOM("薬用キノコの採取", 1200, 0, 2,
-            requirements(Requirement.of(Attribute.Type.KNOWLEDGE, 30)),
+            requirements(Requirement.of(Attribute.Type.KNOWLEDGE, 35)),
             requirements(),
             new QuestDetailEvents(new Item("薬用キノコ") {
             }) {

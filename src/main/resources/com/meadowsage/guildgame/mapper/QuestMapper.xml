@@ -16,7 +16,7 @@
                 AND NOT EXISTS (
                 SELECT id
                 FROM quest_order qo
-                INNER JOIN quest_order_result qor ON qo.id = qor.quest_order_id AND qor.succeeded = TRUE
+                INNER JOIN quest_order_result qor ON qo.id = qor.quest_order_id AND qor.is_succeeded = TRUE
                 WHERE qo.quest_id = q.id
                 )
             </if>

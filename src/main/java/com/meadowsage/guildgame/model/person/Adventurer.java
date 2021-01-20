@@ -4,7 +4,6 @@ import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Money;
-import com.meadowsage.guildgame.model.world.GameWorld;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -21,7 +20,7 @@ public class Adventurer extends Person {
     }
 
     @Override
-    public void doDaytimeActivity(GameWorld world, GameLogger gameLogger) {
+    public void doDaytimeActivity(GameLogger gameLogger) {
         if (!getEnergy().isFull()) {
             // 体力を消費している場合、休息を取る
             gameLogger.info(getName().getFirstName() + "は休息をとった。[体力回復]", this, null);
@@ -52,9 +51,6 @@ public class Adventurer extends Person {
         }
     }
 
-    public void doMorningActivity(GameWorld world) {
-    }
-
     /**
      * 報酬額の計算
      *
@@ -62,8 +58,7 @@ public class Adventurer extends Person {
      * @return 金額
      */
     public int calcReward(Quest quest) {
-        double base = 100 + getReputation().getValue() * 2;
-        return 100 + (int) Math.round(base * (quest.getDanger() * 100));
+        return 100 + getReputation().getValue() * 2 + quest.getDanger() * quest.getDanger() * 100;
     }
 
     public void earnMoney(Money money) {

@@ -22,7 +22,7 @@ public class Main0030 extends Scenario {
     @Override
     public boolean canStart(GameWorld world) {
         // 条件：3日目以降、名声30以上
-        return world.getGameDate() >= 3 && world.getGuild().getReputation() >= 30;
+        return world.getGameDate() >= 3 && world.getGuild().getReputation() >= 15;
     }
 
     @Override

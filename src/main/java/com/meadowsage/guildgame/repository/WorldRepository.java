@@ -1,6 +1,5 @@
 package com.meadowsage.guildgame.repository;
 
-import com.meadowsage.guildgame.mapper.GuildMapper;
 import com.meadowsage.guildgame.mapper.OpenedPlaceMapper;
 import com.meadowsage.guildgame.mapper.WorldMapper;
 import com.meadowsage.guildgame.model.Place;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 public class WorldRepository {
 
     private final WorldMapper worldMapper;
-    private final GuildMapper guildMapper;
+    private final GuildRepository guildRepository;
     private final PersonRepository personRepository;
     private final PartyRepository partyRepository;
     private final QuestRepository questRepository;
@@ -47,7 +46,7 @@ public class WorldRepository {
 
     public void saveNew(GameWorld world, String saveDataId) {
         worldMapper.save(world, saveDataId);
-        guildMapper.save(world.getGuild(), world.getId());
+        guildRepository.create(world.getGuild(), world.getId());
         world.getAllPersons().forEach(person -> personRepository.save(person, world.getId()));
         // IDが払い出されたメンバで初期パーティを作成
         Party initialParty = Party.createNew("街の世話役", world.getAdventurers());
@@ -57,10 +56,15 @@ public class WorldRepository {
         world.getPlaces().forEach(place -> openedPlaceMapper.insert(place, world.getId()));
     }
 
+    public void save(World world) {
+        worldMapper.update(world);
+    }
+
+    @Deprecated
     public void save(GameWorld world) {
         // TODO updated_atで排他制御
         worldMapper.update(world);
-        guildMapper.update(world.getGuild(), world.getId());
+        guildRepository.save(world.getGuild(), world.getId());
 
         // 冒険者更新
         // パーティメンバと冒険者リストは重複しているため、別々に更新する
@@ -86,7 +90,7 @@ public class WorldRepository {
                 .id(world.getId())
                 .gameDate(world.getGameDate())
                 .state(world.getState())
-                .guild(guildMapper.select(world.getId()))
+                .guild(guildRepository.get(world.getId()))
                 .adventurers(personRepository.getAdventurers(world.getId()))
                 .parties(partyRepository.getAll(world.getId()))
                 .applicants(personRepository.getApplicants(world.getId()))

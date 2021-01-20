@@ -5,8 +5,10 @@ import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
-import com.meadowsage.guildgame.model.world.GameWorld;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -51,9 +53,7 @@ public abstract class Person {
 
     public abstract boolean isAdventurer();
 
-    public abstract void doMorningActivity(GameWorld world);
-
-    public abstract void doDaytimeActivity(GameWorld world, GameLogger gameLogger);
+    public abstract void doDaytimeActivity(GameLogger gameLogger);
 
     public void setAsActioned() {
         isActioned = true;

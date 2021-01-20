@@ -1,7 +1,6 @@
 package com.meadowsage.guildgame.model.world;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -10,14 +9,33 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class World {
     @Getter
-    @Builder.Default
-    protected long id = -1;
+    protected long id;
     @Getter
-    @Builder.Default
-    protected int gameDate = 1;
+    protected int gameDate;
     @Getter
-    @Builder.Default
-    protected State state = State.MORNING;
+    protected State state;
+
+    // "setState"にするとMyBatisが勝手に使ってNPE吐いちゃうので注意
+    public void changeState(State state) {
+        switch (state) {
+            case MORNING:
+                if (!this.state.equals(State.MIDNIGHT)) throw new IllegalStateException();
+                break;
+            case MIDDAY:
+                if (!this.state.equals(State.MORNING)) throw new IllegalStateException();
+                break;
+            case AFTERNOON:
+                if (!this.state.equals(State.MIDDAY)) throw new IllegalStateException();
+                break;
+            case NIGHT:
+                if (!this.state.equals(State.AFTERNOON)) throw new IllegalStateException();
+                break;
+            case MIDNIGHT:
+                if (!this.state.equals(State.NIGHT)) throw new IllegalStateException();
+                break;
+        }
+        this.state = state;
+    }
 
     public enum State {
         MORNING, // 朝（キャラクター行動決定）

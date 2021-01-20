@@ -5,6 +5,7 @@ import com.meadowsage.guildgame.model.person.Party;
 import com.meadowsage.guildgame.model.person.Person;
 import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.GameLogger;
+import com.meadowsage.guildgame.model.world.World;
 
 /**
  * クエストの処理
@@ -17,18 +18,18 @@ public class QuestProcess {
     // 補正値 必須不足、推奨充足、疲労時
     private static final int MODIFIER_REQUIREMENTS_UNSATISFIED = -25;
     private static final int MODIFIER_RECOMMENDS_SATISFIED = 10;
-    private static final int MODIFIER_IS_TIRED = -25;
+    private static final int MODIFIER_IS_TIRED = 30;
 
     Quest quest;
     QuestOrder questOrder;
     Party party;
-    int gameDate;
+    World world;
 
-    public QuestProcess(Quest quest, QuestOrder questOrder, Party party, int gameDate) {
+    public QuestProcess(Quest quest, QuestOrder questOrder, Party party, World world) {
         this.quest = quest;
         this.questOrder = questOrder;
         this.party = party;
-        this.gameDate = gameDate;
+        this.world = world;
     }
 
     public void run(Dice dice, GameLogger gameLogger) {
@@ -36,7 +37,7 @@ public class QuestProcess {
 
         // 目標値
         // 必須条件が１つ足りないごとに目標値-25%
-        int target = TARGET_BASE - quest.numberOfUnsatisfiedRequirements(party) * MODIFIER_REQUIREMENTS_UNSATISFIED;
+        int target = TARGET_BASE + quest.numberOfUnsatisfiedRequirements(party) * MODIFIER_REQUIREMENTS_UNSATISFIED;
         target = Math.max(target, TARGET_MIN);
         target = Math.min(target, TARGET_MAX);
 
@@ -48,7 +49,7 @@ public class QuestProcess {
 
         // 成功度＝進行度として保存
         if (successPoint < 0) successPoint = 0;
-        questOrder.saveProgress(gameDate, successPoint);
+        questOrder.saveProgress(world.getGameDate(), successPoint);
 
         // 完了判定
         boolean isCompleted = checkIfCompleted(successPoint);
@@ -71,17 +72,18 @@ public class QuestProcess {
     }
 
     private int tryQuest(Adventurer adventurer, Dice dice, GameLogger gameLogger, int target) {
-        // 補正値
-        int modifiedTarget = target + (adventurer.isTired() ? MODIFIER_IS_TIRED : 0)
-                + (quest.numberOfSatisfiedRecommends(adventurer) * MODIFIER_RECOMMENDS_SATISFIED);
+        // 推奨技能補正
+        int fixedTarget = target + (quest.numberOfSatisfiedRecommends(adventurer) * MODIFIER_RECOMMENDS_SATISFIED);
+        int modifier = adventurer.isTired() ? MODIFIER_IS_TIRED : 0;
+
         if (adventurer.isTired()) {
             gameLogger.warning(adventurer.getName().getFirstName() + "は疲労により力が出ない！", adventurer, quest);
         }
 
-        Dice.DiceRollResult result = dice.calcResult(modifiedTarget);
+        Dice.DiceRollResult result = dice.calcResult(fixedTarget, modifier);
 
         String resultMessage = adventurer.getName().getFirstName()
-                + ": [1D100 <= " + modifiedTarget + "] → "
+                + ": [1D100 <= " + fixedTarget + "] → "
                 + result.getNumber() + " " + result.getType().name();
 
         gameLogger.debug(resultMessage, adventurer, quest);
@@ -109,7 +111,7 @@ public class QuestProcess {
 
     private void success(GameLogger gameLogger) {
         // クエストを完了状態に変更
-        questOrder.markAsSuccess(gameDate);
+        questOrder.markAsSuccess(world.getGameDate());
 
         // 経験点・名声を付与
         party.getMembers().forEach(person -> {
@@ -133,6 +135,6 @@ public class QuestProcess {
             person.getEnergy().consume(1);
         });
 
-        questOrder.markAsFailure(gameDate);
+        questOrder.markAsFailure(world.getGameDate());
     }
 }

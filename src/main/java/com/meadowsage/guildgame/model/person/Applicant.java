@@ -25,12 +25,7 @@ public class Applicant extends Person {
     }
 
     @Override
-    public void doDaytimeActivity(GameWorld world, GameLogger gameLogger) {
-        // 何もしない
-    }
-
-    @Override
-    public void doMorningActivity(GameWorld world) {
+    public void doDaytimeActivity(GameLogger gameLogger) {
         // 何もしない
     }
 

@@ -12,5 +12,5 @@ public interface WorldMapper {
 
     World selectBySaveDataId(String saveDataId);
 
-    void update(GameWorld world);
+    void update(World world);
 }

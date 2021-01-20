@@ -15,7 +15,12 @@ public interface QuestOrderMapper {
 
     void insertResult(QuestOrderResult result, long questOrderId);
 
-    List<QuestOrder> select(long worldId, Integer gameDate, boolean isActive);
+    List<QuestOrder> select(
+            long worldId,
+            Boolean isActive,
+            Integer processedAt,
+            Integer notProcessedAt,
+            Integer completedAt);
 
     void update(long id, QuestOrder.State state);
 

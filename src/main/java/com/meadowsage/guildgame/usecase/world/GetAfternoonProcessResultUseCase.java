@@ -16,8 +16,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -37,21 +37,16 @@ public class GetAfternoonProcessResultUseCase {
             return GetAfternoonProcessResultUseCaseResult.otherActions(gameLogs);
         }
 
-        // 現在の日付に実行されたクエスト受注を取得
-        List<QuestOrder> processedQuestOrders = questRepository.getProcessedOrders(worldId, gameDate);
+        // 最後に実行されたクエスト受注を取得
+        Optional<QuestOrder> lastProcessedQuestOrder = questRepository.getLastProcessedQuestOrder(worldId, gameDate);
 
         // まだクエストが１件も実行されていない場合、空のレスポンスを返す
-        if (processedQuestOrders.size() == 0) return GetAfternoonProcessResultUseCaseResult.empty();
-
-        // 最後に実行されたクエスト受注を取得
-        QuestOrder lastProcessedQuestOrder = processedQuestOrders.stream()
-                .max(Comparator.comparing(QuestOrder::getQuestId))
-                .orElseThrow(IllegalStateException::new);
+        if (!lastProcessedQuestOrder.isPresent()) return GetAfternoonProcessResultUseCaseResult.empty();
 
         // クエスト情報、パーティ情報、ログを取得
-        Quest lastProcessedQuest = questRepository.get(lastProcessedQuestOrder.getQuestId())
+        Quest lastProcessedQuest = questRepository.get(lastProcessedQuestOrder.get().getQuestId())
                 .orElseThrow(IllegalStateException::new);
-        Party party = partyRepository.get(lastProcessedQuestOrder.getPartyId())
+        Party party = partyRepository.get(lastProcessedQuestOrder.get().getPartyId())
                 .orElseThrow(IllegalStateException::new);
         List<GameLog> gameLogs = gameLogRepository.getQuestGameLogs(worldId, gameDate, lastProcessedQuest.getId());
 

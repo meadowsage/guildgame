@@ -59,4 +59,8 @@ public class PersonRepository {
             person.getSkills().forEach(personSkill -> personMapper.updateSkill(person.getId(), personSkill));
         }
     }
+
+    public void save(List<Adventurer> persons, long worldId) {
+        persons.forEach(person -> save(person, worldId));
+    }
 }

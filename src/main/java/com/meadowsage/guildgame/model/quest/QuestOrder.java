@@ -17,7 +17,7 @@ public class QuestOrder {
     private long questId;
     @Getter
     private long partyId;
-    private List<QuestOrderProgress> questOrderProgresses = new ArrayList<>();
+    private final List<QuestOrderProgress> questOrderProgresses = new ArrayList<>();
     @Nullable
     private QuestOrderProgress newProgress;
     @Nullable
@@ -31,22 +31,6 @@ public class QuestOrder {
 
     public boolean isNew() {
         return this.id == -1;
-    }
-
-    /**
-     * クエストが実行済かどうか
-     *
-     * @param gameDate 現在のゲーム日付
-     * @return 実行済ならtrue
-     */
-    public boolean hasProcessed(int gameDate) {
-        return questOrderProgresses.stream()
-                .anyMatch(questOrderProgress -> questOrderProgress.getGameDate() == gameDate);
-    }
-
-    public boolean isActive() {
-        return true;
-//        return this.state.equals(State.ONGOING);
     }
 
     public void markAsSuccess(int gameDate) {

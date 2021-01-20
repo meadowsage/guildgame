@@ -8,3 +8,11 @@ CREATE TABLE game_log
     log_level  smallint     NOT NULL,
     created_at timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE facility_payment
+(
+    world_id  bigint      NOT NULL REFERENCES world (id) ON DELETE CASCADE,
+    game_date int         NOT NULL,
+    name      varchar(20) NOT NULL,
+    value     bigint      NOT NULL
+);

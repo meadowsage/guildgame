@@ -2,8 +2,7 @@ CREATE TABLE quest
 (
     id       bigserial PRIMARY KEY,
     world_id bigint      NOT NULL REFERENCES world (id) ON DELETE CASCADE,
-    content  varchar(40) NOT NULL,
-    is_closed boolean NOT NULL DEFAULT false
+    content  varchar(40) NOT NULL
 );
 
 CREATE TABLE quest_order
@@ -24,7 +23,7 @@ CREATE TABLE quest_order_result
 (
     quest_order_id bigint  NOT NULL REFERENCES quest_order (id) ON DELETE CASCADE,
     game_date      int     NOT NULL,
-    succeeded      boolean NOT NULL
+    is_succeeded      boolean NOT NULL
 );
 
 CREATE TABLE quest_payment

@@ -6,26 +6,29 @@ import com.meadowsage.guildgame.model.value.Money;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class FacilityPayment {
-    private final String name;
-    private final int value;
-    private final int gameDate;
+    private String name;
+    private int value;
+    private int gameDate;
 
-    public static FacilityPayment process(
+    public static void process(
             String name,
             int value,
             Guild guild,
             int gameDate,
-            GameLogger gameLogger
+            GameLogger gameLogger,
+            AccountingLogger accountingLogger
     ) {
         FacilityPayment facilityPayment = new FacilityPayment(name, value, gameDate);
 
         guild.payMoney(Money.of(value));
         gameLogger.detail(name + "の維持費として" + value + "Gを支払った。");
 
-        return facilityPayment;
+        accountingLogger.recordFacilityPayment(facilityPayment);
     }
 }
