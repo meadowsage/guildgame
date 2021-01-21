@@ -29,7 +29,7 @@ CREATE TABLE quest_order_result
 CREATE TABLE quest_payment
 (
     quest_id  bigint NOT NULL REFERENCES quest (id) ON DELETE CASCADE,
-    person_id bigint REFERENCES person (id) ON DELETE CASCADE,
+    person_id bigint NOT NULL REFERENCES person (id) ON DELETE CASCADE,
     game_date int    NOT NULL,
     value     bigint NOT NULL
 );

@@ -1,5 +1,6 @@
 package com.meadowsage.guildgame.controller.response;
 
+import com.meadowsage.guildgame.controller.response.model.ResponsePersonImage;
 import com.meadowsage.guildgame.model.person.Applicant;
 import com.meadowsage.guildgame.model.person.ApplicantReviewer;
 import lombok.Builder;
@@ -18,7 +19,7 @@ public class GetApplicantsResponse {
                         .id(person.getId())
                         .name(person.getName().getFirstName())
                         .fullName(person.getName().getFullName())
-                        .imageBodyFileName(person.getImageBodyFileName())
+                        .image(new ResponsePersonImage(person))
                         .remarks(ApplicantReviewer.of().review(person))
                         .build()
                 ).collect(Collectors.toList());
@@ -30,7 +31,7 @@ public class GetApplicantsResponse {
         long id;
         String name;
         String fullName;
-        String imageBodyFileName;
+        ResponsePersonImage image;
         List<String> remarks;
     }
 }

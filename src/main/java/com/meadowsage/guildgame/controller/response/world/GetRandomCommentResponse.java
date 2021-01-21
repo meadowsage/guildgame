@@ -1,17 +1,16 @@
 package com.meadowsage.guildgame.controller.response.world;
 
-import com.meadowsage.guildgame.usecase.world.GetRandomCommentUseCase;
+import com.meadowsage.guildgame.controller.response.model.ResponseAdventurer;
+import com.meadowsage.guildgame.model.person.Adventurer;
 import lombok.Getter;
 
 @Getter
 public class GetRandomCommentResponse {
-    String name;
+    ResponseAdventurer adventurer;
     String message;
-    String image;
 
-    public GetRandomCommentResponse(GetRandomCommentUseCase.GetRandomCommentUseCaseResult result) {
-        this.name = result.getName();
-        this.message = result.getMessage();
-        this.image = result.getImage();
+    public GetRandomCommentResponse(Adventurer adventurer) {
+        this.adventurer = new ResponseAdventurer(adventurer);
+        this.message = adventurer.getRandomComment();
     }
 }

@@ -80,8 +80,9 @@ public class WorldController {
     }
 
     @GetMapping("/{worldId}/comment")
+    @ResponseBody
     @Transactional(readOnly = true)
     public GetRandomCommentResponse getRandomComment(@PathVariable long worldId) {
-        return new GetRandomCommentResponse(getRandomCommentUseCase.run(worldId));
+        return new GetRandomCommentResponse(getRandomCommentUseCase.run(worldId).getAdventurer());
     }
 }

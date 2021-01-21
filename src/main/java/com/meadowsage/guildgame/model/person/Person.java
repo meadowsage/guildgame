@@ -41,7 +41,7 @@ public abstract class Person {
     @Getter
     private List<PersonSkill> skills = new ArrayList<>();
     @Getter
-    private Integer imageBodyId;
+    private PersonImage personImage;
 
     public boolean isNew() {
         return id == -1;
@@ -74,7 +74,11 @@ public abstract class Person {
             int reputation,
             List<Personality> personalities,
             List<PersonSkill> skills,
-            int imageBodyId,
+            String imageBody,
+            String imageFace,
+            String imageEye,
+            String imageHair,
+            String imageCloth,
             boolean isAdventurer
     ) {
         if (isAdventurer) {
@@ -88,7 +92,7 @@ public abstract class Person {
                     .reputation(Reputation.of(reputation))
                     .personalities(personalities)
                     .skills(skills)
-                    .imageBodyId(imageBodyId)
+                    .personImage(new PersonImage(imageBody, imageFace, imageEye, imageHair, imageCloth))
                     .build();
         } else {
             return Applicant.builder()
@@ -101,7 +105,7 @@ public abstract class Person {
                     .reputation(Reputation.of(reputation))
                     .personalities(personalities)
                     .skills(skills)
-                    .imageBodyId(imageBodyId)
+                    .personImage(new PersonImage(imageBody, imageFace, imageEye, imageHair, imageCloth))
                     .build();
         }
     }
@@ -122,8 +126,4 @@ public abstract class Person {
         int result = new Dice().roll(1, comments.length);
         return comments[result - 1];
     }
-
-    public String getImageBodyFileName() {
-        return "face_" + imageBodyId + ".png";
-    };
 }

@@ -51,6 +51,7 @@ public class PersonRepository {
     public void save(Person person, long worldId) {
         if (person.isNew()) {
             personMapper.insert(person, worldId);
+            personMapper.insertPersonImage(person.getId(), person.getPersonImage());
             personMapper.insertPersonalities(person);
             personMapper.insertSkills(person);
             if (person instanceof Applicant) applicantMapper.insert(person);

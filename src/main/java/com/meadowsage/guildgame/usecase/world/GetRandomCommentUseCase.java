@@ -17,24 +17,18 @@ public class GetRandomCommentUseCase {
     public GetRandomCommentUseCaseResult run(long worldId) {
         List<Adventurer> adventurers = personRepository.getAdventurers(worldId);
         Dice dice = new Dice();
-        int result = dice.roll(1, adventurers.size() + 1);
-        if (result > adventurers.size()) {
-            return new GetRandomCommentUseCaseResult("エリス", "おはようございます。\n……何か、ご用でも？", "face_1.png");
-        } else {
+        int result = dice.roll(1, adventurers.size());
+//        if (result > adventurers.size()) {
+//            return new GetRandomCommentUseCaseResult("エリス", "おはようございます。\n……何か、ご用でも？", "face_1.png");
+//        } else {
             Adventurer adventurer = adventurers.get(result - 1);
-            return new GetRandomCommentUseCaseResult(
-                    adventurer.getName().getFirstName(),
-                    adventurer.getRandomComment(),
-                    adventurer.getImageBodyFileName()
-            );
-        }
+            return new GetRandomCommentUseCaseResult(adventurer);
+//        }
     }
 
     @Getter
     @AllArgsConstructor
     public static class GetRandomCommentUseCaseResult {
-        String name;
-        String message;
-        String image;
+        Adventurer adventurer;
     }
 }

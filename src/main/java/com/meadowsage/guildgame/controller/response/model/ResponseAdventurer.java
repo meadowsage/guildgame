@@ -23,7 +23,7 @@ public class ResponseAdventurer {
     int maxEnergy;
     List<String> personalities;
     List<ResponseSkill> skills;
-    String imageBodyFileName;
+    ResponsePersonImage image;
 
     public ResponseAdventurer(Adventurer adventurer) {
         this.id = adventurer.getId();
@@ -42,7 +42,7 @@ public class ResponseAdventurer {
         this.skills = adventurer.getSkills().stream()
                 .map(ResponseSkill::new)
                 .collect(Collectors.toList());
-        this.imageBodyFileName = adventurer.getImageBodyFileName();
+        this.image = new ResponsePersonImage(adventurer);
     }
 
     @Getter

@@ -1,9 +1,6 @@
 package com.meadowsage.guildgame.mapper;
 
-import com.meadowsage.guildgame.model.person.Adventurer;
-import com.meadowsage.guildgame.model.person.Applicant;
-import com.meadowsage.guildgame.model.person.Person;
-import com.meadowsage.guildgame.model.person.PersonSkill;
+import com.meadowsage.guildgame.model.person.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,6 +8,8 @@ import java.util.List;
 @Mapper
 public interface PersonMapper {
     void insert(Person person, long worldId);
+
+    void insertPersonImage(Long personId, PersonImage personImage);
 
     void insertPersonalities(Person person);
 

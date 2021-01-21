@@ -5,7 +5,6 @@ import com.meadowsage.guildgame.model.system.GameLogger;
 import com.meadowsage.guildgame.model.value.Money;
 import com.meadowsage.guildgame.model.value.Reputation;
 import com.meadowsage.guildgame.model.value.Resource;
-import com.meadowsage.guildgame.model.world.GameWorld;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -60,7 +59,11 @@ public class Applicant extends Person {
             }
 
             // 立ち絵
-            int imageBodyId = dice.roll(1, 4, 1);
+            String imageBody = Integer.toString(dice.roll(1, 1));
+            String imageFace = imageBody + "_" + dice.roll(1, 4);
+            String imageEye = imageBody + "_" + dice.roll(1, 3);
+            String imageHair = imageBody + "_" + dice.roll(1, 3);
+            String imageCloth = imageBody + "_" + dice.roll(1, 1);
 
             return (Applicant) Applicant.builder()
                     .name(name)
@@ -72,7 +75,7 @@ public class Applicant extends Person {
                     .reputation(reputation)
                     .personalities(personalities)
                     .skills(personSkills)
-                    .imageBodyId(imageBodyId)
+                    .personImage(new PersonImage(imageBody, imageFace, imageEye, imageHair, imageCloth))
                     .build();
         }).collect(Collectors.toList());
     }

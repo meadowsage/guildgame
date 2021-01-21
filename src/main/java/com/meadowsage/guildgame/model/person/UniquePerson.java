@@ -18,7 +18,7 @@ public enum UniquePerson {
                     PersonSkill.of(Skill.CAMP, 4),
                     PersonSkill.of(Skill.COACHING, 4),
                     PersonSkill.of(Skill.SWORD, 3)),
-            2,
+            "teran",
             true);
 
     private final String firstName;
@@ -35,23 +35,16 @@ public enum UniquePerson {
     private final List<Personality> personalities;
     private final List<PersonSkill> personSkills;
 
-    private final int imageBodyId;
+    private final String imageBody;
 
     private final boolean isAdventurer;
 
     public Person getInstance() {
         return Person.of(
-                firstName,
-                familyName,
-                battle,
-                knowledge,
-                support,
-                energy,
-                money,
-                reputation,
-                personalities,
-                personSkills,
-                imageBodyId,
+                firstName, familyName,
+                battle, knowledge, support, energy, money, reputation,
+                personalities, personSkills,
+                imageBody, "0", "0", "0", "0",
                 isAdventurer);
     }
 }

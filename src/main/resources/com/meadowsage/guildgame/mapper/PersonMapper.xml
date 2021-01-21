@@ -12,6 +12,7 @@
         <association property="knowledge" columnPrefix="k_" autoMapping="true"/>
         <association property="support" columnPrefix="s_" autoMapping="true"/>
         <association property="energy" columnPrefix="e_" autoMapping="true"/>
+        <association property="personImage" columnPrefix="pi_" autoMapping="true"/>
         <collection property="personalities" ofType="com.meadowsage.guildgame.model.person.Personality">
             <result column="personality"/>
         </collection>
@@ -28,6 +29,7 @@
         <association property="knowledge" columnPrefix="k_" autoMapping="true"/>
         <association property="support" columnPrefix="s_" autoMapping="true"/>
         <association property="energy" columnPrefix="e_" autoMapping="true"/>
+        <association property="personImage" columnPrefix="pi_" autoMapping="true"/>
         <collection property="personalities" ofType="com.meadowsage.guildgame.model.person.Personality">
             <result column="personality"/>
         </collection>
@@ -39,7 +41,6 @@
         SELECT
         p.id,
         p.is_actioned,
-        p.image_body_id,
         p.first_name AS n_first_name,
         p.family_name AS n_family_name,
         p.money AS m_value,
@@ -58,11 +59,17 @@
         p2.type AS personality,
         ps.skill as ps_skill,
         ps.level as ps_level,
-        ps.exp as ps_exp
+        ps.exp as ps_exp,
+        pi.image_body as pi_body,
+        pi.image_face as pi_face,
+        pi.image_eye as pi_eye,
+        pi.image_hair as pi_hair,
+        pi.image_cloth as pi_cloth
         FROM person p
         LEFT JOIN applicant a on p.id = a.person_id
         LEFT JOIN personality p2 on p.id = p2.person_id
         LEFT JOIN person_skill ps on p.id = ps.person_id
+        INNER JOIN person_image pi on p.id = pi.person_id
         WHERE a.person_id IS NULL
         <if test="worldId != null">
             AND world_id = #{worldId}
@@ -77,24 +84,29 @@
 
     <select id="selectApplicants" resultMap="applicantMap">
         SELECT p.id,
-               p.image_body_id,
-               p.first_name  as n_first_name,
-               p.family_name as n_family_name,
-               p.money       as m_value,
-               p.reputation  as r_value,
-               p.battle      as b_value,
-               p.knowledge   as k_value,
-               p.support     as s_value,
-               p.max_energy  as e_max,
-               p.energy      as e_value,
-               p2.type       as personality,
-               ps.skill      as ps_skill,
-               ps.level      as ps_level,
-               ps.exp        as ps_exp
+               p.first_name   as n_first_name,
+               p.family_name  as n_family_name,
+               p.money        as m_value,
+               p.reputation   as r_value,
+               p.battle       as b_value,
+               p.knowledge    as k_value,
+               p.support      as s_value,
+               p.max_energy   as e_max,
+               p.energy       as e_value,
+               p2.type        as personality,
+               ps.skill       as ps_skill,
+               ps.level       as ps_level,
+               ps.exp         as ps_exp,
+               pi.image_body  as pi_body,
+               pi.image_face  as pi_face,
+               pi.image_eye   as pi_eye,
+               pi.image_hair  as pi_hair,
+               pi.image_cloth as pi_cloth
         FROM person p
                  LEFT JOIN applicant a on p.id = a.person_id
                  LEFT JOIN personality p2 on p.id = p2.person_id
                  LEFT JOIN person_skill ps on p.id = ps.person_id
+                 INNER JOIN person_image pi on p.id = pi.person_id
         WHERE world_id = #{worldId}
           AND a.person_id IS NOT NULL
     </select>
@@ -113,7 +125,6 @@
                             support_exp,
                             max_energy,
                             energy,
-                            image_body_id,
                             is_actioned)
         VALUES (#{worldId},
                 #{person.name.firstName},
@@ -128,8 +139,22 @@
                 #{person.support.exp},
                 #{person.energy.max},
                 #{person.energy.value},
-                #{person.imageBodyId},
                 #{person.isActioned})
+    </insert>
+
+    <insert id="insertPersonImage">
+        INSERT INTO person_image(person_id,
+                                 image_body,
+                                 image_face,
+                                 image_eye,
+                                 image_hair,
+                                 image_cloth)
+        VALUES (#{personId},
+                #{personImage.body},
+                #{personImage.face},
+                #{personImage.eye},
+                #{personImage.hair},
+                #{personImage.cloth})
     </insert>
 
     <insert id="insertPersonalities">
