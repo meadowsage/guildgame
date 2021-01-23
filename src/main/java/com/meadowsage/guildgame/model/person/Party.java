@@ -5,20 +5,33 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Party {
     private static final int MAX_LIMIT_OF_MEMBERS = 4;
 
     @Getter
-    long id;
+    private long id;
     @Getter
-    String name;
+    private String name;
+
+    private List<Adventurer> members = new ArrayList<>();
     @Getter
-    List<Adventurer> members = new ArrayList<>();
-    @Getter
-    Long leaderId;
+    private Long leaderId;
+
+    public List<Adventurer> getMembers() {
+        // 戦闘がリーダでない場合、先頭に移動する
+        if(members.size() > 0 && members.get(0).getId() != leaderId) {
+            Adventurer leader = members.stream().filter(member -> member.getId() == leaderId).findFirst()
+                    .orElseThrow(IllegalStateException::new);
+            members.removeIf(member -> member.getId() == leaderId);
+            members.add(0, leader);
+        }
+        return members;
+    }
 
     public boolean canAddMember() {
         return members.size() < MAX_LIMIT_OF_MEMBERS;

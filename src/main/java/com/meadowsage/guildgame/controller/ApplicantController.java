@@ -33,6 +33,6 @@ public class ApplicantController {
     ) {
         // TODO 入力チェック セーブデータと応募者の突き合わせ、支給品が使用可能かのチェック（ギルドランクが基準）
         System.out.println(saveDataId + " " + worldId);
-        updateApplicantUseCase.run(applicantId, request.getIsApproval());
+        updateApplicantUseCase.run(worldId, applicantId, request.getIsApproval());
     }
 }

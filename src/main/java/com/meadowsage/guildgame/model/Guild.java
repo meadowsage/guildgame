@@ -30,4 +30,9 @@ public class Guild {
     public void gainReputation(int reputation) {
         this.reputation += reputation;
     }
+
+    public int getLimitOfAdventurers() {
+        // FIXME reputationまたはランクで判定
+        return 6;
+    }
 }

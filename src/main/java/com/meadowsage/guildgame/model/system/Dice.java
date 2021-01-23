@@ -31,9 +31,10 @@ public class Dice {
 
     /**
      * 1d100の結果に応じた結果を返す
+     * 1~100の範囲外にはならない
      */
     public DiceRollResult calcResult(int target, int modifier) {
-        int result = roll(1, 100) + modifier;
+        int result = Math.min(Math.max(roll(1, 100) + modifier, 1), 100);
 
         // 1,100は自動成功・自動失敗
         if (result <= 1) return new DiceRollResult(result, ResultType.CRITICAL);

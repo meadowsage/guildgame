@@ -1,5 +1,6 @@
 package com.meadowsage.guildgame.controller.response.world;
 
+import com.meadowsage.guildgame.controller.response.model.ResponseGuild;
 import com.meadowsage.guildgame.model.Guild;
 import com.meadowsage.guildgame.model.world.World;
 import lombok.Getter;
@@ -25,17 +26,6 @@ public class GetWorldResponse {
             this.id = world.getId();
             this.gameDate = world.getGameDate();
             this.state = world.getState().name();
-        }
-    }
-
-    @Getter
-    private static class ResponseGuild {
-        long money;
-        int reputation;
-
-        public ResponseGuild(Guild guild) {
-            this.money = guild.getMoney().getValue();
-            this.reputation = guild.getReputation();
         }
     }
 }
