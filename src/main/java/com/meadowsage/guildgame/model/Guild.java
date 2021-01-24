@@ -35,4 +35,14 @@ public class Guild {
         // FIXME reputationまたはランクで判定
         return 6;
     }
+
+    public int getLimitOfQuests() {
+        // FIXME reputationまたはランクで判定
+        return 3;
+    }
+
+    public int getLimitOfApplicants() {
+        // FIXME とりあえず固定
+        return 5;
+    }
 }

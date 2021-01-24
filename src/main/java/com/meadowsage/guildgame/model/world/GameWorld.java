@@ -4,10 +4,8 @@ import com.meadowsage.guildgame.model.Guild;
 import com.meadowsage.guildgame.model.Place;
 import com.meadowsage.guildgame.model.person.*;
 import com.meadowsage.guildgame.model.quest.Quest;
-import com.meadowsage.guildgame.model.quest.QuestGenerator;
 import com.meadowsage.guildgame.model.quest.QuestOrder;
 import com.meadowsage.guildgame.model.quest.UniqueQuest;
-import com.meadowsage.guildgame.model.system.Dice;
 import com.meadowsage.guildgame.model.system.SaveData;
 import com.meadowsage.guildgame.repository.QuestRepository;
 import com.meadowsage.guildgame.repository.WorldRepository;
@@ -15,7 +13,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,25 +70,5 @@ public class GameWorld extends World {
         questRepository.addQuestOrder(world.getQuests().get(0).getId(), world.getParties().get(0).getId());
 
         return world;
-    }
-
-    public void midday() {
-        state = State.AFTERNOON;
-    }
-
-    public void midnight() {
-        Dice dice = new Dice();
-        // 新しい応募者の作成
-        int applicantNum = dice.roll(1, 3);
-        applicants.addAll(Applicant.generate(applicantNum, dice));
-
-        // 新しいクエストの作成
-        int questNum = (int) (1 + Math.random() * 2);
-        quests.addAll(new QuestGenerator(guild.getReputation(), places, new Dice()).generate(questNum));
-
-        // 日付進める
-        gameDate++;
-
-        state = State.MORNING;
     }
 }

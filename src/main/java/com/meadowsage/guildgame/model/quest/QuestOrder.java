@@ -33,6 +33,10 @@ public class QuestOrder {
         return this.id == -1;
     }
 
+    public boolean isOngoing() {
+        return !questOrderProgresses.isEmpty();
+    }
+
     public void markAsSuccess(int gameDate) {
         this.questOrderResult = QuestOrderResult.success(gameDate);
     }

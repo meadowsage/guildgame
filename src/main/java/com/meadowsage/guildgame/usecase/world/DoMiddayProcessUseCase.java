@@ -1,6 +1,5 @@
 package com.meadowsage.guildgame.usecase.world;
 
-import com.meadowsage.guildgame.model.world.GameWorld;
 import com.meadowsage.guildgame.model.world.World;
 import com.meadowsage.guildgame.repository.WorldRepository;
 import lombok.AllArgsConstructor;
@@ -12,8 +11,10 @@ public class DoMiddayProcessUseCase {
     private final WorldRepository worldRepository;
 
     public void run(long worldId) {
-        GameWorld world = worldRepository.getGameWorld(worldId);
-        if (world.getState().equals(World.State.MIDDAY)) world.midday();
+        World world = worldRepository.getGameWorld(worldId);
+        if (!world.getState().equals(World.State.MIDDAY)) return;
+
+        world.changeState(World.State.AFTERNOON);
         worldRepository.save(world);
     }
 }

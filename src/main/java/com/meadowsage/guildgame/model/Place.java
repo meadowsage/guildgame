@@ -5,11 +5,13 @@ import com.meadowsage.guildgame.model.system.Dice;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 
 @Getter
 @AllArgsConstructor
 public enum Place {
-    CITY("町", new QuestContent[]{
+    CITY("始まりの町", new QuestContent[]{
             QuestContent.CITY_GUARD,
             QuestContent.CITY_ASSIST_HAUL,
             QuestContent.CITY_ASSIST_CONSTRUCTION,
@@ -29,5 +31,12 @@ public enum Place {
     public QuestContent decideQuestContent(Dice dice) {
         int choice = dice.roll(1, questContents.length);
         return questContents[choice - 1];
+    }
+
+    // FIXME この構造で良いのだろうか…
+    public static Place findPlaceOf(QuestContent questContent){
+        return Arrays.stream(values())
+                .filter(place -> Arrays.asList(place.questContents).contains(questContent))
+                .findAny().orElseThrow(IllegalStateException::new);
     }
 }

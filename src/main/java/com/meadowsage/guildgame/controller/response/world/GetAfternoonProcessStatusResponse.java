@@ -1,6 +1,7 @@
 package com.meadowsage.guildgame.controller.response.world;
 
 import com.meadowsage.guildgame.controller.response.model.ResponseParty;
+import com.meadowsage.guildgame.controller.response.model.ResponseQuest;
 import com.meadowsage.guildgame.model.person.Party;
 import com.meadowsage.guildgame.model.quest.Quest;
 import com.meadowsage.guildgame.model.system.GameLog;
@@ -24,21 +25,10 @@ public class GetAfternoonProcessStatusResponse {
             List<GameLog> gameLogs,
             boolean isDone
     ) {
-        if (quest != null) this.quest = new ResponseQuest(quest);
+        if (quest != null) this.quest = new ResponseQuest(quest, null, party);
         if (party != null) this.party = new ResponseParty(party);
         this.gameLogs = gameLogs.stream().map(ResponseGameLog::new).collect(Collectors.toList());
         this.isDone = isDone;
-    }
-
-    @Getter
-    private static class ResponseQuest {
-        long id;
-        String name;
-
-        public ResponseQuest(Quest quest) {
-            this.id = quest.getId();
-            this.name = quest.getName();
-        }
     }
 
     @Getter

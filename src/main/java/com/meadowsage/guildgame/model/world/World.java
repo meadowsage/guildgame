@@ -37,6 +37,10 @@ public class World {
         this.state = state;
     }
 
+    public void toNextDay() {
+        gameDate++;
+    }
+
     public enum State {
         MORNING, // 朝（キャラクター行動決定）
         MIDDAY, // 昼（ユーザ操作待ち）

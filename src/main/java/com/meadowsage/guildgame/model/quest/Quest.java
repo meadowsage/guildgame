@@ -1,5 +1,6 @@
 package com.meadowsage.guildgame.model.quest;
 
+import com.meadowsage.guildgame.model.Place;
 import com.meadowsage.guildgame.model.person.Adventurer;
 import com.meadowsage.guildgame.model.person.Party;
 import com.meadowsage.guildgame.model.system.GameLogger;
@@ -8,12 +9,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Quest {
     @Getter
     private long id = -1;
+    private final List<QuestOrderProgress> progresses = new ArrayList<>();
     private QuestContent content;
 
     public Quest(QuestContent content) {
@@ -36,6 +39,14 @@ public class Quest {
         return content.getAmount();
     }
 
+    public int getProgress() {
+        return progresses.stream().mapToInt(QuestOrderProgress::getProgress).sum();
+    }
+
+    public Place getPlace() {
+        return content.getPlace();
+    }
+
     public List<QuestContent.Requirement> getRequirements() {
         return content.getRequirements();
     }
@@ -50,10 +61,6 @@ public class Quest {
 
     public boolean isNew() {
         return id == -1;
-    }
-
-    public int criticalEvent(Adventurer adventurer, GameLogger gameLogger) {
-        return content.getEvents().criticalEvent(this, adventurer, gameLogger);
     }
 
     public int specialEvent(Adventurer adventurer, GameLogger gameLogger) {

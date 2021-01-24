@@ -48,6 +48,10 @@ public class PersonRepository {
         applicantMapper.delete(personId);
     }
 
+    public void deleteAllApplicants(long worldId) {
+        getApplicants(worldId).stream().map(Applicant::getId).forEach(this::deleteApplicant);
+    }
+
     public void save(Person person, long worldId) {
         if (person.isNew()) {
             personMapper.insert(person, worldId);

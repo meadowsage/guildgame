@@ -91,7 +91,6 @@ public class QuestProcess {
         // ダイスロールの結果に応じてイベントを実行
         switch (result.getType()) {
             case CRITICAL:
-                return quest.criticalEvent(adventurer, gameLogger);
             case SPECIAL:
                 return quest.specialEvent(adventurer, gameLogger);
             case SUCCESS:

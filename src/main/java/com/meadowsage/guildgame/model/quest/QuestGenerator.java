@@ -12,11 +12,9 @@ import java.util.stream.IntStream;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class QuestGenerator {
     Dice dice;
-    int reputation;
     List<Place> places;
 
-    public QuestGenerator(int reputation, List<Place> places, Dice dice) {
-        this.reputation = reputation;
+    public QuestGenerator(List<Place> places, Dice dice) {
         this.places = places;
         this.dice = dice;
     }
