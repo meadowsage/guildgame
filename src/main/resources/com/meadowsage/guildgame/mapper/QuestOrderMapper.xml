@@ -49,7 +49,11 @@
             AND qop.game_date = #{processedAt}
         </if>
         <if test="notProcessedAt != null">
-            AND (qop.game_date IS NULL OR qop.game_date != #{notProcessedAt})
+          AND NOT EXISTS (
+            SELECT qop2.quest_order_id
+            FROM quest_order_progress qop2
+            WHERE qo.id = qop2.quest_order_id AND qop2.game_date = #{notProcessedAt}
+            )
         </if>
         <if test="completedAt != null">
             AND qor.game_date = #{completedAt}

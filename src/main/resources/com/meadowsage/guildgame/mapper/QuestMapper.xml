@@ -3,9 +3,21 @@
 
 <mapper namespace="com.meadowsage.guildgame.mapper.QuestMapper">
 
-    <select id="select" resultType="com.meadowsage.guildgame.model.quest.Quest">
-        SELECT q.*
+    <resultMap id="questMap" type="com.meadowsage.guildgame.model.quest.Quest" autoMapping="true">
+        <id column="id" property="id"/>
+        <collection property="progresses" autoMapping="true" columnPrefix="qop_"
+                    ofType="com.meadowsage.guildgame.model.quest.QuestOrderProgress">
+            <id column="game_date" property="gameDate"/>
+        </collection>
+    </resultMap>
+
+    <select id="select" resultMap="questMap">
+        SELECT q.*,
+        qop.game_date as qop_game_date,
+        qop.progress as qop_progress
         FROM quest q
+        LEFT JOIN quest_order qo on q.id = qo.quest_id
+        LEFT JOIN quest_order_progress qop on qo.id = qop.quest_order_id
         <where>
             <if test="questId != null">
                 AND q.id = #{questId}
