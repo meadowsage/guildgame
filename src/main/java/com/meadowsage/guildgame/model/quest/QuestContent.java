@@ -15,12 +15,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
 public enum QuestContent {
     // 町
-    CITY_WEEDING("町の草むしり", 500, 0, 1,
+    CITY_WEEDING("町の草むしり", Place.CITY, 500, 0, 1,
             requirements(Requirement.of(Attribute.Type.SUPPORT, 20)),
             requirements(),
             new QuestDetailEvents() {
@@ -46,7 +47,7 @@ public enum QuestContent {
                     return successEvent(quest, adventurer, gameLogger);
                 }
             }),
-    CITY_GUARD("町の見回り", 500, 0, 1,
+    CITY_GUARD("町の見回り", Place.CITY, 500, 0, 1,
             requirements(Requirement.of(Attribute.Type.SUPPORT, 20)),
             requirements(),
             new QuestDetailEvents() {
@@ -56,7 +57,7 @@ public enum QuestContent {
                     return 1;
                 }
             }),
-    CITY_ASSIST_HAUL("店の運搬手伝い", 500, 0, 1,
+    CITY_ASSIST_HAUL("店の運搬手伝い", Place.CITY, 500, 0, 1,
             requirements(Requirement.of(Attribute.Type.SUPPORT, 20)),
             requirements(),
             new QuestDetailEvents() {
@@ -66,7 +67,7 @@ public enum QuestContent {
                     return 1;
                 }
             }),
-    CITY_ASSIST_CONSTRUCTION("工事の手伝い", 500, 0, 1,
+    CITY_ASSIST_CONSTRUCTION("工事の手伝い", Place.CITY, 500, 0, 1,
             requirements(Requirement.of(Attribute.Type.SUPPORT, 20)),
             requirements(),
             new QuestDetailEvents() {
@@ -79,36 +80,36 @@ public enum QuestContent {
                     return 1;
                 }
             }),
-    CITY_EXTERMINATE_WILD_HOUNDS("郊外の野犬駆除", 800, 0, 1,
+    CITY_EXTERMINATE_WILD_HOUNDS("郊外の野犬駆除", Place.CITY, 800, 0, 1,
             requirements(Requirement.of(Attribute.Type.BATTLE, 20)),
             requirements(),
             new QuestDetailEvents(new Monster("野犬") {
             }) {
             }),
-    CITY_EXTERMINATE_LARGE_RATS("ラージラット駆除", 800, 0, 1,
+    CITY_EXTERMINATE_LARGE_RATS("ラージラット駆除", Place.CITY, 800, 0, 1,
             requirements(Requirement.of(Attribute.Type.BATTLE, 20)),
             requirements(),
             new QuestDetailEvents(new Monster("ラージラット") {
             }) {
             }),
     // 茸の森
-    M_FOREST_ESCORT_LUMBERJACK("木こりの護衛", 1000, 0, 2,
+    M_FOREST_ESCORT_LUMBERJACK("木こりの護衛", Place.MUSHROOM_FOREST, 1000, 0, 2,
             requirements(Requirement.of(Attribute.Type.SUPPORT, 50), Requirement.of(Attribute.Type.BATTLE, 30)),
             requirements(),
             new QuestDetailEvents() {
             }),
-    M_FOREST_ESCORT_ROAD_MAINTENANCE("道の舗装手伝い", 1000, 0, 2,
+    M_FOREST_ESCORT_ROAD_MAINTENANCE("道の舗装手伝い", Place.MUSHROOM_FOREST, 1000, 0, 2,
             requirements(Requirement.of(Attribute.Type.SUPPORT, 50)),
             requirements(),
             new QuestDetailEvents() {
             }),
-    M_FOREST_EXTERMINATE_FOREST_SLIME("フォレストスライム駆除", 1000, 1, 2,
+    M_FOREST_EXTERMINATE_FOREST_SLIME("フォレストスライム駆除", Place.MUSHROOM_FOREST, 1000, 1, 2,
             requirements(Requirement.of(Attribute.Type.BATTLE, 50)),
             requirements(),
             new QuestDetailEvents(new Monster("フォレストスライム") {
             }) {
             }),
-    M_FOREST_HARVEST_MEDICINE_MUSHROOM("薬用キノコの採取", 1200, 0, 2,
+    M_FOREST_HARVEST_MEDICINE_MUSHROOM("薬用キノコの採取", Place.MUSHROOM_FOREST, 1200, 0, 2,
             requirements(Requirement.of(Attribute.Type.KNOWLEDGE, 50)),
             requirements(),
             new QuestDetailEvents(new Item("薬用キノコ") {
@@ -116,6 +117,7 @@ public enum QuestContent {
             });
 
     private final String contentName;
+    private final Place place;
     private final int reward;
     private final int danger;
     private final int amount;
@@ -127,10 +129,11 @@ public enum QuestContent {
         return Collections.unmodifiableList(Arrays.asList(requirements));
     }
 
-    public Place getPlace() {
-        return Place.findPlaceOf(this);
+    public static List<QuestContent> valuesAt(Place place) {
+        return Arrays.stream(values())
+                .filter(questContent -> questContent.getPlace().equals(place))
+                .collect(Collectors.toList());
     }
-
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
