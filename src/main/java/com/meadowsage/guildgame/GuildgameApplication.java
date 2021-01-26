@@ -27,7 +27,8 @@ public class GuildgameApplication {
                 registry.addMapping("/api/**")
                         .allowedOrigins(
                                 "http://localhost:3000",
-                                "https://guild-game-front.herokuapp.com"
+                                "https://guild-game-front.herokuapp.com",
+                                "https://inspiring-blackwell-fb88a8.netlify.app"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
             }
