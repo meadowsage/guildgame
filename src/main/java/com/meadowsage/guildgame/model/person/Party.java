@@ -54,8 +54,8 @@ public class Party {
         return members.stream().mapToInt(adventurer -> adventurer.calcReward(quest)).sum();
     }
 
-    public int getMaxAttributeValue(Attribute.Type type) {
-        return members.stream().mapToInt(member -> member.getAttribute(type).getValue()).max().orElse(0);
+    public int getAttributeValue(Attribute.Type type) {
+        return members.stream().mapToInt(member -> member.getAttribute(type).getValue()).sum();
     }
 
     public int getMaxSkillLevel(Skill skill) {

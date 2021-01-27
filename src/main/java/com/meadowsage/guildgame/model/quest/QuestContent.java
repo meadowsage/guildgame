@@ -168,7 +168,7 @@ public enum QuestContent {
 
         @Override
         public boolean isSatisfied(Party party) {
-            return party.getMaxAttributeValue(type) >= value;
+            return party.getAttributeValue(type) >= value;
         }
 
         @Override
