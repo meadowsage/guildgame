@@ -36,7 +36,7 @@ public class DoMidnightProcessUseCase {
 
         // 新しい応募者の作成
         int numberOfApplicants = personRepository.getApplicants(worldId).size();
-        int limitOfNewApplicants = Math.min(guild.getLimitOfApplicants() - numberOfApplicants, 3);
+        int limitOfNewApplicants = Math.min(guild.getLimitOfApplicants() - numberOfApplicants, 2);
         List<Applicant> applicants = (limitOfNewApplicants > 0)
                 ? Applicant.generate(dice.roll(1, limitOfNewApplicants), dice)
                 : new ArrayList<>();
