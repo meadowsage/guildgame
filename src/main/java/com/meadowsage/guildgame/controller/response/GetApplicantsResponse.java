@@ -22,6 +22,7 @@ public class GetApplicantsResponse {
         long id;
         String name;
         String fullName;
+        String personality;
         ResponsePersonImage image;
         List<String> remarks;
         String battle;
@@ -32,6 +33,7 @@ public class GetApplicantsResponse {
             id = applicant.getId();
             name = applicant.getName().getFirstName();
             fullName = applicant.getName().getFullName();
+            personality = applicant.getPersonalities().get(0).getLabel();
             image = new ResponsePersonImage(applicant);
             remarks = ApplicantReviewer.of().review(applicant);
             battle = reviewAttribute(applicant.getBattle().getValue());
