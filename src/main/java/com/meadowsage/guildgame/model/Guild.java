@@ -33,7 +33,7 @@ public class Guild {
 
     public int getLimitOfAdventurers() {
         // FIXME reputationまたはランクで判定
-        return 6;
+        return 4;
     }
 
     public int getLimitOfQuests() {
